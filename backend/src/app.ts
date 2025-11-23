@@ -1,0 +1,25 @@
+import express from "express";
+import cors from "cors";
+import turfRoutes from "./routes/turfRoutes";
+import bookingRoutes from "./routes/bookingRoutes";
+import { errorHandler } from "./middlewares/errorHandler";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Routes
+const V1 = "v1";
+
+app.use(`/api/${V1}/turfs`, turfRoutes);
+app.use(`/api/${V1}/bookings`, bookingRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Server is running!");
+});
+
+// Middleware
+app.use(errorHandler);
+
+export default app;
