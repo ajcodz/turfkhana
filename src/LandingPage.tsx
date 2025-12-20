@@ -1,0 +1,333 @@
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Text,
+  SimpleGrid,
+  Image,
+  VStack,
+  HStack,
+  Badge,
+  Flex,
+  Icon,
+} from "@chakra-ui/react";
+import { useColorModeValue } from "./components/ui/color-mode";
+import { Card, CardBody } from "@chakra-ui/card";
+import { Calendar, MapPin, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+
+interface Turf {
+  id: number;
+  title: string;
+  category: string;
+  price: number;
+  image: string;
+  location: string;
+  capacity: string;
+}
+
+const turfs: Turf[] = [
+  {
+    id: 1,
+    title: "Premier Cricket Ground",
+    category: "Cricket",
+    price: 2500,
+    image:
+      "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=500&h=300&fit=crop",
+    location: "Model Town",
+    capacity: "22 players",
+  },
+  {
+    id: 2,
+    title: "Elite Futsal Arena",
+    category: "Futsal",
+    price: 3000,
+    image:
+      "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=500&h=300&fit=crop",
+    location: "DHA Phase 5",
+    capacity: "10 players",
+  },
+  {
+    id: 3,
+    title: "Valley Cricket Pitch",
+    category: "Cricket",
+    price: 2000,
+    image:
+      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500&h=300&fit=crop",
+    location: "Johar Town",
+    capacity: "22 players",
+  },
+  {
+    id: 4,
+    title: "Champions Futsal Court",
+    category: "Futsal",
+    price: 2800,
+    image:
+      "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=500&h=300&fit=crop",
+    location: "Gulberg",
+    capacity: "12 players",
+  },
+];
+
+const LandingPage: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [filteredTurfs, setFilteredTurfs] = useState<Turf[]>(turfs);
+
+  const bgGradient = useColorModeValue(
+    "linear(to-br, green.50, teal.50)",
+    "linear(to-br, gray.900, gray.800)"
+  );
+  const cardBg = useColorModeValue("white", "gray.700");
+  const badgeBg = useColorModeValue("green.100", "green.900");
+  const badgeColor = useColorModeValue("green.800", "green.100");
+
+  const categories = ["All", "Cricket", "Futsal"];
+
+  return (
+    <Box minH="100vh">
+      {/* Hero Section */}
+      <Box
+        bgGradient={bgGradient}
+        py={{ base: 16, md: 24 }}
+        px={4}
+        position="relative"
+        overflow="hidden"
+      >
+        <Container maxW="container.xl">
+          <VStack gap={6} textAlign="center" py={8}>
+            <Badge
+              bg={badgeBg}
+              color={badgeColor}
+              colorScheme="green"
+              fontSize="sm"
+              px={3}
+              py={1}
+              borderRadius="full"
+            >
+              Book Your Perfect Turf
+            </Badge>
+            <Heading
+              as="h1"
+              size={{ base: "2xl", md: "3xl", lg: "6xl" }}
+              fontWeight="bold"
+              lineHeight="shorter"
+              maxW="4xl"
+            >
+              Find & Book Premium Indoor Turfs in{" "}
+              <Text as="span" color="green.500">
+                Minutes
+              </Text>
+            </Heading>
+            <Text
+              fontSize={{ base: "lg", md: "xl" }}
+              color="gray.600"
+              maxW="2xl"
+            >
+              Experience the best indoor cricket and futsal facilities across
+              Lahore. Book instantly, play immediately.
+            </Text>
+            <Link to="/turf-details/1">
+              <Button
+                colorScheme="green"
+                size="lg"
+                px={8}
+                py={6}
+                fontSize="lg"
+                borderRadius="full"
+                _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
+                transition="all 0.2s"
+              >
+                Book a Turf
+              </Button>
+            </Link>
+            <HStack gap={8} pt={4} flexWrap="wrap" justify="center">
+              <HStack>
+                <Icon as={MapPin} color="green.500" />
+                <Text fontSize="sm" color="gray.600">
+                  15+ Locations
+                </Text>
+              </HStack>
+              <HStack>
+                <Icon as={Calendar} color="green.500" />
+                <Text fontSize="sm" color="gray.600">
+                  24/7 Booking
+                </Text>
+              </HStack>
+              <HStack>
+                <Icon as={Users} color="green.500" />
+                <Text fontSize="sm" color="gray.600">
+                  5000+ Players
+                </Text>
+              </HStack>
+            </HStack>
+          </VStack>
+        </Container>
+      </Box>
+
+      {/* Categories Section */}
+      <Container maxW="container.xl" pb={12}>
+        <VStack gap={8} align="stretch">
+          <Box textAlign="center">
+            <Heading as="h2" size="xl" mb={2}>
+              Browse by Category
+            </Heading>
+            <Text color="gray.600" fontSize="lg">
+              Choose your sport and find the perfect venue
+            </Text>
+          </Box>
+
+          <Flex justify="center" gap={4} flexWrap="wrap">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={category === selectedCategory ? "solid" : "outline"}
+                colorScheme="green"
+                size="lg"
+                borderRadius="full"
+                px={8}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setFilteredTurfs(
+                    category === "All"
+                      ? turfs
+                      : turfs.filter((turf) => turf.category === category)
+                  );
+                }}
+              >
+                {category}
+              </Button>
+            ))}
+          </Flex>
+        </VStack>
+      </Container>
+
+      {/* Available Turfs Section */}
+      <Box bg={useColorModeValue("gray.50", "gray.800")} py={16}>
+        <Container maxW="container.xl">
+          <VStack gap={8} align="stretch">
+            <Box>
+              <Heading as="h2" size="xl" mb={2}>
+                Available Turfs
+              </Heading>
+              <Text color="gray.600" fontSize="lg">
+                Book your slot at premium indoor facilities
+              </Text>
+            </Box>
+
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
+              {filteredTurfs.map((turf) => (
+                <Card
+                  key={turf.id}
+                  bg={cardBg}
+                  overflow="hidden"
+                  transition="all 0.3s"
+                  _hover={{
+                    transform: "translateY(-8px)",
+                    shadow: "2xl",
+                  }}
+                  borderRadius="xl"
+                >
+                  <Box position="relative">
+                    <Image
+                      src={turf.image}
+                      alt={turf.title}
+                      h="200px"
+                      w="100%"
+                      objectFit="cover"
+                    />
+                    <Badge
+                      position="absolute"
+                      top={3}
+                      right={3}
+                      colorScheme={
+                        turf.category === "Cricket" ? "blue" : "orange"
+                      }
+                      fontSize="xs"
+                      px={2}
+                      py={1}
+                      borderRadius="md"
+                    >
+                      {turf.category}
+                    </Badge>
+                  </Box>
+                  <CardBody>
+                    <VStack align="stretch" gap={3}>
+                      <Heading as="h3" size="md">
+                        {turf.title}
+                      </Heading>
+                      <HStack fontSize="sm" color="gray.600">
+                        <Icon as={MapPin} boxSize={4} />
+                        <Text>{turf.location}</Text>
+                      </HStack>
+                      <HStack fontSize="sm" color="gray.600">
+                        <Icon as={Users} boxSize={4} />
+                        <Text>{turf.capacity}</Text>
+                      </HStack>
+                      <Flex justify="space-between" align="center" pt={2}>
+                        <Box>
+                          <Text
+                            fontSize="2xl"
+                            fontWeight="bold"
+                            color="green.500"
+                          >
+                            Rs {turf.price}
+                          </Text>
+                          <Text fontSize="xs" color="gray.500">
+                            per hour
+                          </Text>
+                        </Box>
+                        <Link to={`/turf-details/${turf.id}`}>
+                          <Button
+                            colorScheme="green"
+                            size="sm"
+                            borderRadius="full"
+                          >
+                            View Details
+                          </Button>
+                        </Link>
+                      </Flex>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </VStack>
+        </Container>
+      </Box>
+
+      {/* Footer CTA */}
+      <Box bg="green.500" py={16} px={4}>
+        <Container maxW="container.xl">
+          <VStack gap={6} textAlign="center">
+            <Heading as="h2" size="xl" color="white">
+              Ready to Play?
+            </Heading>
+            <Text fontSize="lg" color="white" opacity={0.9} maxW="2xl">
+              Join thousands of players who trust TurfKhana for their sports
+              venue needs
+            </Text>
+            <Link to="/turf-details/1">
+              <Button
+                size="lg"
+                bg="white"
+                color="green.500"
+                px={8}
+                py={6}
+                fontSize="lg"
+                borderRadius="full"
+                _hover={{ bg: "gray.100", transform: "translateY(-2px)" }}
+                transition="all 0.2s"
+              >
+                Start Booking Now
+              </Button>
+            </Link>
+          </VStack>
+        </Container>
+      </Box>
+    </Box>
+  );
+};
+
+export default LandingPage;
