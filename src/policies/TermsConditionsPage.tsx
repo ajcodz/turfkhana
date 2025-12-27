@@ -218,7 +218,7 @@ const TermsConditionsPage: React.FC = () => {
                 <VStack gap={4} align="stretch" pl={4}>
                   <Box>
                     <Heading as="h3" size="md" mb={3}>8.1 Informal Resolution</Heading>
-                    <Text color="gray.700" mb={3}>Contact disputes@turfkhana.com first. We'll work to resolve within 30 days.</Text>
+                    <Text color="gray.700" mb={3}>Contact ajcodzhq@gmail.com first. We'll work to resolve within 30 days.</Text>
 
                     <Heading as="h3" size="md" mb={3}>8.2 Arbitration</Heading>
                     <Text color="gray.700" mb={3}>Unresolved disputes go to binding arbitration in Lahore under Pakistan's Arbitration Act, 1940.</Text>

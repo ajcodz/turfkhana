@@ -486,7 +486,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <VStack gap={3} align="stretch">
                                     <Box
                                         p={4}
-                                        bg={useColorModeValue('gray.50', 'gray.700')}
+                                        bg={useColorModeValue('gray.100', 'gray.700')}
                                         borderRadius="lg"
                                     >
                                         <Text fontWeight="semibold" mb={2}>
@@ -499,7 +499,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
 
                                     <Box
                                         p={4}
-                                        bg={useColorModeValue('gray.50', 'gray.700')}
+                                        bg={useColorModeValue('gray.100', 'gray.700')}
                                         borderRadius="lg"
                                     >
                                         <Text fontWeight="semibold" mb={2}>
@@ -512,7 +512,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
 
                                     <Box
                                         p={4}
-                                        bg={useColorModeValue('gray.50', 'gray.700')}
+                                        bg={useColorModeValue('gray.100', 'gray.700')}
                                         borderRadius="lg"
                                     >
                                         <Text fontWeight="semibold" mb={2}>
@@ -525,7 +525,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
 
                                     <Box
                                         p={4}
-                                        bg={useColorModeValue('gray.50', 'gray.700')}
+                                        bg={useColorModeValue('gray.100', 'gray.700')}
                                         borderRadius="lg"
                                     >
                                         <Text fontWeight="semibold" mb={2}>
@@ -538,7 +538,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
 
                                     <Box
                                         p={4}
-                                        bg={useColorModeValue('gray.50', 'gray.700')}
+                                        bg={useColorModeValue('gray.100', 'gray.700')}
                                         borderRadius="lg"
                                     >
                                         <Text fontWeight="semibold" mb={2}>
