@@ -17,7 +17,6 @@ import {
     Table,
     Menu,
     Portal,
-    useDisclosure,
     NativeSelect,
 } from '@chakra-ui/react';
 import {
@@ -34,6 +33,8 @@ import {
     Eye,
 } from 'lucide-react';
 import { useColorModeValue } from '../components/ui/color-mode';
+import type { DashboardContext } from './DashboardPage';
+import { useOutletContext } from 'react-router-dom';
 
 interface Booking {
     id: string;
@@ -47,10 +48,10 @@ interface Booking {
 }
 
 const AdminBookingListPage: React.FC = () => {
+    const { onOpen } = useOutletContext<DashboardContext>();
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
-    const { onOpen } = useDisclosure();
 
     const itemsPerPage = 10;
 

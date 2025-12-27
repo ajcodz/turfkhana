@@ -12,7 +12,6 @@ import {
     VStack,
     Avatar,
     Menu,
-    useDisclosure,
     Input,
     SimpleGrid,
     Separator,
@@ -35,6 +34,8 @@ import {
 } from 'lucide-react';
 import { toaster } from '../components/ui/toaster';
 import { useColorModeValue } from '../components/ui/color-mode';
+import type { DashboardContext } from './DashboardPage';
+import { useOutletContext } from 'react-router-dom';
 
 interface SettingsData {
     hourlyPrice: string;
@@ -44,7 +45,7 @@ interface SettingsData {
 }
 
 const AdminSettingsPage: React.FC = () => {
-    const { onOpen } = useDisclosure();
+    const { onOpen } = useOutletContext<DashboardContext>();
 
     const cardBg = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.700');

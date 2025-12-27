@@ -23,9 +23,14 @@ import {
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Link, Outlet } from "react-router-dom";
 
+export type DashboardContext = {
+  setActiveNav: React.Dispatch<React.SetStateAction<string>>;
+  onOpen: () => void;
+};
+
 const DashboardPage: React.FC = () => {
   const [activeNav, setActiveNav] = useState("Dashboard");
-  const { open, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
 
   const bgColor = useColorModeValue("gray.50", "gray.900");
   const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -147,7 +152,7 @@ const DashboardPage: React.FC = () => {
         h="93vh"
         overflowY="auto"
       >
-        <Outlet context={{ setActiveNav }} />
+        <Outlet context={{ setActiveNav, onOpen }} />
       </Box>
     </Flex>
   );

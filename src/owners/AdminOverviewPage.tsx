@@ -31,6 +31,7 @@ import {
   User,
 } from "lucide-react";
 import { Link, useOutletContext } from "react-router-dom";
+import type { DashboardContext } from "./DashboardPage";
 
 interface Booking {
   id: string;
@@ -51,13 +52,9 @@ interface StatCard {
   color: string;
 }
 
-type DashboardContext = {
-  setActiveNav: React.Dispatch<React.SetStateAction<string>>;
-};
-
 const AdminOverviewPage: React.FC = () => {
-  const { setActiveNav } = useOutletContext<DashboardContext>();
-  const { onOpen, onClose } = useDisclosure();
+  const { setActiveNav, onOpen } = useOutletContext<DashboardContext>();
+  const { onClose } = useDisclosure();
 
   const cardBg = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");

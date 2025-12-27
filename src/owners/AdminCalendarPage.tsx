@@ -15,7 +15,6 @@ import {
     Badge,
     Menu,
     Portal,
-    useDisclosure,
     Separator,
 } from '@chakra-ui/react';
 import {
@@ -32,6 +31,8 @@ import {
     Phone,
 } from 'lucide-react';
 import { useColorModeValue } from '../components/ui/color-mode';
+import { useOutletContext } from 'react-router-dom';
+import type { DashboardContext } from './DashboardPage';
 
 interface Booking {
     id: string;
@@ -52,7 +53,7 @@ interface DayBooking {
 const AdminCalendarPage: React.FC = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const { onOpen } = useDisclosure();
+    const { onOpen } = useOutletContext<DashboardContext>();
 
     const cardBg = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.700');
