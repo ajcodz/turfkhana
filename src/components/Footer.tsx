@@ -11,6 +11,7 @@ import {
   IconButton,
   Stack,
   Separator,
+  Image,
 } from "@chakra-ui/react";
 import {
   Facebook,
@@ -48,7 +49,7 @@ const Footer: React.FC = () => {
           <GridItem>
             <VStack align="flex-start" gap={4}>
               <Heading as="h3" size="lg" color="green.500" mb={2}>
-                TurfKhana
+                <Image src="src/assets/TurfKhana Logo Transparent.png" alt="TurfKhana" h={16} />
               </Heading>
               <Text fontSize="sm" lineHeight="tall">
                 Pakistan's premier indoor turf booking platform. Book your
