@@ -108,7 +108,7 @@ const Navbar: React.FC = () => {
               _hover={{ color: "green.600" }}
               transition="color 0.2s"
             >
-              <Image src="src/assets/TurfKhana Logo Transparent.png" alt="TurfKhana" h={12} />
+              <Image src="/TurfKhana Logo Transparent.png" alt="TurfKhana" h={12} />
             </Box>
           </Link>
 
