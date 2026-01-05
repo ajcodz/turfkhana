@@ -20,6 +20,7 @@ import {
   Youtube,
   Phone,
   Mail,
+  MapPin,
 } from "lucide-react";
 import { useColorModeValue } from "./ui/color-mode";
 import { Link } from "react-router-dom";
@@ -237,18 +238,16 @@ const Footer: React.FC = () => {
               </Heading>
 
               <VStack align="flex-start" gap={3} fontSize="sm">
-                {/* <HStack align="flex-start" gap={3}>
+                <HStack align="flex-start" gap={3}>
                   <Box mt="2px">
                     <MapPin size={18} />
                   </Box>
                   <Text>
-                    TurfKhana Headquarters
+                    Qainchi Amer Sidhu
                     <br />
-                    Model Town, Lahore
-                    <br />
-                    Punjab, Pakistan
+                    Lahore, Punjab, Pakistan
                   </Text>
-                </HStack> */}
+                </HStack>
 
                 <HStack gap={3}>
                   <Phone size={18} />

@@ -11,7 +11,7 @@ import {
   AlertDescription,
   Link,
 } from '@chakra-ui/react';
-import { CheckCircle, AlertTriangle, Mail, Phone } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Mail, Phone, MapPin } from 'lucide-react';
 import { useColorModeValue } from '../components/ui/color-mode';
 
 const TermsConditionsPage: React.FC = () => {
@@ -331,7 +331,7 @@ const TermsConditionsPage: React.FC = () => {
                     </Box>
                   </Box>
 
-                  {/* <Box display="flex" alignItems="flex-start">
+                  <Box display="flex" alignItems="flex-start">
                     <Box
                       as="span"
                       display="inline-flex"
@@ -350,14 +350,12 @@ const TermsConditionsPage: React.FC = () => {
                         Address
                       </Text>
                       <Text color="gray.700">
-                        TurfKhana Headquarters
+                        Model Town
                         <br />
-                        Model Town, Lahore
-                        <br />
-                        Punjab, Pakistan
+                        Lahore, Punjab, Pakistan
                       </Text>
                     </Box>
-                  </Box> */}
+                  </Box>
                 </VStack>
 
                 <Text color="gray.600" fontSize="sm" mt={4} fontStyle="italic">

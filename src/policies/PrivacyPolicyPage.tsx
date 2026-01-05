@@ -9,7 +9,7 @@ import {
   List,
   Separator
 } from '@chakra-ui/react';
-import { CheckCircle, Mail, Phone } from 'lucide-react';
+import { CheckCircle, Mail, MapPin, Phone } from 'lucide-react';
 import { useColorModeValue } from '../components/ui/color-mode';
 
 const PrivacyPolicyPage: React.FC = () => {
@@ -629,7 +629,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     </Box>
                   </Box>
 
-                  {/* <Box display="flex" alignItems="flex-start">
+                  <Box display="flex" alignItems="flex-start">
                     <Box
                       as="span"
                       display="inline-flex"
@@ -648,14 +648,12 @@ const PrivacyPolicyPage: React.FC = () => {
                         Address
                       </Text>
                       <Text color="gray.700">
-                        TurfKhana Headquarters
+                        Qainchi Amer Sidhu
                         <br />
-                        Model Town, Lahore
-                        <br />
-                        Punjab, Pakistan
+                        Lahore, Punjab, Pakistan
                       </Text>
                     </Box>
-                  </Box> */}
+                  </Box>
                 </VStack>
 
                 <Text color="gray.600" fontSize="sm" mt={4} fontStyle="italic">

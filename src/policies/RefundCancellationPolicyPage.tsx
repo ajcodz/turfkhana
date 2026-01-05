@@ -15,7 +15,7 @@ import {
     List,
     Link,
 } from '@chakra-ui/react';
-import { CheckCircle, XCircle, Clock, AlertTriangle, RefreshCw, DollarSign, Phone, Mail } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, AlertTriangle, RefreshCw, DollarSign, Phone, Mail, MapPin } from 'lucide-react';
 import { useColorModeValue } from '../components/ui/color-mode';
 
 const RefundCancellationPolicyPage: React.FC = () => {
@@ -727,7 +727,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                         </Box>
                                     </Box>
 
-                                    {/* <Box display="flex" alignItems="flex-start">
+                                    <Box display="flex" alignItems="flex-start">
                                         <Box
                                             as="span"
                                             display="inline-flex"
@@ -746,14 +746,12 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                                 Address
                                             </Text>
                                             <Text color="gray.700">
-                                                TurfKhana Headquarters
+                                                Qainchi Amer Sidhu
                                                 <br />
-                                                Model Town, Lahore
-                                                <br />
-                                                Punjab, Pakistan
+                                                Lahore, Punjab, Pakistan
                                             </Text>
                                         </Box>
-                                    </Box> */}
+                                    </Box>
                                 </VStack>
 
                                 <Text color="gray.600" fontSize="sm" mt={4} fontStyle="italic">

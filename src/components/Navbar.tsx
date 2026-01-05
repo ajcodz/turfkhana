@@ -27,6 +27,7 @@ import {
   // Calendar,
   Phone,
   Mail,
+  MapPin,
 } from "lucide-react";
 import { ColorModeButton, useColorModeValue } from "./ui/color-mode";
 import { Link, useLocation } from "react-router-dom";
@@ -379,10 +380,10 @@ const Navbar: React.FC = () => {
                         <Mail size={16} />
                         <Text>ajcodzhq@gmail.com</Text>
                       </HStack>
-                      {/* <HStack fontSize="sm" color="gray.600">
-                                                <MapPin size={16} />
-                                                <Text>Model Town, Lahore</Text>
-                                            </HStack> */}
+                      <HStack fontSize="sm" color="gray.600">
+                        <MapPin size={16} />
+                        <Text>Qainchi Amer Sidhu, Lahore</Text>
+                      </HStack>
                     </VStack>
                   </Box>
                 </Stack>
