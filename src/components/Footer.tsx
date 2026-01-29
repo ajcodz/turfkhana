@@ -243,7 +243,7 @@ const Footer: React.FC = () => {
                     <MapPin size={18} />
                   </Box>
                   <Text>
-                    Qainchi Amer Sidhu
+                    Plot No. 59/B Koh-e-Noor Housing Scheme
                     <br />
                     Lahore, Punjab, Pakistan
                   </Text>

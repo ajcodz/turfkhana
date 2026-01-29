@@ -746,7 +746,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                                 Address
                                             </Text>
                                             <Text color="gray.700">
-                                                Qainchi Amer Sidhu
+                                                Plot No. 59/B Koh-e-Noor Housing Scheme
                                                 <br />
                                                 Lahore, Punjab, Pakistan
                                             </Text>

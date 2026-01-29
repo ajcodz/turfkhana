@@ -382,7 +382,10 @@ const Navbar: React.FC = () => {
                       </HStack>
                       <HStack fontSize="sm" color="gray.600">
                         <MapPin size={16} />
-                        <Text>Qainchi Amer Sidhu, Lahore</Text>
+                        <VStack alignItems={"start"} gap={0}>
+                          <Text>Plot No. 59/B</Text>
+                          <Text>Koh-e-Noor Housing Scheme, Lahore</Text>
+                        </VStack>
                       </HStack>
                     </VStack>
                   </Box>
