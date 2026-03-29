@@ -12,68 +12,26 @@ import {
   Badge,
   Flex,
   Icon,
+  Alert,
+  Spinner,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "./components/ui/color-mode";
 import { Card, CardBody } from "@chakra-ui/card";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-
-interface Turf {
-  id: number;
-  title: string;
-  category: string;
-  price: number;
-  image: string;
-  location: string;
-  capacity: string;
-}
-
-const turfs: Turf[] = [
-  {
-    id: 1,
-    title: "Premier Cricket Ground",
-    category: "Cricket",
-    price: 2500,
-    image:
-      "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=500&h=300&fit=crop",
-    location: "Model Town",
-    capacity: "22 players",
-  },
-  {
-    id: 2,
-    title: "Elite Futsal Arena",
-    category: "Futsal",
-    price: 3000,
-    image:
-      "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=500&h=300&fit=crop",
-    location: "DHA Phase 5",
-    capacity: "10 players",
-  },
-  {
-    id: 3,
-    title: "Valley Cricket Pitch",
-    category: "Cricket",
-    price: 2000,
-    image:
-      "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500&h=300&fit=crop",
-    location: "Johar Town",
-    capacity: "22 players",
-  },
-  {
-    id: 4,
-    title: "Champions Futsal Court",
-    category: "Futsal",
-    price: 2800,
-    image:
-      "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=500&h=300&fit=crop",
-    location: "Gulberg",
-    capacity: "12 players",
-  },
-];
+import { useTurfs } from "./useLandingPage";
 
 const LandingPage: React.FC = () => {
+  const { data: turfs = [], isLoading, isError } = useTurfs();
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [filteredTurfs, setFilteredTurfs] = useState<Turf[]>(turfs);
+
+  // Derive filtered turfs from API data
+  const filteredTurfs = (
+    selectedCategory === "All"
+      ? turfs
+      : turfs.filter((turf) => turf.type.toLowerCase() === selectedCategory.toLowerCase())
+  ).slice(0, 4); // top 4 only
 
   const bgGradient = useColorModeValue(
     "linear(to-br, green.50, teal.50)",
@@ -189,11 +147,6 @@ const LandingPage: React.FC = () => {
                 px={8}
                 onClick={() => {
                   setSelectedCategory(category);
-                  setFilteredTurfs(
-                    category === "All"
-                      ? turfs
-                      : turfs.filter((turf) => turf.category === category)
-                  );
                 }}
               >
                 {category}
@@ -216,83 +169,95 @@ const LandingPage: React.FC = () => {
               </Text>
             </Box>
 
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
-              {filteredTurfs.map((turf) => (
-                <Card
-                  key={turf.id}
-                  bg={cardBg}
-                  overflow="hidden"
-                  transition="all 0.3s"
-                  _hover={{
-                    transform: "translateY(-8px)",
-                    shadow: "2xl",
-                  }}
-                  borderRadius="xl"
-                >
-                  <Box position="relative">
-                    <Image
-                      src={turf.image}
-                      alt={turf.title}
-                      h="200px"
-                      w="100%"
-                      objectFit="cover"
-                    />
-                    <Badge
-                      position="absolute"
-                      top={3}
-                      right={3}
-                      colorScheme={
-                        turf.category === "Cricket" ? "blue" : "orange"
-                      }
-                      fontSize="xs"
-                      px={2}
-                      py={1}
-                      borderRadius="md"
-                    >
-                      {turf.category}
-                    </Badge>
-                  </Box>
-                  <CardBody>
-                    <VStack align="stretch" gap={3}>
-                      <Heading as="h3" size="md">
-                        {turf.title}
-                      </Heading>
-                      <HStack fontSize="sm" color="gray.600">
-                        <Icon as={MapPin} boxSize={4} />
-                        <Text>{turf.location}</Text>
-                      </HStack>
-                      <HStack fontSize="sm" color="gray.600">
-                        <Icon as={Users} boxSize={4} />
-                        <Text>{turf.capacity}</Text>
-                      </HStack>
-                      <Flex justify="space-between" align="center" pt={2}>
-                        <Box>
-                          <Text
-                            fontSize="2xl"
-                            fontWeight="bold"
-                            color="green.500"
-                          >
-                            Rs {turf.price}
-                          </Text>
-                          <Text fontSize="xs" color="gray.500">
-                            per hour
-                          </Text>
-                        </Box>
-                        <Link to={`/turf-details/${turf.id}`}>
-                          <Button
-                            colorScheme="green"
-                            size="sm"
-                            borderRadius="full"
-                          >
-                            View Details
-                          </Button>
-                        </Link>
-                      </Flex>
-                    </VStack>
-                  </CardBody>
-                </Card>
-              ))}
-            </SimpleGrid>
+            {/* Loading State */}
+            {isLoading && (
+              <Flex justify="center" py={12}>
+                <Spinner size="xl" color="green.500" />
+              </Flex>
+            )}
+
+            {/* Error State */}
+            {isError && (
+              <Alert.Root status="error" borderRadius="lg">
+                <AlertDescription>Failed to load turfs. Please try again later.</AlertDescription>
+              </Alert.Root>
+            )}
+
+            {/* Turfs Grid */}
+            {!isLoading && !isError && (
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
+                {filteredTurfs.map((turf) => (
+                  <Card
+                    key={turf.id}
+                    bg={cardBg}
+                    overflow="hidden"
+                    transition="all 0.3s"
+                    _hover={{
+                      transform: "translateY(-8px)",
+                      shadow: "2xl",
+                    }}
+                    borderRadius="xl"
+                  >
+                    <Box position="relative">
+                      <Image
+                        src={`https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=500&h=300&fit=crop`}
+                        alt={turf.name}
+                        h="200px"
+                        w="100%"
+                        objectFit="cover"
+                      />
+                      <Badge
+                        position="absolute"
+                        top={3}
+                        right={3}
+                        colorScheme={turf.type.toLowerCase() === "cricket" ? "blue" : "orange"}
+                        fontSize="xs"
+                        px={2}
+                        py={1}
+                        borderRadius="md"
+                      >
+                        {turf.type.toUpperCase()}
+                      </Badge>
+                    </Box>
+                    <CardBody>
+                      <VStack align="stretch" gap={3}>
+                        <Heading as="h3" size="md">
+                          {turf.name}
+                        </Heading>
+                        <HStack fontSize="sm" color="gray.600">
+                          <Icon as={MapPin} boxSize={4} />
+                          <Text>{turf.address}</Text>
+                        </HStack>
+                        <Flex justify="space-between" align="center" pt={2}>
+                          <Box>
+                            <Text fontSize="2xl" fontWeight="bold" color="green.500">
+                              {turf.currency} {turf.price_per_slot}
+                            </Text>
+                            <Text fontSize="xs" color="gray.500">
+                              per slot
+                            </Text>
+                          </Box>
+                          <Link to={`/turf-details/${turf.id}`}>
+                            <Button colorScheme="green" size="sm" borderRadius="full">
+                              View Details
+                            </Button>
+                          </Link>
+                        </Flex>
+                      </VStack>
+                    </CardBody>
+                  </Card>
+                ))}
+              </SimpleGrid>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && !isError && filteredTurfs.length === 0 && (
+              <Flex justify="center" py={12}>
+                <Text color="gray.500" fontSize="lg">
+                  No turfs found for this category.
+                </Text>
+              </Flex>
+            )}
           </VStack>
         </Container>
       </Box>
