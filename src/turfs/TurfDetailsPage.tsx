@@ -13,18 +13,19 @@ import {
   Icon,
   Flex,
   Separator,
+  Alert,
+  Spinner,
 } from "@chakra-ui/react";
 import { toaster } from "../components/ui/toaster";
 import { useColorModeValue } from "../components/ui/color-mode";
 import {
   MapPin,
-  Users,
-  Star,
   Clock,
   Calendar,
   CheckCircle,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useTurf } from "./useTurfDetailsPage";
 
 interface TimeSlot {
   id: string;
@@ -33,35 +34,16 @@ interface TimeSlot {
 }
 
 const TurfDetailsPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { data: turf, isLoading, isError } = useTurf(id!);
+  
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
   const cardBg = useColorModeValue("white", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.600");
   const hoverBg = useColorModeValue("gray.50", "gray.600");
-
-  // Mock turf data
-  const turfData = {
-    id: 1,
-    title: "Premier Cricket Ground",
-    category: "Cricket",
-    price: 2500,
-    image:
-      "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1200&h=400&fit=crop",
-    location: "Model Town, Lahore",
-    capacity: "22 players",
-    rating: 4.8,
-    reviews: 124,
-    description:
-      "Professional-grade cricket turf with premium synthetic grass, floodlights, and modern amenities. Perfect for practice sessions and competitive matches.",
-    amenities: [
-      "Floodlights",
-      "Changing Rooms",
-      "Parking",
-      "Drinking Water",
-      "First Aid",
-    ],
-  };
+  const pageBg = useColorModeValue("gray.50", "gray.800");
 
   // Generate dates for the next 7 days
   const generateDates = () => {
@@ -161,39 +143,40 @@ const TurfDetailsPage: React.FC = () => {
     // });
   };
 
+  if (isLoading) {
+    return (
+      <Flex justify="center" align="center" minH="100vh">
+        <Spinner size="xl" color="green.500" />
+      </Flex>
+    );
+  }
+
+  if (isError || !turf) {
+    return (
+      <Flex justify="center" align="center" minH="100vh" px={4}>
+        <Alert.Root status="error" borderRadius="lg" maxW="md">
+          <Alert.Description>Failed to load turf details. Please try again later.</Alert.Description>
+        </Alert.Root>
+      </Flex>
+    );
+  }
+
   return (
-    <Box minH="100vh" bg={useColorModeValue("gray.50", "gray.800")}>
+    <Box minH="100vh" bg={pageBg}>
       {/* Banner Image */}
-      <Box
-        position="relative"
-        h={{ base: "250px", md: "400px" }}
-        overflow="hidden"
-      >
+      <Box position="relative" h={{ base: "250px", md: "400px" }} overflow="hidden">
         <Image
-          src={turfData.image}
-          alt={turfData.title}
+          src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1200&h=400&fit=crop"
+          alt={turf.name}
           w="100%"
           h="100%"
           objectFit="cover"
         />
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          bg="blackAlpha.400"
-        />
+        <Box position="absolute" top={0} left={0} right={0} bottom={0} bg="blackAlpha.400" />
         <Container maxW="container.xl" position="relative" h="100%">
           <Flex align="flex-end" h="100%" pb={8}>
-            <Badge
-              colorScheme="blue"
-              fontSize="md"
-              px={4}
-              py={2}
-              borderRadius="full"
-            >
-              {turfData.category}
+            <Badge colorScheme="blue" fontSize="md" px={4} py={2} borderRadius="full">
+              {turf.type}
             </Badge>
           </Flex>
         </Container>
@@ -204,38 +187,30 @@ const TurfDetailsPage: React.FC = () => {
           {/* Turf Info Section */}
           <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
             <VStack align="stretch" gap={4}>
-              <Flex
-                justify="space-between"
-                align="flex-start"
-                flexWrap="wrap"
-                gap={4}
-              >
+              <Flex justify="space-between" align="flex-start" flexWrap="wrap" gap={4}>
                 <Box flex="1">
                   <Heading as="h1" size={{ base: "xl", md: "2xl" }} mb={3}>
-                    {turfData.title}
+                    {turf.name}
                   </Heading>
                   <HStack gap={4} flexWrap="wrap" mb={3}>
                     <HStack color="gray.600">
                       <Icon as={MapPin} />
-                      <Text fontSize="md">{turfData.location}</Text>
+                      <Text fontSize="md">{turf.address}</Text>
                     </HStack>
                     <HStack color="gray.600">
-                      <Icon as={Users} />
-                      <Text fontSize="md">{turfData.capacity}</Text>
-                    </HStack>
-                    <HStack>
-                      <Icon as={Star} color="yellow.400" fill="yellow.400" />
-                      <Text fontWeight="semibold">{turfData.rating}</Text>
-                      <Text color="gray.600">({turfData.reviews} reviews)</Text>
+                      <Icon as={Clock} />
+                      <Text fontSize="md">
+                        {turf.opening_time} - {turf.closing_time}
+                      </Text>
                     </HStack>
                   </HStack>
                 </Box>
                 <Box textAlign={{ base: "left", md: "right" }}>
                   <Text fontSize="3xl" fontWeight="bold" color="green.500">
-                    Rs {turfData.price}
+                    {turf.currency} {turf.price_per_slot}
                   </Text>
                   <Text color="gray.600" fontSize="sm">
-                    per hour
+                    per slot
                   </Text>
                 </Box>
               </Flex>
@@ -243,29 +218,12 @@ const TurfDetailsPage: React.FC = () => {
               <Separator />
 
               <Box>
-                <Text color="gray.700" fontSize="md" lineHeight="tall">
-                  {turfData.description}
-                </Text>
-              </Box>
-
-              <Box>
                 <Heading as="h3" size="sm" mb={3}>
-                  Amenities
+                  Slot Duration
                 </Heading>
-                <Flex gap={2} flexWrap="wrap">
-                  {turfData.amenities.map((amenity) => (
-                    <Badge
-                      key={amenity}
-                      colorScheme="green"
-                      px={3}
-                      py={1}
-                      borderRadius="md"
-                      fontSize="xs"
-                    >
-                      {amenity}
-                    </Badge>
-                  ))}
-                </Flex>
+                <Badge colorScheme="green" px={3} py={1} borderRadius="md" fontSize="xs">
+                  {turf.slot_duration_minutes} minutes per slot
+                </Badge>
               </Box>
             </VStack>
           </Box>
@@ -405,33 +363,23 @@ const TurfDetailsPage: React.FC = () => {
               gap={4}
             >
               <VStack align="flex-start" gap={2}>
-                <Heading as="h3" size="md">
-                  Booking Summary
-                </Heading>
+                <Heading as="h3" size="md">Booking Summary</Heading>
                 <Text color="gray.600">
                   Date: <strong>{selectedDate.toDateString()}</strong>
                 </Text>
                 {selectedSlot && (
                   <Text color="gray.600">
-                    Time:{" "}
-                    <strong>
-                      {timeSlots.find((s) => s.id === selectedSlot)?.time}
-                    </strong>
+                    Time: <strong>{timeSlots.find((s) => s.id === selectedSlot)?.time}</strong>
                   </Text>
                 )}
                 <Text color="gray.600">
                   Price:{" "}
-                  <Text
-                    as="span"
-                    color="green.500"
-                    fontWeight="bold"
-                    fontSize="lg"
-                  >
-                    Rs {turfData.price}
+                  <Text as="span" color="green.500" fontWeight="bold" fontSize="lg">
+                    {turf.currency} {turf.price_per_slot}
                   </Text>
                 </Text>
               </VStack>
-              <Link to={`/booking-form/${turfData.id}`}>
+              <Link to={`/booking-form/${turf.id}`}>
                 <Button
                   colorScheme="green"
                   size="lg"

@@ -14,7 +14,6 @@ import {
   Icon,
   Alert,
   Spinner,
-  AlertDescription,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "./components/ui/color-mode";
 import { Card, CardBody } from "@chakra-ui/card";
@@ -179,7 +178,7 @@ const LandingPage: React.FC = () => {
             {/* Error State */}
             {isError && (
               <Alert.Root status="error" borderRadius="lg">
-                <AlertDescription>Failed to load turfs. Please try again later.</AlertDescription>
+                <Alert.Description>Failed to load turfs. Please try again later.</Alert.Description>
               </Alert.Root>
             )}
 
