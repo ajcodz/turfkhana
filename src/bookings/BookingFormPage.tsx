@@ -26,12 +26,24 @@ import {
   Mail,
   CreditCard,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface BookingFormData {
   fullName: string;
   phoneNumber: string;
   email: string;
+}
+
+interface BookingLocationState {
+  turfId: string;
+  turfName: string;
+  turfImage: string;
+  location: string;
+  date: string;
+  timeSlot: string;
+  duration: string;
+  pricePerSlot: number;
+  currency: string;
 }
 
 const BookingFormPage: React.FC = () => {
@@ -46,19 +58,23 @@ const BookingFormPage: React.FC = () => {
   const cardBg = useColorModeValue("white", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.600");
   const summaryBg = useColorModeValue("green.50", "gray.800");
+  const pageBg = useColorModeValue("gray.50", "gray.900");
 
-  // Mock booking data
+  const location = useLocation();
+  const navigate = useNavigate();
+  const state = location.state as BookingLocationState | null;
+
   const bookingData = {
-    id: 1,
-    turfName: "Premier Cricket Ground",
+    turfName: state?.turfName ?? "—",
     turfImage:
+      state?.turfImage ??
       "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=200&fit=crop",
-    location: "Model Town, Lahore",
-    date: "Wednesday, December 4, 2025",
-    timeSlot: "06:00 PM - 07:00 PM",
-    duration: "1 hour",
-    pricePerHour: 2500,
-    totalPrice: 2500,
+    location: state?.location ?? "—",
+    date: state?.date ?? "—",
+    timeSlot: state?.timeSlot ?? "—",
+    duration: state?.duration ?? "—",
+    pricePerSlot: state?.pricePerSlot ?? 0,
+    currency: state?.currency ?? "Rs",
   };
 
   const handleInputChange = (field: keyof BookingFormData, value: string) => {
@@ -102,49 +118,111 @@ const BookingFormPage: React.FC = () => {
         duration: 3000,
         closable: true,
       });
-      // toast({
-      //   title: 'Validation Error',
-      //   description: 'Please fix the errors in the form',
-      //   status: 'error',
-      //   duration: 3000,
-      //   isClosable: true,
-      // });
       return;
     }
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toaster.success({
-        title: "Booking Confirmed!",
-        description:
-          "Your turf has been successfully booked. You will receive a confirmation shortly.",
+    try {
+      const APP_BASE_URL = "http://localhost:3000/api/v1";
+
+      // Step 1: Create the client
+      const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.fullName.trim(),
+          phone: formData.phoneNumber.trim(),
+          email: formData.email.trim() || null,
+        }),
+      });
+
+      if (!clientRes.ok) {
+        const err = await clientRes.json();
+        throw new Error(err?.error?.message ?? "Failed to create client");
+      }
+
+      const { client } = await clientRes.json();
+
+      // Step 2: Parse the time slot string "06:00 PM - 07:00 PM" → "18:00:00" / "19:00:00"
+      const parseTime = (timeStr: string): string => {
+        const [time, meridiem] = timeStr.trim().split(" ");
+        let [hours, minutes] = time.split(":").map(Number);
+        if (meridiem === "PM" && hours !== 12) hours += 12;
+        if (meridiem === "AM" && hours === 12) hours = 0;
+        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+      };
+
+      const [startRaw, endRaw] = (state?.timeSlot ?? "").split(" - ");
+      const startTime = parseTime(startRaw ?? "");
+      const endTime = parseTime(endRaw ?? "");
+
+      // Parse date string (e.g. "Wed May 10 2026") → "YYYY-MM-DD"
+      const dateObj = new Date(state?.date ?? "");
+      const bookingDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
+
+      // Step 3: Create the booking
+      const bookingRes = await fetch(`${APP_BASE_URL}/bookings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: client.id,
+          turf_id: state?.turfId,
+          date: bookingDate,
+          start_time: startTime,
+          end_time: endTime,
+          duration_minutes: parseInt(state?.duration ?? "60"),
+          price: state?.pricePerSlot ?? 0,
+          status: "confirmed",
+          payment_method: "cash",
+          payment_status: "pending",
+          payment_transaction_id: null,
+        }),
+      });
+
+      if (!bookingRes.ok) {
+        const err = await bookingRes.json();
+        throw new Error(err?.error?.message ?? "Failed to create booking");
+      }
+
+      const { booking } = await bookingRes.json();
+
+      // Step 4: Navigate to confirmation page
+      navigate(`/booking-confirmation/${booking.id}`, {
+        state: {
+          bookingId: booking.id,
+          turfName: state?.turfName,
+          location: state?.location,
+          date: state?.date,
+          timeSlot: state?.timeSlot,
+          duration: state?.duration,
+          customerName: formData.fullName.trim(),
+          phoneNumber: formData.phoneNumber.trim(),
+          amountToPay: state?.pricePerSlot,
+          currency: state?.currency,
+          bookedAt: new Date().toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+        },
+      });
+    } catch (error) {
+      toaster.error({
+        title: "Booking Failed",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         duration: 5000,
         closable: true,
       });
-      // toast({
-      //   title: 'Booking Confirmed!',
-      //   description: 'Your turf has been successfully booked. You will receive a confirmation shortly.',
-      //   status: 'success',
-      //   duration: 5000,
-      //   isClosable: true,
-      // });
-
-      // Reset form
-      setFormData({
-        fullName: "",
-        phoneNumber: "",
-        email: "",
-      });
-    }, 1500);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Box
       minH="100vh"
-      bg={useColorModeValue("gray.50", "gray.900")}
+      bg={pageBg}
       py={{ base: 6, md: 12 }}
     >
       <Container maxW="container.xl">
@@ -280,7 +358,7 @@ const BookingFormPage: React.FC = () => {
                     </Box>
 
                     {/* Submit Button */}
-                    <Link to={`/booking-confirmation/${bookingData.id}`}>
+                    {/* <Link to={`/booking-confirmation/${bookingData.id}`}> */}
                       <Button
                         type="submit"
                         colorScheme="green"
@@ -295,7 +373,7 @@ const BookingFormPage: React.FC = () => {
                       >
                         Confirm Booking
                       </Button>
-                    </Link>
+                    {/* </Link> */}
 
                     <Text fontSize="xs" color="gray.500" textAlign="center">
                       By confirming, you agree to our Terms of Service and
@@ -387,10 +465,10 @@ const BookingFormPage: React.FC = () => {
                   <VStack gap={3} align="stretch">
                     <HStack justify="space-between">
                       <Text fontSize="sm" color="gray.600">
-                        Price per hour
+                        Price per slot
                       </Text>
                       <Text fontSize="sm">
-                        Rs {bookingData.pricePerHour.toLocaleString()}
+                        {bookingData.currency} {bookingData.pricePerSlot.toLocaleString()}
                       </Text>
                     </HStack>
 
@@ -408,7 +486,7 @@ const BookingFormPage: React.FC = () => {
                         Total Amount
                       </Text>
                       <Text fontSize="2xl" fontWeight="bold" color="green.500">
-                        Rs {bookingData.totalPrice.toLocaleString()}
+                        {bookingData.currency} {bookingData.pricePerSlot.toLocaleString()}
                       </Text>
                     </HStack>
                   </VStack>

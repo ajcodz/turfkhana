@@ -24,7 +24,7 @@ import {
   Calendar,
   CheckCircle,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTurf } from "./useTurfDetailsPage";
 
 interface TimeSlot {
@@ -34,6 +34,7 @@ interface TimeSlot {
 }
 
 const TurfDetailsPage: React.FC = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data: turf, isLoading, isError } = useTurf(id!);
   
@@ -110,39 +111,6 @@ const TurfDetailsPage: React.FC = () => {
     return date1.toDateString() === date2.toDateString();
   };
 
-  const handleContinueBooking = () => {
-    if (!selectedSlot) {
-      toaster.warning({
-        title: "Please select a time slot",
-        duration: 3000,
-        closable: true,
-      });
-      // toast({
-      //   title: 'Please select a time slot',
-      //   status: 'warning',
-      //   duration: 3000,
-      //   isClosable: true,
-      // });
-      return;
-    }
-
-    toaster.success({
-      title: "Proceeding to booking",
-      description: `Date: ${selectedDate.toDateString()}, Slot: ${
-        timeSlots.find((s) => s.id === selectedSlot)?.time
-      }`,
-      duration: 5000,
-      closable: true,
-    });
-    // toast({
-    //   title: 'Proceeding to booking',
-    //   description: `Date: ${selectedDate.toDateString()}, Slot: ${timeSlots.find(s => s.id === selectedSlot)?.time}`,
-    //   status: 'success',
-    //   duration: 5000,
-    //   isClosable: true,
-    // });
-  };
-
   if (isLoading) {
     return (
       <Flex justify="center" align="center" minH="100vh">
@@ -160,6 +128,31 @@ const TurfDetailsPage: React.FC = () => {
       </Flex>
     );
   }
+
+  const handleContinueBooking = () => {
+    if (!selectedSlot) {
+      toaster.warning({
+        title: "Please select a time slot",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    navigate(`/booking-form/${turf.id}`, {
+      state: {
+        turfId: turf.id,
+        turfName: turf.name,
+        turfImage: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=200&fit=crop",
+        location: turf.address,
+        date: selectedDate.toDateString(),
+        timeSlot: timeSlots.find((s) => s.id === selectedSlot)?.time,
+        duration: `${turf.slot_duration_minutes} minutes`,
+        pricePerSlot: turf.price_per_slot,
+        currency: turf.currency,
+      },
+    });
+  };
 
   return (
     <Box minH="100vh" bg={pageBg}>
@@ -379,7 +372,7 @@ const TurfDetailsPage: React.FC = () => {
                   </Text>
                 </Text>
               </VStack>
-              <Link to={`/booking-form/${turf.id}`}>
+              {/* <Link to={`/booking-form/${turf.id}`}> */}
                 <Button
                   colorScheme="green"
                   size="lg"
@@ -394,7 +387,7 @@ const TurfDetailsPage: React.FC = () => {
                 >
                   Continue to Booking
                 </Button>
-              </Link>
+              {/* </Link> */}
             </Flex>
           </Box>
         </VStack>

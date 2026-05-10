@@ -23,9 +23,25 @@ import {
   Download,
   Share2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
+interface ConfirmationState {
+  bookingId: number;
+  turfName: string;
+  location: string;
+  date: string;
+  timeSlot: string;
+  duration: string;
+  customerName: string;
+  phoneNumber: string;
+  amountToPay: number;
+  currency: string;
+  bookedAt: string;
+}
 
 const BookingConfirmationPage: React.FC = () => {
+  const { state } = useLocation();
+  const data = state as ConfirmationState | null;
   const cardBg = useColorModeValue("white", "gray.700");
   const successBg = useColorModeValue("green.50", "green.900");
   const successColor = useColorModeValue("green.600", "green.300");
@@ -33,16 +49,17 @@ const BookingConfirmationPage: React.FC = () => {
 
   // Mock booking confirmation data
   const bookingData = {
-    bookingId: "TK-2025-1542",
-    turfName: "Premier Cricket Ground",
-    location: "Model Town, Lahore",
-    date: "Wednesday, December 4, 2025",
-    timeSlot: "06:00 PM - 07:00 PM",
-    duration: "1 hour",
-    customerName: "Ahmad Hassan",
-    phoneNumber: "+92 300 1234567",
-    amountPaid: 2500,
-    bookingDate: "November 30, 2025",
+    bookingId: data?.bookingId ? `TK-${data.bookingId}` : "—",
+    turfName: data?.turfName ?? "—",
+    location: data?.location ?? "—",
+    date: data?.date ?? "—",
+    timeSlot: data?.timeSlot ?? "—",
+    duration: data?.duration ?? "—",
+    customerName: data?.customerName ?? "—",
+    phoneNumber: data?.phoneNumber ?? "—",
+    amountPaid: data?.amountToPay ?? 0,
+    currency: data?.currency ?? "Rs",
+    bookingDate: data?.bookedAt ?? "—",
   };
 
   const handleGoHome = () => {
@@ -238,7 +255,7 @@ const BookingConfirmationPage: React.FC = () => {
                       </Text>
                     </HStack>
                     <Text fontSize="2xl" fontWeight="bold" color={successColor}>
-                      Rs {bookingData.amountPaid.toLocaleString()}
+                      {bookingData.currency} {bookingData.amountPaid.toLocaleString()}
                     </Text>
                   </HStack>
                   <Text
