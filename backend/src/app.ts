@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import turfRoutes from "./routes/turfRoutes";
 import bookingRoutes from "./routes/bookingRoutes";
+import clientRoutes from "./routes/clientRoutes";
+import ownerRoutes from "./routes/ownerRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
@@ -14,6 +17,9 @@ const V1 = "v1";
 
 app.use(`/api/${V1}/turfs`, turfRoutes);
 app.use(`/api/${V1}/bookings`, bookingRoutes);
+app.use(`/api/${V1}/clients`, clientRoutes);
+app.use(`/api/${V1}/owners`, ownerRoutes);
+app.use(`/api/${V1}/payments`, paymentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running!");
