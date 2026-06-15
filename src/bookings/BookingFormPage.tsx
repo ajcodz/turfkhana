@@ -26,7 +26,7 @@ import {
   Mail,
   CreditCard,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 interface BookingFormData {
   fullName: string;
@@ -61,7 +61,6 @@ const BookingFormPage: React.FC = () => {
   const pageBg = useColorModeValue("gray.50", "gray.900");
 
   const location = useLocation();
-  const navigate = useNavigate();
   const state = location.state as BookingLocationState | null;
 
   const bookingData = {
@@ -185,32 +184,71 @@ const BookingFormPage: React.FC = () => {
         throw new Error(err?.error?.message ?? "Failed to create booking");
       }
 
-      const { booking } = await bookingRes.json();
-
-      // Step 4: Navigate to confirmation page
-      navigate(`/booking-confirmation/${booking.id}`, {
-        state: {
-          bookingId: booking.id,
-          turfName: state?.turfName,
-          location: state?.location,
-          date: state?.date,
-          timeSlot: state?.timeSlot,
-          duration: state?.duration,
-          customerName: formData.fullName.trim(),
-          phoneNumber: formData.phoneNumber.trim(),
-          amountToPay: state?.pricePerSlot,
-          currency: state?.currency,
-          bookedAt: new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-        },
+      // Step 4: Initiate PayFast transaction
+      const paymentRes = await fetch(`${APP_BASE_URL}/payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transAmount: String(state?.pricePerSlot ?? 0),
+          currencyCode: state?.currency ?? "PKR",
+          customerEmail: formData.email.trim() || "noreply@turfkhana.com",
+          customerMobile: formData.phoneNumber.trim(),
+          successUrl: "http://localhost:5173/booking-success",
+          failureUrl: "http://localhost:5173/booking-failure",
+          checkoutUrl: "http://localhost:5173/booking-checkout",
+          items: [
+            {
+              SKU: `TURF-${state?.turfId}`,
+              NAME: state?.turfName,
+              PRICE: String(state?.pricePerSlot ?? 0),
+              QTY: "1",
+            },
+          ],
+        }),
       });
+
+      if (!paymentRes.ok) {
+        const err = await paymentRes.json();
+        throw new Error(err?.error?.message ?? "Failed to initiate payment");
+      }
+
+      const { payload } = await paymentRes.json();
+
+      // Step 5: Submit payload to PayFast transaction page
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action =
+        "https://ipg1.apps.net.pk/Ecommerce/api/Transaction/PostTransaction";
+
+      Object.entries(payload).forEach(([key, value]) => {
+        if (key === "ITEMS" && Array.isArray(value)) {
+          (value as any[]).forEach((item, index) => {
+            Object.entries(item).forEach(([itemKey, itemValue]) => {
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = `ITEMS[${index}][${itemKey}]`;
+              input.value = String(itemValue);
+              form.appendChild(input);
+            });
+          });
+        } else {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = key;
+          input.value = String(value);
+          form.appendChild(input);
+        }
+      });
+
+      document.body.appendChild(form);
+      form.submit();
     } catch (error) {
       toaster.error({
         title: "Booking Failed",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
         duration: 5000,
         closable: true,
       });
@@ -220,11 +258,7 @@ const BookingFormPage: React.FC = () => {
   };
 
   return (
-    <Box
-      minH="100vh"
-      bg={pageBg}
-      py={{ base: 6, md: 12 }}
-    >
+    <Box minH="100vh" bg={pageBg} py={{ base: 6, md: 12 }}>
       <Container maxW="container.xl">
         <VStack gap={6} align="stretch">
           {/* Page Header */}
@@ -359,20 +393,20 @@ const BookingFormPage: React.FC = () => {
 
                     {/* Submit Button */}
                     {/* <Link to={`/booking-confirmation/${bookingData.id}`}> */}
-                      <Button
-                        type="submit"
-                        colorScheme="green"
-                        size="lg"
-                        w="100%"
-                        py={6}
-                        fontSize="lg"
-                        loading={isSubmitting}
-                        loadingText="Processing..."
-                        _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
-                        transition="all 0.2s"
-                      >
-                        Confirm Booking
-                      </Button>
+                    <Button
+                      type="submit"
+                      colorScheme="green"
+                      size="lg"
+                      w="100%"
+                      py={6}
+                      fontSize="lg"
+                      loading={isSubmitting}
+                      loadingText="Processing..."
+                      _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
+                      transition="all 0.2s"
+                    >
+                      Proceed to Checkout
+                    </Button>
                     {/* </Link> */}
 
                     <Text fontSize="xs" color="gray.500" textAlign="center">
@@ -468,7 +502,8 @@ const BookingFormPage: React.FC = () => {
                         Price per slot
                       </Text>
                       <Text fontSize="sm">
-                        {bookingData.currency} {bookingData.pricePerSlot.toLocaleString()}
+                        {bookingData.currency}{" "}
+                        {bookingData.pricePerSlot.toLocaleString()}
                       </Text>
                     </HStack>
 
@@ -486,7 +521,8 @@ const BookingFormPage: React.FC = () => {
                         Total Amount
                       </Text>
                       <Text fontSize="2xl" fontWeight="bold" color="green.500">
-                        {bookingData.currency} {bookingData.pricePerSlot.toLocaleString()}
+                        {bookingData.currency}{" "}
+                        {bookingData.pricePerSlot.toLocaleString()}
                       </Text>
                     </HStack>
                   </VStack>
