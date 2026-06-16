@@ -193,9 +193,9 @@ const BookingFormPage: React.FC = () => {
           currencyCode: state?.currency ?? "PKR",
           customerEmail: formData.email.trim() || "noreply@turfkhana.com",
           customerMobile: formData.phoneNumber.trim(),
-          successUrl: "http://localhost:5173/booking-success",
+          successUrl: `http://localhost:5173/booking-confirmation/${state?.turfId}`,
           failureUrl: "http://localhost:5173/booking-failure",
-          checkoutUrl: "http://localhost:5173/booking-checkout",
+          checkoutUrl: `http://localhost:5173/booking-form/${state?.turfId}`,
           items: [
             {
               SKU: `TURF-${state?.turfId}`,

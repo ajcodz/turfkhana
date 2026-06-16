@@ -23,7 +23,7 @@ import {
   Download,
   Share2,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 
 interface ConfirmationState {
   bookingId: number;
@@ -41,7 +41,9 @@ interface ConfirmationState {
 
 const BookingConfirmationPage: React.FC = () => {
   const { state } = useLocation();
+  const [searchParams] = useSearchParams();
   const data = state as ConfirmationState | null;
+
   const cardBg = useColorModeValue("white", "gray.700");
   const successBg = useColorModeValue("green.50", "green.900");
   const successColor = useColorModeValue("green.600", "green.300");
@@ -49,17 +51,21 @@ const BookingConfirmationPage: React.FC = () => {
 
   // Mock booking confirmation data
   const bookingData = {
-    bookingId: data?.bookingId ? `TK-${data.bookingId}` : "—",
-    turfName: data?.turfName ?? "—",
+    bookingId: data?.bookingId
+      ? `TK-${data.bookingId}`
+      : (searchParams.get("BASKET_ID") ?? "—"),
+    turfName: data?.turfName ?? searchParams.get("MERCHANT_NAME") ?? "—",
     location: data?.location ?? "—",
     date: data?.date ?? "—",
     timeSlot: data?.timeSlot ?? "—",
     duration: data?.duration ?? "—",
-    customerName: data?.customerName ?? "—",
-    phoneNumber: data?.phoneNumber ?? "—",
-    amountPaid: data?.amountToPay ?? 0,
-    currency: data?.currency ?? "Rs",
-    bookingDate: data?.bookedAt ?? "—",
+    customerName:
+      data?.customerName ?? searchParams.get("CUSTOMER_EMAIL_ADDRESS") ?? "—",
+    phoneNumber:
+      data?.phoneNumber ?? searchParams.get("CUSTOMER_MOBILE_NO") ?? "—",
+    amountPaid: data?.amountToPay ?? Number(searchParams.get("TXNAMT")) ?? 0,
+    currency: data?.currency ?? searchParams.get("CURRENCY_CODE") ?? "Rs",
+    bookingDate: data?.bookedAt ?? new Date().toLocaleString(),
   };
 
   const handleGoHome = () => {
@@ -255,7 +261,8 @@ const BookingConfirmationPage: React.FC = () => {
                       </Text>
                     </HStack>
                     <Text fontSize="2xl" fontWeight="bold" color={successColor}>
-                      {bookingData.currency} {bookingData.amountPaid.toLocaleString()}
+                      {bookingData.currency}{" "}
+                      {bookingData.amountPaid.toLocaleString()}
                     </Text>
                   </HStack>
                   <Text
