@@ -1,6 +1,7 @@
 import LandingPage from "./LandingPage";
 import BookingFormPage from "./bookings/BookingFormPage";
 import BookingConfirmationPage from "./bookings/BookingConfirmationPage";
+import BookingFailurePage from "./bookings/BookingFailurePage";
 import AdminCalendarPage from "./owners/AdminCalendarPage";
 import AdminBookingListPage from "./owners/AdminBookingListPage";
 import PrivacyPolicyPage from "./policies/PrivacyPolicyPage";
@@ -30,6 +31,7 @@ function App() {
           path="/booking-confirmation/:id"
           element={<BookingConfirmationPage />}
         />
+        <Route path="/booking-failure" element={<BookingFailurePage />} />
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<DashboardPage />}>

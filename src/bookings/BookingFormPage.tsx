@@ -185,6 +185,19 @@ const BookingFormPage: React.FC = () => {
       }
 
       // Step 4: Initiate PayFast transaction
+      const failureParams = new URLSearchParams({
+        turfId: String(state?.turfId ?? ""),
+        turfName: state?.turfName ?? "",
+        location: state?.location ?? "",
+        date: state?.date ?? "",
+        timeSlot: state?.timeSlot ?? "",
+        duration: String(state?.duration ?? ""),
+        customerName: formData.fullName.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        amountToPay: String(state?.pricePerSlot ?? 0),
+        currency: state?.currency ?? "PKR",
+      }).toString();
+
       const paymentRes = await fetch(`${APP_BASE_URL}/payments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -194,7 +207,7 @@ const BookingFormPage: React.FC = () => {
           customerEmail: formData.email.trim() || "noreply@turfkhana.com",
           customerMobile: formData.phoneNumber.trim(),
           successUrl: `http://localhost:5173/booking-confirmation/${state?.turfId}`,
-          failureUrl: "http://localhost:5173/booking-failure",
+          failureUrl: `http://localhost:5173/booking-failure?${failureParams}`,
           checkoutUrl: `http://localhost:5173/booking-form/${state?.turfId}`,
           items: [
             {
