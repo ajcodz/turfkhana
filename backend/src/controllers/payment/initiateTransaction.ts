@@ -48,8 +48,8 @@ export const initiateTransaction = catchAsync(async (req, res) => {
     items,
   } = req.body;
 
-  const merchantId = "247894";
-  const securedKey = "svSN5fOef3kxlLH8VxifK_JBNJ";
+  const merchantId = process.env.MERCHANT_ID ?? "";
+  const securedKey = process.env.SECURED_KEY ?? "";
   const basketId = `FLUX-${generateRandomString(4)}`;
 
   const token = await getAccessToken(
