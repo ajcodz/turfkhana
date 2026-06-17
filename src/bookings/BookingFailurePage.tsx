@@ -9,7 +9,6 @@ import {
   HStack,
   Icon,
   Separator,
-  Badge,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Card, CardBody } from "@chakra-ui/card";
@@ -18,7 +17,6 @@ import {
   Calendar,
   Clock,
   MapPin,
-  Hash,
   RefreshCcw,
   Home,
 } from "lucide-react";
@@ -94,21 +92,6 @@ const BookingFailurePage: React.FC = () => {
                 Unfortunately your transaction could not be completed
               </Text>
             </VStack>
-
-            {/* Basket ID Badge */}
-            <Badge
-              colorScheme="red"
-              fontSize={{ base: "md", md: "lg" }}
-              px={6}
-              py={3}
-              borderRadius="full"
-              display="flex"
-              alignItems="center"
-              gap={2}
-            >
-              <Icon as={Hash} boxSize={5} />
-              <Text fontWeight="bold">{failureData.basketId}</Text>
-            </Badge>
           </VStack>
 
           {/* Booking Details Card */}
