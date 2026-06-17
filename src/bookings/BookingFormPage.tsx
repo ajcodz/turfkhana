@@ -125,25 +125,7 @@ const BookingFormPage: React.FC = () => {
     try {
       const APP_BASE_URL = "http://localhost:3000/api/v1";
 
-      // Step 1: Create the client
-      const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.fullName.trim(),
-          phone: formData.phoneNumber.trim(),
-          email: formData.email.trim() || null,
-        }),
-      });
-
-      if (!clientRes.ok) {
-        const err = await clientRes.json();
-        throw new Error(err?.error?.message ?? "Failed to create client");
-      }
-
-      const { client } = await clientRes.json();
-
-      // Step 2: Parse the time slot string "06:00 PM - 07:00 PM" → "18:00:00" / "19:00:00"
+      // Parse the time slot string "06:00 PM - 07:00 PM" → "18:00:00" / "19:00:00"
       const parseTime = (timeStr: string): string => {
         const [time, meridiem] = timeStr.trim().split(" ");
         let [hours, minutes] = time.split(":").map(Number);
@@ -160,31 +142,38 @@ const BookingFormPage: React.FC = () => {
       const dateObj = new Date(state?.date ?? "");
       const bookingDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
 
-      // Step 3: Create the booking
-      const bookingRes = await fetch(`${APP_BASE_URL}/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client_id: client.id,
-          turf_id: state?.turfId,
-          date: bookingDate,
-          start_time: startTime,
-          end_time: endTime,
-          duration_minutes: parseInt(state?.duration ?? "60"),
-          price: state?.pricePerSlot ?? 0,
-          status: "confirmed",
-          payment_method: "cash",
-          payment_status: "pending",
-          payment_transaction_id: null,
-        }),
-      });
+      // Bundle all booking + client details to pass through PayFast redirect URLs
+      const bookingParams = new URLSearchParams({
+        turfId: String(state?.turfId ?? ""),
+        turfName: state?.turfName ?? "",
+        location: state?.location ?? "",
+        date: bookingDate,
+        displayDate: state?.date ?? "",
+        timeSlot: state?.timeSlot ?? "",
+        startTime,
+        endTime,
+        duration: String(state?.duration ?? ""),
+        fullName: formData.fullName.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        email: formData.email.trim(),
+        pricePerSlot: String(state?.pricePerSlot ?? 0),
+        currency: state?.currency ?? "PKR",
+      }).toString();
 
-      if (!bookingRes.ok) {
-        const err = await bookingRes.json();
-        throw new Error(err?.error?.message ?? "Failed to create booking");
-      }
+      const failureParams = new URLSearchParams({
+        turfId: String(state?.turfId ?? ""),
+        turfName: state?.turfName ?? "",
+        location: state?.location ?? "",
+        date: state?.date ?? "",
+        timeSlot: state?.timeSlot ?? "",
+        duration: String(state?.duration ?? ""),
+        customerName: formData.fullName.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        amountToPay: String(state?.pricePerSlot ?? 0),
+        currency: state?.currency ?? "PKR",
+      }).toString();
 
-      // Step 4: Initiate PayFast transaction
+      // Initiate PayFast transaction (no DB writes yet)
       const paymentRes = await fetch(`${APP_BASE_URL}/payments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -193,9 +182,9 @@ const BookingFormPage: React.FC = () => {
           currencyCode: state?.currency ?? "PKR",
           customerEmail: formData.email.trim() || "noreply@turfkhana.com",
           customerMobile: formData.phoneNumber.trim(),
-          successUrl: "http://localhost:5173/booking-success",
-          failureUrl: "http://localhost:5173/booking-failure",
-          checkoutUrl: "http://localhost:5173/booking-checkout",
+          successUrl: `http://localhost:5173/booking-confirmation/${state?.turfId}?${bookingParams}`,
+          failureUrl: `http://localhost:5173/booking-failure?${failureParams}`,
+          checkoutUrl: `http://localhost:5173/booking-form/${state?.turfId}`,
           items: [
             {
               SKU: `TURF-${state?.turfId}`,
@@ -214,7 +203,7 @@ const BookingFormPage: React.FC = () => {
 
       const { payload } = await paymentRes.json();
 
-      // Step 5: Submit payload to PayFast transaction page
+      // Submit payload to PayFast transaction page
       const form = document.createElement("form");
       form.method = "POST";
       form.action =

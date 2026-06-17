@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,6 +10,7 @@ import {
   Icon,
   Separator,
   Badge,
+  Spinner,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Card, CardBody } from "@chakra-ui/card";
@@ -23,59 +24,175 @@ import {
   Download,
   Share2,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { toaster } from "../components/ui/toaster";
 
-interface ConfirmationState {
-  bookingId: number;
-  turfName: string;
-  location: string;
-  date: string;
-  timeSlot: string;
-  duration: string;
-  customerName: string;
-  phoneNumber: string;
-  amountToPay: number;
-  currency: string;
-  bookedAt: string;
-}
+const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 const BookingConfirmationPage: React.FC = () => {
-  const { state } = useLocation();
-  const data = state as ConfirmationState | null;
+  const [searchParams] = useSearchParams();
+  const [isCreating, setIsCreating] = useState(true);
+  const [createdBookingId, setCreatedBookingId] = useState<number | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+
   const cardBg = useColorModeValue("white", "gray.700");
   const successBg = useColorModeValue("green.50", "green.900");
   const successColor = useColorModeValue("green.600", "green.300");
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
-  // Mock booking confirmation data
-  const bookingData = {
-    bookingId: data?.bookingId ? `TK-${data.bookingId}` : "—",
-    turfName: data?.turfName ?? "—",
-    location: data?.location ?? "—",
-    date: data?.date ?? "—",
-    timeSlot: data?.timeSlot ?? "—",
-    duration: data?.duration ?? "—",
-    customerName: data?.customerName ?? "—",
-    phoneNumber: data?.phoneNumber ?? "—",
-    amountPaid: data?.amountToPay ?? 0,
-    currency: data?.currency ?? "Rs",
-    bookingDate: data?.bookedAt ?? "—",
-  };
+  const basketId = searchParams.get("BASKET_ID") ?? "";
 
-  const handleGoHome = () => {
-    console.log("Navigating to home page");
-    // Navigation logic here
+  useEffect(() => {
+    const createBookingAfterPayment = async () => {
+      // Prevent duplicate booking creation on refresh, using PayFast's unique BASKET_ID
+      const storageKey = `booking_created_${basketId}`;
+      const alreadyCreated = sessionStorage.getItem(storageKey);
+
+      if (alreadyCreated) {
+        setCreatedBookingId(Number(alreadyCreated));
+        setIsCreating(false);
+        return;
+      }
+
+      try {
+        // Step 1: Create the client
+        const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: searchParams.get("fullName") ?? "",
+            phone: searchParams.get("phoneNumber") ?? "",
+            email: searchParams.get("email")?.trim() || null,
+          }),
+        });
+
+        if (!clientRes.ok) {
+          const err = await clientRes.json();
+          throw new Error(err?.error?.message ?? "Failed to create client");
+        }
+
+        const { client } = await clientRes.json();
+
+        // Step 2: Create the booking
+        const bookingRes = await fetch(`${APP_BASE_URL}/bookings`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            client_id: client.id,
+            turf_id: searchParams.get("turfId"),
+            date: searchParams.get("date"),
+            start_time: searchParams.get("startTime"),
+            end_time: searchParams.get("endTime"),
+            duration_minutes: parseInt(searchParams.get("duration") ?? "60"),
+            price: Number(searchParams.get("pricePerSlot") ?? 0),
+            status: "confirmed",
+            payment_method: "card",
+            payment_status: "paid",
+            payment_transaction_id: basketId || null,
+          }),
+        });
+
+        if (!bookingRes.ok) {
+          const err = await bookingRes.json();
+          throw new Error(err?.error?.message ?? "Failed to create booking");
+        }
+
+        const { booking } = await bookingRes.json();
+
+        sessionStorage.setItem(storageKey, String(booking.id));
+        setCreatedBookingId(booking.id);
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Something went wrong while saving your booking.";
+        setCreateError(message);
+        toaster.error({
+          title: "Booking Save Failed",
+          description: message,
+          duration: 6000,
+          closable: true,
+        });
+      } finally {
+        setIsCreating(false);
+      }
+    };
+
+    createBookingAfterPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const bookingData = {
+    bookingId: createdBookingId ? `TK-${createdBookingId}` : "—",
+    turfName: searchParams.get("turfName") ?? "—",
+    location: searchParams.get("location") ?? "—",
+    date: searchParams.get("displayDate") ?? "—",
+    timeSlot: searchParams.get("timeSlot") ?? "—",
+    duration: searchParams.get("duration") ?? "—",
+    customerName: searchParams.get("fullName") ?? "—",
+    phoneNumber: searchParams.get("phoneNumber") ?? "—",
+    amountPaid: Number(searchParams.get("pricePerSlot") ?? 0),
+    currency: searchParams.get("currency") ?? "Rs",
+    bookingDate: new Date().toLocaleString(),
   };
 
   const handleDownloadReceipt = () => {
     console.log("Downloading receipt");
-    // Download logic here
   };
 
   const handleShareBooking = () => {
     console.log("Sharing booking details");
-    // Share logic here
   };
+
+  if (isCreating) {
+    return (
+      <Box
+        minH="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        bg={useColorModeValue("gray.50", "gray.900")}
+      >
+        <VStack gap={4}>
+          <Spinner size="xl" color="green.500" />
+          <Text color="gray.600">Confirming your booking...</Text>
+        </VStack>
+      </Box>
+    );
+  }
+
+  if (createError) {
+    return (
+      <Box
+        minH="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        bg={useColorModeValue("gray.50", "gray.900")}
+        px={4}
+      >
+        <VStack gap={4} textAlign="center" maxW="md">
+          <Icon as={CreditCard} boxSize={12} color="red.500" />
+          <Heading size="md" color="red.500">
+            Payment Received, But Booking Failed to Save
+          </Heading>
+          <Text color="gray.600" fontSize="sm">
+            {createError}
+          </Text>
+          <Text color="gray.600" fontSize="sm">
+            Your payment was successful, but we couldn't save your booking
+            automatically. Please contact support with your transaction ID:{" "}
+            <strong>{basketId}</strong>
+          </Text>
+          <Link to="/">
+            <Button colorScheme="green" mt={2}>
+              Go to Home
+            </Button>
+          </Link>
+        </VStack>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -255,7 +372,8 @@ const BookingConfirmationPage: React.FC = () => {
                       </Text>
                     </HStack>
                     <Text fontSize="2xl" fontWeight="bold" color={successColor}>
-                      {bookingData.currency} {bookingData.amountPaid.toLocaleString()}
+                      {bookingData.currency}{" "}
+                      {bookingData.amountPaid.toLocaleString()}
                     </Text>
                   </HStack>
                   <Text
@@ -310,7 +428,6 @@ const BookingConfirmationPage: React.FC = () => {
           <VStack gap={3}>
             <Link to="/" style={{ width: "100%", display: "block" }}>
               <Button
-                onClick={handleGoHome}
                 colorScheme="green"
                 size="lg"
                 w="100%"
