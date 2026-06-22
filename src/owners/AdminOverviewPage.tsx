@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Avatar,
   Badge,
@@ -16,6 +17,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  Spinner,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import {
@@ -28,19 +30,24 @@ import {
   LogOut,
   Settings,
   TrendingUp,
+  TrendingDown,
   User,
 } from "lucide-react";
 import { Link, useOutletContext } from "react-router-dom";
 import type { DashboardContext } from "./DashboardPage";
 
+const APP_BASE_URL = "http://localhost:3000/api/v1";
+
 interface Booking {
   id: string;
+  rawId: number;
   customerName: string;
   turfName: string;
   date: string;
   time: string;
   status: "confirmed" | "pending" | "completed" | "cancelled";
   amount: number;
+  rawDate: string;
 }
 
 interface StatCard {
@@ -59,88 +66,168 @@ const AdminOverviewPage: React.FC = () => {
   const cardBg = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
 
-  const stats: StatCard[] = [
-    {
-      title: "Today's Bookings",
-      value: "12",
-      icon: BookOpen,
-      change: "+3 from yesterday",
-      isPositive: true,
-      color: "blue",
-    },
-    {
-      title: "Upcoming Bookings",
-      value: "48",
-      icon: Clock,
-      change: "+12% this week",
-      isPositive: true,
-      color: "orange",
-    },
-    {
-      title: "Total Revenue",
-      value: "Rs 125,000",
-      icon: DollarSign,
-      change: "+18% this month",
-      isPositive: true,
-      color: "green",
-    },
-    {
-      title: "Growth Rate",
-      value: "23%",
-      icon: TrendingUp,
-      change: "+5% from last month",
-      isPositive: true,
-      color: "purple",
-    },
-  ];
+  const [allBookings, setAllBookings] = useState<Booking[]>([]);
+  const [stats, setStats] = useState<StatCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const recentBookings: Booking[] = [
-    {
-      id: "TK-2025-1542",
-      customerName: "Ahmad Hassan",
-      turfName: "Premier Cricket Ground",
-      date: "Dec 4, 2025",
-      time: "06:00 PM",
-      status: "confirmed",
-      amount: 2500,
-    },
-    {
-      id: "TK-2025-1543",
-      customerName: "Ali Raza",
-      turfName: "Elite Futsal Arena",
-      date: "Dec 4, 2025",
-      time: "07:00 PM",
-      status: "pending",
-      amount: 3000,
-    },
-    {
-      id: "TK-2025-1544",
-      customerName: "Usman Malik",
-      turfName: "Valley Cricket Pitch",
-      date: "Dec 3, 2025",
-      time: "05:00 PM",
-      status: "completed",
-      amount: 2000,
-    },
-    {
-      id: "TK-2025-1545",
-      customerName: "Hassan Khan",
-      turfName: "Champions Futsal Court",
-      date: "Dec 5, 2025",
-      time: "08:00 PM",
-      status: "confirmed",
-      amount: 2800,
-    },
-    {
-      id: "TK-2025-1546",
-      customerName: "Bilal Ahmed",
-      turfName: "Premier Cricket Ground",
-      date: "Dec 2, 2025",
-      time: "04:00 PM",
-      status: "cancelled",
-      amount: 2500,
-    },
-  ];
+  useEffect(() => {
+    const fetchOverviewData = async () => {
+      setIsLoading(true);
+      setFetchError(null);
+
+      try {
+        const [bookingsRes, clientsRes, turfsRes] = await Promise.all([
+          fetch(`${APP_BASE_URL}/bookings`),
+          fetch(`${APP_BASE_URL}/clients`),
+          fetch(`${APP_BASE_URL}/turfs`),
+        ]);
+
+        if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
+        if (!clientsRes.ok) throw new Error("Failed to fetch clients");
+        if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
+
+        const { bookings } = await bookingsRes.json();
+        const { clients } = await clientsRes.json();
+        const { turfs } = await turfsRes.json();
+
+        const clientMap = new Map(clients.map((c: any) => [c.id, c]));
+        const turfMap = new Map(turfs.map((t: any) => [t.id, t]));
+
+        const formatTime = (time: string) => {
+          if (!time) return "—";
+          const [hoursStr, minutes] = time.split(":");
+          let hours = parseInt(hoursStr, 10);
+          const meridiem = hours >= 12 ? "PM" : "AM";
+          if (hours === 0) hours = 12;
+          else if (hours > 12) hours -= 12;
+          return `${String(hours).padStart(2, "0")}:${minutes} ${meridiem}`;
+        };
+
+        const formatDate = (dateStr: string) => {
+          if (!dateStr) return "—";
+          return new Date(dateStr).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
+        };
+
+        const mapped: Booking[] = bookings.map((b: any) => {
+          const client = clientMap.get(b.client_id) as any;
+          const turf = turfMap.get(b.turf_id) as any;
+          return {
+            id: `TK-${b.id}`,
+            rawId: b.id,
+            customerName: client?.name ?? "Unknown Customer",
+            turfName: turf?.name ?? "Unknown Turf",
+            date: formatDate(b.date),
+            rawDate: b.date,
+            time: formatTime(b.start_time),
+            status: (b.status ?? "pending") as Booking["status"],
+            amount: b.price ?? 0,
+          };
+        });
+
+        mapped.sort((a, b) => b.rawId - a.rawId);
+        setAllBookings(mapped.slice(0, 5));
+
+        // --- Compute stats ---
+        const today = new Date();
+        const todayStr = today.toISOString().split("T")[0];
+
+        const todaysBookings = bookings.filter(
+          (b: any) => b.date === todayStr,
+        ).length;
+
+        const now = new Date();
+        const upcomingBookings = bookings.filter((b: any) => {
+          const bookingDateTime = new Date(`${b.date}T${b.start_time}`);
+          return bookingDateTime >= now && b.status !== "cancelled";
+        }).length;
+
+        const totalRevenue = bookings
+          .filter((b: any) => b.payment_status === "paid")
+          .reduce((sum: number, b: any) => sum + (b.price ?? 0), 0);
+
+        // Growth: this month's bookings vs last month's bookings
+        const thisMonthCount = bookings.filter((b: any) => {
+          const d = new Date(b.date);
+          return (
+            d.getMonth() === today.getMonth() &&
+            d.getFullYear() === today.getFullYear()
+          );
+        }).length;
+
+        const lastMonthDate = new Date(
+          today.getFullYear(),
+          today.getMonth() - 1,
+          1,
+        );
+        const lastMonthCount = bookings.filter((b: any) => {
+          const d = new Date(b.date);
+          return (
+            d.getMonth() === lastMonthDate.getMonth() &&
+            d.getFullYear() === lastMonthDate.getFullYear()
+          );
+        }).length;
+
+        const growthRate =
+          lastMonthCount === 0
+            ? thisMonthCount > 0
+              ? 100
+              : 0
+            : Math.round(
+                ((thisMonthCount - lastMonthCount) / lastMonthCount) * 100,
+              );
+
+        setStats([
+          {
+            title: "Today's Bookings",
+            value: String(todaysBookings),
+            icon: BookOpen,
+            change: `${bookings.length} total bookings`,
+            isPositive: true,
+            color: "blue",
+          },
+          {
+            title: "Upcoming Bookings",
+            value: String(upcomingBookings),
+            icon: Clock,
+            change: "Confirmed & pending",
+            isPositive: true,
+            color: "orange",
+          },
+          {
+            title: "Total Revenue",
+            value: `Rs ${totalRevenue.toLocaleString()}`,
+            icon: DollarSign,
+            change: "From paid bookings",
+            isPositive: true,
+            color: "green",
+          },
+          {
+            title: "Growth Rate",
+            value: `${growthRate >= 0 ? "+" : ""}${growthRate}%`,
+            icon: growthRate >= 0 ? TrendingUp : TrendingDown,
+            change: "vs last month",
+            isPositive: growthRate >= 0,
+            color: "purple",
+          },
+        ]);
+      } catch (error) {
+        setFetchError(
+          error instanceof Error ? error.message : "Failed to load dashboard",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOverviewData();
+  }, []);
+
+  const recentBookings = allBookings;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -156,6 +243,47 @@ const AdminOverviewPage: React.FC = () => {
         return "gray";
     }
   };
+
+  if (isLoading) {
+    return (
+      <Box
+        flex={1}
+        ml={{ base: 0, lg: "280px" }}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        minH="100vh"
+      >
+        <VStack gap={4}>
+          <Spinner size="xl" color="green.500" />
+          <Text color="gray.600">Loading dashboard...</Text>
+        </VStack>
+      </Box>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <Box
+        flex={1}
+        ml={{ base: 0, lg: "280px" }}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        minH="100vh"
+      >
+        <VStack gap={2}>
+          <Text color="red.500" fontWeight="semibold">
+            Failed to load dashboard
+          </Text>
+          <Text fontSize="sm" color="gray.500">
+            {fetchError}
+          </Text>
+        </VStack>
+      </Box>
+    );
+  }
+
   return (
     <Box flex={1} ml={{ base: 0, lg: "280px" }}>
       {/* Top Navbar */}

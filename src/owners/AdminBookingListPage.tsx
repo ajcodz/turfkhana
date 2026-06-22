@@ -19,6 +19,8 @@ import {
   Portal,
   NativeSelect,
   Spinner,
+  Dialog,
+  Field,
 } from "@chakra-ui/react";
 import {
   BookOpen,
@@ -31,21 +33,30 @@ import {
   Search,
   ChevronLeft,
   Filter,
-  Eye,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import type { DashboardContext } from "./DashboardPage";
 import { useOutletContext } from "react-router-dom";
+import { toaster } from "../components/ui/toaster";
 
 const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 interface Booking {
   id: string;
+  rawId: number;
+  clientId: number;
+  turfId: number;
   customerName: string;
   customerPhone: string;
   turfName: string;
   date: string;
+  rawDate: string;
   time: string;
+  rawStartTime: string;
+  rawEndTime: string;
+  durationMinutes: number;
   status: "confirmed" | "pending" | "completed" | "cancelled";
   amount: number;
 }
@@ -112,22 +123,25 @@ const AdminBookingListPage: React.FC = () => {
 
           return {
             id: `TK-${b.id}`,
+            rawId: b.id,
+            clientId: b.client_id,
+            turfId: b.turf_id,
             customerName: client?.name ?? "Unknown Customer",
             customerPhone: client?.phone ?? "—",
             turfName: turf?.name ?? "Unknown Turf",
             date: formatDate(b.date),
+            rawDate: b.date,
             time: formatTime(b.start_time),
+            rawStartTime: b.start_time,
+            rawEndTime: b.end_time,
+            durationMinutes: b.duration_minutes,
             status: (b.status ?? "pending") as Booking["status"],
             amount: b.price ?? 0,
           };
         });
 
         // Most recent bookings first
-        mappedBookings.sort((a, b) => {
-          const idA = parseInt(a.id.replace("TK-", ""), 10);
-          const idB = parseInt(b.id.replace("TK-", ""), 10);
-          return idB - idA;
-        });
+        mappedBookings.sort((a, b) => b.rawId - a.rawId);
 
         setAllBookings(mappedBookings);
       } catch (error) {
@@ -141,6 +155,162 @@ const AdminBookingListPage: React.FC = () => {
 
     fetchBookings();
   }, []);
+
+  // Edit modal state
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [editForm, setEditForm] = useState({
+    date: "",
+    startTime: "",
+    endTime: "",
+    durationMinutes: "",
+    price: "",
+    status: "pending",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Delete dialog state
+  const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const openEditModal = (booking: Booking) => {
+    setEditingBooking(booking);
+    setEditForm({
+      date: booking.rawDate,
+      startTime: booking.rawStartTime,
+      endTime: booking.rawEndTime,
+      durationMinutes: String(booking.durationMinutes ?? ""),
+      price: String(booking.amount ?? ""),
+      status: booking.status,
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditingBooking(null);
+  };
+
+  const handleUpdateBooking = async () => {
+    if (!editingBooking) return;
+    setIsSaving(true);
+
+    try {
+      const res = await fetch(
+        `${APP_BASE_URL}/bookings/${editingBooking.rawId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            client_id: editingBooking.clientId,
+            turf_id: editingBooking.turfId,
+            date: editForm.date,
+            start_time: editForm.startTime,
+            end_time: editForm.endTime,
+            duration_minutes: parseInt(editForm.durationMinutes, 10),
+            price: Number(editForm.price),
+            status: editForm.status,
+            payment_method: null,
+            payment_status: null,
+            payment_transaction_id: null,
+          }),
+        },
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error?.message ?? "Failed to update booking");
+      }
+
+      const { booking: updated } = await res.json();
+
+      // Update local state without refetching everything
+      setAllBookings((prev) =>
+        prev.map((b) =>
+          b.rawId === editingBooking.rawId
+            ? {
+                ...b,
+                rawDate: updated.date,
+                date: new Date(updated.date).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                }),
+                rawStartTime: updated.start_time,
+                rawEndTime: updated.end_time,
+                time: (() => {
+                  const [hoursStr, minutes] = updated.start_time.split(":");
+                  let hours = parseInt(hoursStr, 10);
+                  const meridiem = hours >= 12 ? "PM" : "AM";
+                  if (hours === 0) hours = 12;
+                  else if (hours > 12) hours -= 12;
+                  return `${String(hours).padStart(2, "0")}:${minutes} ${meridiem}`;
+                })(),
+                durationMinutes: updated.duration_minutes,
+                amount: updated.price,
+                status: updated.status,
+              }
+            : b,
+        ),
+      );
+
+      toaster.success({
+        title: "Booking Updated",
+        description: `Booking ${editingBooking.id} was updated successfully`,
+        duration: 3000,
+        closable: true,
+      });
+
+      closeEditModal();
+    } catch (error) {
+      toaster.error({
+        title: "Update Failed",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+        duration: 5000,
+        closable: true,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteBooking = async () => {
+    if (!deletingBooking) return;
+    setIsDeleting(true);
+
+    try {
+      const res = await fetch(
+        `${APP_BASE_URL}/bookings/${deletingBooking.rawId}`,
+        { method: "DELETE" },
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error?.message ?? "Failed to delete booking");
+      }
+
+      setAllBookings((prev) =>
+        prev.filter((b) => b.rawId !== deletingBooking.rawId),
+      );
+
+      toaster.success({
+        title: "Booking Deleted",
+        description: `Booking ${deletingBooking.id} was deleted successfully`,
+        duration: 3000,
+        closable: true,
+      });
+
+      setDeletingBooking(null);
+    } catch (error) {
+      toaster.error({
+        title: "Delete Failed",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+        duration: 5000,
+        closable: true,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -451,14 +621,26 @@ const AdminBookingListPage: React.FC = () => {
                           Rs {booking.amount.toLocaleString()}
                         </Table.Cell>
                         <Table.Cell>
-                          <IconButton
-                            aria-label="View details"
-                            size="sm"
-                            variant="ghost"
-                            colorScheme="green"
-                          >
-                            <Eye size={16} />
-                          </IconButton>
+                          <HStack gap={1}>
+                            <IconButton
+                              aria-label="Edit booking"
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="blue"
+                              onClick={() => openEditModal(booking)}
+                            >
+                              <Pencil size={16} />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Delete booking"
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="red"
+                              onClick={() => setDeletingBooking(booking)}
+                            >
+                              <Trash2 size={16} />
+                            </IconButton>
+                          </HStack>
                         </Table.Cell>
                       </Table.Row>
                     ))
@@ -540,6 +722,165 @@ const AdminBookingListPage: React.FC = () => {
           )}
         </VStack>
       </Container>
+      {/* Edit Booking Dialog */}
+      <Dialog.Root
+        open={!!editingBooking}
+        onOpenChange={(e) => !e.open && closeEditModal()}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Edit Booking {editingBooking?.id}</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack gap={4} align="stretch">
+                  <Field.Root>
+                    <Field.Label>Date</Field.Label>
+                    <Input
+                      type="date"
+                      value={editForm.date}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, date: e.target.value })
+                      }
+                    />
+                  </Field.Root>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Start Time</Field.Label>
+                      <Input
+                        type="time"
+                        step={1}
+                        value={editForm.startTime}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            startTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>End Time</Field.Label>
+                      <Input
+                        type="time"
+                        step={1}
+                        value={editForm.endTime}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            endTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Duration (minutes)</Field.Label>
+                      <Input
+                        type="number"
+                        value={editForm.durationMinutes}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            durationMinutes: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>Price (Rs)</Field.Label>
+                      <Input
+                        type="number"
+                        value={editForm.price}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, price: e.target.value })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <Field.Root>
+                    <Field.Label>Status</Field.Label>
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        value={editForm.status}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            status: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="confirmed">Confirmed</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </NativeSelect.Field>
+                    </NativeSelect.Root>
+                  </Field.Root>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button variant="outline" onClick={closeEditModal}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="green"
+                  onClick={handleUpdateBooking}
+                  loading={isSaving}
+                >
+                  Save Changes
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog.Root
+        open={!!deletingBooking}
+        onOpenChange={(e) => !e.open && setDeletingBooking(null)}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Delete Booking</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <Text>
+                  Are you sure you want to delete booking{" "}
+                  <strong>{deletingBooking?.id}</strong> for{" "}
+                  <strong>{deletingBooking?.customerName}</strong>? This action
+                  cannot be undone.
+                </Text>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button
+                  variant="outline"
+                  onClick={() => setDeletingBooking(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  onClick={handleDeleteBooking}
+                  loading={isDeleting}
+                >
+                  Delete
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </Box>
   );
 };
