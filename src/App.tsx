@@ -4,6 +4,7 @@ import BookingConfirmationPage from "./bookings/BookingConfirmationPage";
 import BookingFailurePage from "./bookings/BookingFailurePage";
 import AdminCalendarPage from "./owners/AdminCalendarPage";
 import AdminBookingListPage from "./owners/AdminBookingListPage";
+import AdminTurfListPage from "./owners/AdminTurfListPage";
 import PrivacyPolicyPage from "./policies/PrivacyPolicyPage";
 import RefundCancellationPolicyPage from "./policies/RefundCancellationPolicyPage";
 import DashboardPage from "./owners/DashboardPage";
@@ -38,6 +39,7 @@ function App() {
           <Route index element={<AdminOverviewPage />} />
           <Route path="calendar" element={<AdminCalendarPage />} />
           <Route path="booking-list" element={<AdminBookingListPage />} />
+          <Route path="turf-list" element={<AdminTurfListPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
         </Route>
 
