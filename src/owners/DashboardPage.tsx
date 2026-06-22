@@ -19,6 +19,7 @@ import {
   BookOpen,
   Settings,
   ChevronRight,
+  MapPin,
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Link, Outlet } from "react-router-dom";
@@ -43,6 +44,7 @@ const DashboardPage: React.FC = () => {
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Calendar", path: "calendar", icon: Calendar },
     { name: "Bookings", path: "booking-list", icon: BookOpen },
+    { name: "Turfs", path: "turf-list", icon: MapPin },
     { name: "Settings", path: "settings", icon: Settings },
   ];
 
@@ -147,11 +149,7 @@ const DashboardPage: React.FC = () => {
       </Drawer.Root>
 
       {/* Main Content */}
-      <Box
-        flex={1}
-        h="93vh"
-        overflowY="auto"
-      >
+      <Box flex={1} h="93vh" overflowY="auto">
         <Outlet context={{ setActiveNav, onOpen }} />
       </Box>
     </Flex>
