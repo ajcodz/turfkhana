@@ -131,6 +131,122 @@ const AdminTurfListPage: React.FC = () => {
   const [deletingTurf, setDeletingTurf] = useState<Turf | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Create modal state
+  const [isCreating, setIsCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    type: "",
+    address: "",
+    openingTime: "",
+    closingTime: "",
+    slotDurationMinutes: "60",
+    pricePerSlot: "",
+    currency: "PKR",
+    bookingWindowDays: "30",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const closeCreateModal = () => {
+    setIsCreating(false);
+    setCreateForm({
+      name: "",
+      type: "",
+      address: "",
+      openingTime: "",
+      closingTime: "",
+      slotDurationMinutes: "60",
+      pricePerSlot: "",
+      currency: "PKR",
+      bookingWindowDays: "30",
+    });
+  };
+
+  const handleCreateTurf = async () => {
+    if (
+      !createForm.name ||
+      !createForm.type ||
+      !createForm.address ||
+      !createForm.openingTime ||
+      !createForm.closingTime ||
+      !createForm.pricePerSlot
+    ) {
+      toaster.error({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`${APP_BASE_URL}/turfs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          owner_id: 1,
+          name: createForm.name,
+          slug: null,
+          type: createForm.type,
+          address: createForm.address,
+          lat: null,
+          lng: null,
+          opening_time: createForm.openingTime,
+          closing_time: createForm.closingTime,
+          slot_duration_minutes: parseInt(createForm.slotDurationMinutes, 10),
+          price_per_slot: Number(createForm.pricePerSlot),
+          currency: createForm.currency,
+          booking_window_days: parseInt(createForm.bookingWindowDays, 10),
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error?.message ?? "Failed to create turf");
+      }
+
+      const { turf: created } = await res.json();
+
+      const newTurf: Turf = {
+        id: created.id,
+        ownerId: created.owner_id,
+        name: created.name,
+        slug: created.slug ?? null,
+        type: created.type,
+        address: created.address,
+        openingTime: created.opening_time,
+        closingTime: created.closing_time,
+        slotDurationMinutes: created.slot_duration_minutes,
+        pricePerSlot: created.price_per_slot,
+        currency: created.currency,
+        bookingWindowDays: created.booking_window_days,
+      };
+
+      setAllTurfs((prev) => [newTurf, ...prev]);
+
+      toaster.success({
+        title: "Turf Created",
+        description: `${created.name} was added successfully`,
+        duration: 3000,
+        closable: true,
+      });
+
+      closeCreateModal();
+    } catch (error) {
+      toaster.error({
+        title: "Create Failed",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+        duration: 5000,
+        closable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const openEditModal = (turf: Turf) => {
     setEditingTurf(turf);
     setEditForm({
@@ -363,6 +479,15 @@ const AdminTurfListPage: React.FC = () => {
           </HStack>
 
           <HStack gap={3}>
+            <Button
+              colorScheme="green"
+              size="sm"
+              borderRadius="full"
+              onClick={() => setIsCreating(true)}
+            >
+              + New Turf
+            </Button>
+
             <IconButton
               aria-label="Notifications"
               variant="ghost"
@@ -805,6 +930,161 @@ const AdminTurfListPage: React.FC = () => {
                   loading={isSaving}
                 >
                   Save Changes
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+
+      {/* Create Turf Dialog */}
+      <Dialog.Root
+        open={isCreating}
+        onOpenChange={(e) => !e.open && closeCreateModal()}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Add New Turf</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack gap={4} align="stretch">
+                  <Field.Root>
+                    <Field.Label>Turf Name *</Field.Label>
+                    <Input
+                      placeholder="e.g. Green Arena"
+                      value={createForm.name}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, name: e.target.value })
+                      }
+                    />
+                  </Field.Root>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Type *</Field.Label>
+                      <Input
+                        placeholder="e.g. Cricket, Futsal"
+                        value={createForm.type}
+                        onChange={(e) =>
+                          setCreateForm({ ...createForm, type: e.target.value })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>Currency</Field.Label>
+                      <Input
+                        value={createForm.currency}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            currency: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <Field.Root>
+                    <Field.Label>Address *</Field.Label>
+                    <Input
+                      placeholder="e.g. DHA Phase 5, Lahore"
+                      value={createForm.address}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          address: e.target.value,
+                        })
+                      }
+                    />
+                  </Field.Root>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Opening Time *</Field.Label>
+                      <Input
+                        type="time"
+                        value={createForm.openingTime}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            openingTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>Closing Time *</Field.Label>
+                      <Input
+                        type="time"
+                        value={createForm.closingTime}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            closingTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Slot Duration (minutes)</Field.Label>
+                      <Input
+                        type="number"
+                        value={createForm.slotDurationMinutes}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            slotDurationMinutes: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>Price Per Slot *</Field.Label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 2000"
+                        value={createForm.pricePerSlot}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            pricePerSlot: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <Field.Root>
+                    <Field.Label>Booking Window (days)</Field.Label>
+                    <Input
+                      type="number"
+                      value={createForm.bookingWindowDays}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          bookingWindowDays: e.target.value,
+                        })
+                      }
+                    />
+                  </Field.Root>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button variant="outline" onClick={closeCreateModal}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="green"
+                  onClick={handleCreateTurf}
+                  loading={isSubmitting}
+                >
+                  Create Turf
                 </Button>
               </Dialog.Footer>
             </Dialog.Content>
