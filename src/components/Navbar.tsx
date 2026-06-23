@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -30,7 +30,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { ColorModeButton, useColorModeValue } from "./ui/color-mode";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // interface NavLinkProps {
 //   children: React.ReactNode;
@@ -68,7 +68,18 @@ import { Link, useLocation } from "react-router-dom";
 const Navbar: React.FC = () => {
   const location = useLocation();
   const { open, onOpen, onClose } = useDisclosure();
-  const [isLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    setIsLoggedIn(false);
+    navigate("/", { replace: true });
+  };
 
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -109,7 +120,11 @@ const Navbar: React.FC = () => {
               _hover={{ color: "green.600" }}
               transition="color 0.2s"
             >
-              <Image src="/TurfKhana Logo Transparent.png" alt="TurfKhana" h={12} />
+              <Image
+                src="/TurfKhana Logo Transparent.png"
+                alt="TurfKhana"
+                h={12}
+              />
             </Box>
           </Link>
 
@@ -125,112 +140,25 @@ const Navbar: React.FC = () => {
           {/* Right Side Actions */}
           <Flex alignItems="center" gap={3}>
             {isLoggedIn ? (
-              <>
-                {/* My Bookings Button - Desktop */}
-                {/* <Link to="/my-bookings">
-                  <Button
-                    variant="ghost"
-                    colorScheme="green"
-                    size="sm"
-                    display={{ base: "none", md: "inline-flex" }}
-                  >
-                    <Calendar size={16} />
-                    My Bookings
-                    <Badge ml={2} colorScheme="green" borderRadius="full">
-                      3
-                    </Badge>
-                  </Button>
-                </Link> */}
-
-                {/* User Menu */}
-                {/* <Menu.Root>
-                  <Menu.Trigger asChild>
-                    <Button
-                      as={Button}
-                      rounded="full"
-                      variant="ghost"
-                      cursor="pointer"
-                      minW={0}
-                      p={0}
-                    >
-                      <Avatar.Root size="sm" bg="green.500">
-                        <Avatar.Fallback name="Ahsan Javed" />
-                      </Avatar.Root>
-                    </Button>
-                  </Menu.Trigger>
-                  <Portal>
-                    <Menu.Positioner>
-                      <Menu.Content>
-                        <Box px={3} py={2}>
-                          <Text fontWeight="semibold">Ahsan Javed</Text>
-                          <Text fontSize="sm" color="gray.600">
-                            ajcodzhq@gmail.com
-                          </Text>
-                        </Box>
-                        <Menu.Separator />
-                        <Link to="/profile">
-                          <Menu.Item value="profile">
-                            <User size={16} /> My Profile
-                          </Menu.Item>
-                        </Link>
-                        <Link to="/my-bookings">
-                          <Menu.Item value="bookings">
-                            <Calendar size={16} />
-                            My Bookings
-                            <Badge
-                              ml="auto"
-                              colorScheme="green"
-                              borderRadius="full"
-                              fontSize="xs"
-                            >
-                              3
-                            </Badge>
-                          </Menu.Item>
-                        </Link>
-                        <Link to="/settings">
-                          <Menu.Item value="settings">
-                            <Settings size={16} />
-                            Settings
-                          </Menu.Item>
-                        </Link>
-                        <Menu.Separator />
-                        <Menu.Item
-                          value="logout"
-                          onClick={handleLogout}
-                          color="red.500"
-                        >
-                          <LogOut size={16} />
-                          Logout
-                        </Menu.Item>
-                      </Menu.Content>
-                    </Menu.Positioner>
-                  </Portal>
-                </Menu.Root> */}
-              </>
+              <Button
+                colorScheme="red"
+                variant="outline"
+                size="sm"
+                display={{ base: "none", sm: "inline-flex" }}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
             ) : (
-              <>
-                {/* Guest Actions */}
-                {/* <Link
-                                    to="/login">
-                                    <Button
-                                        variant="ghost"
-                                        colorScheme="green"
-                                        size="sm"
-                                    >
-                                        Login
-                                    </Button>
-                                </Link> */}
-                {/* Sign Up */}
-                <Link to="/login">
-                  <Button
-                    colorScheme="green"
-                    size="sm"
-                    display={{ base: "none", sm: "inline-flex" }}
-                  >
-                    Login
-                  </Button>
-                </Link>
-              </>
+              <Link to="/login">
+                <Button
+                  colorScheme="green"
+                  size="sm"
+                  display={{ base: "none", sm: "inline-flex" }}
+                >
+                  Login
+                </Button>
+              </Link>
             )}
 
             {/* Mobile Menu Button */}
@@ -295,69 +223,23 @@ const Navbar: React.FC = () => {
 
                   <Box borderTop="1px" borderColor={borderColor} pt={4} mt={4}>
                     {isLoggedIn ? (
-                      <>
-                        {/* <NavLink to="/my-bookings" onClick={onClose}>
-                          <Flex align="center" justify="space-between">
-                            <HStack>
-                              <Calendar size={18} />
-                              <Text>My Bookings</Text>
-                            </HStack>
-                            <Badge colorScheme="green" borderRadius="full">
-                              3
-                            </Badge>
-                          </Flex>
-                        </NavLink>
-                        <NavLink to="/profile" onClick={onClose}>
-                          <HStack>
-                            <User size={18} />
-                            <Text>My Profile</Text>
-                          </HStack>
-                        </NavLink>
-                        <NavLink to="/settings" onClick={onClose}>
-                          <HStack>
-                            <Settings size={18} />
-                            <Text>Settings</Text>
-                          </HStack>
-                        </NavLink>
-                        <Box
-                          px={3}
-                          py={2}
-                          color="red.500"
-                          cursor="pointer"
-                          onClick={() => {
-                            handleLogout();
-                            onClose();
-                          }}
-                        >
-                          <HStack>
-                            <LogOut size={18} />
-                            <Text fontWeight="medium">Logout</Text>
-                          </HStack>
-                        </Box> */}
-                      </>
+                      <Button
+                        colorScheme="red"
+                        variant="outline"
+                        w="100%"
+                        onClick={() => {
+                          handleLogout();
+                          onClose();
+                        }}
+                      >
+                        Logout
+                      </Button>
                     ) : (
-                      <>
-                        {/* <Link to="/login">
-                          <Button
-                            variant="outline"
-                            colorScheme="green"
-                            w="100%"
-                            mb={3}
-                            onClick={onClose}
-                          >
-                            Login
-                          </Button>
-                        </Link> */}
-                        <Link to="/login">
-                          <Button
-                            colorScheme="green"
-                            w="100%"
-                            onClick={onClose}
-                          >
-                            Login
-                          </Button>
-                        </Link>
-                      </>
+                      <Link to="/login">
+                        <Button colorScheme="green" w="100%" onClick={onClose}>
+                          Login
+                        </Button>
+                      </Link>
                     )}
                   </Box>
 

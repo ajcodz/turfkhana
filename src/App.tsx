@@ -14,6 +14,7 @@ import AdminSettingsPage from "./owners/AdminSettingsPage";
 import TermsConditionsPage from "./policies/TermsConditionsPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { Routes, Route, useLocation } from "react-router-dom";
 import AdminOverviewPage from "./owners/AdminOverviewPage";
 
@@ -35,7 +36,14 @@ function App() {
         <Route path="/booking-failure" element={<BookingFailurePage />} />
 
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardPage />}>
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<AdminOverviewPage />} />
           <Route path="calendar" element={<AdminCalendarPage />} />
           <Route path="booking-list" element={<AdminBookingListPage />} />
