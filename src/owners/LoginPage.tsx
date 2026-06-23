@@ -61,55 +61,55 @@ const LoginPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = () => {
-    if (!validateForm()) {
-      return;
-    }
+  const handleLogin = async () => {
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const res = await fetch("http://localhost:3000/api/v1/owners/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          password: formData.password,
+        }),
+      });
 
-      // Mock validation - replace with actual authentication
-      if (
-        formData.email === "admin@turfkhana.com" &&
-        formData.password === "admin123"
-      ) {
-        toaster.success({
-          title: "Login Successful",
-          description: "Welcome back, Admin!",
-          duration: 3000,
-          closable: true,
-        });
-        // toast({
-        //   title: 'Login Successful',
-        //   description: 'Welcome back, Admin!',
-        //   status: 'success',
-        //   duration: 3000,
-        //   isClosable: true,
-        // });
-        // Redirect to admin dashboard
-        console.log("Redirecting to admin dashboard...");
-        localStorage.setItem("isLoggedIn", "true");
-        navigate("/dashboard");
-      } else {
+      const data = await res.json();
+
+      if (!res.ok) {
         toaster.error({
           title: "Login Failed",
-          description: "Invalid email or password",
+          description: data?.error ?? "Invalid email or password",
           duration: 3000,
           closable: true,
         });
-        // toast({
-        //   title: 'Login Failed',
-        //   description: 'Invalid email or password',
-        //   status: 'error',
-        //   duration: 3000,
-        //   isClosable: true,
-        // });
+        return;
       }
-    }, 1000);
+
+      // Save login state and owner info
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("owner", JSON.stringify(data.owner));
+
+      toaster.success({
+        title: "Login Successful",
+        description: `Welcome back, ${data.owner.name}!`,
+        duration: 3000,
+        closable: true,
+      });
+
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      toaster.error({
+        title: "Login Failed",
+        description: "Something went wrong. Please try again.",
+        duration: 3000,
+        closable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -231,32 +231,6 @@ const LoginPage: React.FC = () => {
               >
                 Sign In
               </Button>
-
-              {/* Demo Credentials */}
-              <Box
-                mt={4}
-                p={4}
-                bg={useColorModeValue("blue.50", "blue.900")}
-                borderRadius="lg"
-                fontSize="sm"
-              >
-                <Text
-                  fontWeight="semibold"
-                  mb={2}
-                  color={useColorModeValue("blue.700", "blue.200")}
-                >
-                  Demo Credentials:
-                </Text>
-                <VStack
-                  align="stretch"
-                  gap={1}
-                  fontSize="xs"
-                  color={useColorModeValue("blue.600", "blue.300")}
-                >
-                  <Text>Email: admin@turfkhana.com</Text>
-                  <Text>Password: admin123</Text>
-                </VStack>
-              </Box>
             </VStack>
           </Box>
 
