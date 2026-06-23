@@ -3,18 +3,19 @@ import { catchAsync } from "../../utils/catchAsync";
 import { Owner, CreateOwnerDTO } from "../../models/owner.model";
 
 export const createOwner = catchAsync(async (req, res) => {
-    const ownerData: CreateOwnerDTO = {
-        name: req.body.name,
-        phone: req.body.phone,
-        email: req.body.email ?? null,
-    };
+  const ownerData: CreateOwnerDTO = {
+    name: req.body.name,
+    phone: req.body.phone,
+    email: req.body.email ?? null,
+    password: req.body.password,
+  };
 
-    const { data, error } = await supabase
-        .from("owners")
-        .insert([ownerData])
-        .select();
+  const { data, error } = await supabase
+    .from("owners")
+    .insert([ownerData])
+    .select();
 
-    if (error) return res.status(400).json({ error });
+  if (error) return res.status(400).json({ error });
 
-    res.status(201).json({ owner: data[0] as Owner });
+  res.status(201).json({ owner: data[0] as Owner });
 });
