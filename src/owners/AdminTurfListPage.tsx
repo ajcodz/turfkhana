@@ -122,7 +122,6 @@ const AdminTurfListPage: React.FC = () => {
     closingTime: "",
     slotDurationMinutes: "",
     pricePerSlot: "",
-    currency: "PKR",
     bookingWindowDays: "",
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -141,7 +140,6 @@ const AdminTurfListPage: React.FC = () => {
     closingTime: "",
     slotDurationMinutes: "60",
     pricePerSlot: "",
-    currency: "PKR",
     bookingWindowDays: "30",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -156,7 +154,6 @@ const AdminTurfListPage: React.FC = () => {
       closingTime: "",
       slotDurationMinutes: "60",
       pricePerSlot: "",
-      currency: "PKR",
       bookingWindowDays: "30",
     });
   };
@@ -197,7 +194,7 @@ const AdminTurfListPage: React.FC = () => {
           closing_time: createForm.closingTime,
           slot_duration_minutes: parseInt(createForm.slotDurationMinutes, 10),
           price_per_slot: Number(createForm.pricePerSlot),
-          currency: createForm.currency,
+          currency: "PKR",
           booking_window_days: parseInt(createForm.bookingWindowDays, 10),
         }),
       });
@@ -257,7 +254,6 @@ const AdminTurfListPage: React.FC = () => {
       closingTime: turf.closingTime,
       slotDurationMinutes: String(turf.slotDurationMinutes),
       pricePerSlot: String(turf.pricePerSlot),
-      currency: turf.currency,
       bookingWindowDays: String(turf.bookingWindowDays),
     });
   };
@@ -284,7 +280,7 @@ const AdminTurfListPage: React.FC = () => {
           closing_time: editForm.closingTime,
           slot_duration_minutes: parseInt(editForm.slotDurationMinutes, 10),
           price_per_slot: Number(editForm.pricePerSlot),
-          currency: editForm.currency,
+          currency: "PKR",
           booking_window_days: parseInt(editForm.bookingWindowDays, 10),
         }),
       });
@@ -823,18 +819,6 @@ const AdminTurfListPage: React.FC = () => {
                         }
                       />
                     </Field.Root>
-                    <Field.Root>
-                      <Field.Label>Currency</Field.Label>
-                      <Input
-                        value={editForm.currency}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            currency: e.target.value,
-                          })
-                        }
-                      />
-                    </Field.Root>
                   </HStack>
 
                   <Field.Root>
@@ -970,18 +954,6 @@ const AdminTurfListPage: React.FC = () => {
                         value={createForm.type}
                         onChange={(e) =>
                           setCreateForm({ ...createForm, type: e.target.value })
-                        }
-                      />
-                    </Field.Root>
-                    <Field.Root>
-                      <Field.Label>Currency</Field.Label>
-                      <Input
-                        value={createForm.currency}
-                        onChange={(e) =>
-                          setCreateForm({
-                            ...createForm,
-                            currency: e.target.value,
-                          })
                         }
                       />
                     </Field.Root>
