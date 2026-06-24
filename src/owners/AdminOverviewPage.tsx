@@ -61,6 +61,8 @@ interface StatCard {
 
 const AdminOverviewPage: React.FC = () => {
   const { setActiveNav, onOpen } = useOutletContext<DashboardContext>();
+  const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
+  const ownerId = owner?.id ?? null;
   const { onClose } = useDisclosure();
 
   const cardBg = useColorModeValue("white", "gray.800");
@@ -92,7 +94,14 @@ const AdminOverviewPage: React.FC = () => {
         const { turfs } = await turfsRes.json();
 
         const clientMap = new Map(clients.map((c: any) => [c.id, c]));
-        const turfMap = new Map(turfs.map((t: any) => [t.id, t]));
+
+        // Only keep this owner's turfs and bookings
+        const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
+        const ownerTurfIds = new Set(ownerTurfs.map((t: any) => t.id));
+        const turfMap = new Map(ownerTurfs.map((t: any) => [t.id, t]));
+        const ownerBookings = bookings.filter((b: any) =>
+          ownerTurfIds.has(b.turf_id),
+        );
 
         const formatTime = (time: string) => {
           if (!time) return "—";
@@ -113,7 +122,7 @@ const AdminOverviewPage: React.FC = () => {
           });
         };
 
-        const mapped: Booking[] = bookings.map((b: any) => {
+        const mapped: Booking[] = ownerBookings.map((b: any) => {
           const client = clientMap.get(b.client_id) as any;
           const turf = turfMap.get(b.turf_id) as any;
           return {
@@ -136,22 +145,22 @@ const AdminOverviewPage: React.FC = () => {
         const today = new Date();
         const todayStr = today.toISOString().split("T")[0];
 
-        const todaysBookings = bookings.filter(
+        const todaysBookings = ownerBookings.filter(
           (b: any) => b.date === todayStr,
         ).length;
 
         const now = new Date();
-        const upcomingBookings = bookings.filter((b: any) => {
+        const upcomingBookings = ownerBookings.filter((b: any) => {
           const bookingDateTime = new Date(`${b.date}T${b.start_time}`);
           return bookingDateTime >= now && b.status !== "cancelled";
         }).length;
 
-        const totalRevenue = bookings
+        const totalRevenue = ownerBookings
           .filter((b: any) => b.payment_status === "paid")
           .reduce((sum: number, b: any) => sum + (b.price ?? 0), 0);
 
         // Growth: this month's bookings vs last month's bookings
-        const thisMonthCount = bookings.filter((b: any) => {
+        const thisMonthCount = ownerBookings.filter((b: any) => {
           const d = new Date(b.date);
           return (
             d.getMonth() === today.getMonth() &&
@@ -164,7 +173,7 @@ const AdminOverviewPage: React.FC = () => {
           today.getMonth() - 1,
           1,
         );
-        const lastMonthCount = bookings.filter((b: any) => {
+        const lastMonthCount = ownerBookings.filter((b: any) => {
           const d = new Date(b.date);
           return (
             d.getMonth() === lastMonthDate.getMonth() &&
@@ -186,7 +195,7 @@ const AdminOverviewPage: React.FC = () => {
             title: "Today's Bookings",
             value: String(todaysBookings),
             icon: BookOpen,
-            change: `${bookings.length} total bookings`,
+            change: `${ownerBookings.length} total bookings`,
             isPositive: true,
             color: "blue",
           },
@@ -312,7 +321,7 @@ const AdminOverviewPage: React.FC = () => {
                 Dashboard
               </Heading>
               <Text fontSize="sm" color="gray.500">
-                Welcome back, Admin
+                Welcome back, {owner?.name ?? "Admin"}
               </Text>
             </Box>
           </HStack>

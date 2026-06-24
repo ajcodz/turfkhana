@@ -63,6 +63,8 @@ interface Booking {
 
 const AdminBookingListPage: React.FC = () => {
   const { onOpen } = useOutletContext<DashboardContext>();
+  const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
+  const ownerId = owner?.id ?? null;
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -96,7 +98,11 @@ const AdminBookingListPage: React.FC = () => {
         const { turfs } = await turfsRes.json();
 
         const clientMap = new Map(clients.map((c: any) => [c.id, c]));
-        const turfMap = new Map(turfs.map((t: any) => [t.id, t]));
+
+        // Only keep turfs that belong to the logged-in owner
+        const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
+        const ownerTurfIds = new Set(ownerTurfs.map((t: any) => t.id));
+        const turfMap = new Map(ownerTurfs.map((t: any) => [t.id, t]));
 
         const formatTime = (time: string) => {
           if (!time) return "—";
@@ -117,7 +123,12 @@ const AdminBookingListPage: React.FC = () => {
           });
         };
 
-        const mappedBookings: Booking[] = bookings.map((b: any) => {
+        // Only keep bookings for this owner's turfs
+        const ownerBookings = bookings.filter((b: any) =>
+          ownerTurfIds.has(b.turf_id),
+        );
+
+        const mappedBookings: Booking[] = ownerBookings.map((b: any) => {
           const client = clientMap.get(b.client_id) as any;
           const turf = turfMap.get(b.turf_id) as any;
 
