@@ -565,7 +565,7 @@ const AdminCalendarPage: React.FC = () => {
                             </Box>
                           </HStack>
                           <Badge
-                            colorScheme={getStatusColor(booking.status)}
+                            colorPalette={getStatusColor(booking.status)}
                             fontSize="xs"
                           >
                             {booking.status}
