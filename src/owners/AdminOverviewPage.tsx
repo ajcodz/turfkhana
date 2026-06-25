@@ -509,7 +509,7 @@ const AdminOverviewPage: React.FC = () => {
                       </Table.Cell>
                       <Table.Cell>
                         <Badge
-                          colorScheme={getStatusColor(booking.status)}
+                          colorPalette={getStatusColor(booking.status)}
                           px={3}
                           py={1}
                           borderRadius="full"

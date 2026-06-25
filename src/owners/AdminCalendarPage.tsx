@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -16,6 +16,7 @@ import {
   Menu,
   Portal,
   Separator,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   CalendarDays,
@@ -54,81 +55,108 @@ const AdminCalendarPage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const { onOpen } = useOutletContext<DashboardContext>();
+  const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
+  const ownerId = owner?.id ?? null;
+
+  const [dayBookings, setDayBookings] = useState<DayBooking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCalendarData = async () => {
+      setIsLoading(true);
+      setFetchError(null);
+
+      try {
+        const [bookingsRes, clientsRes, turfsRes] = await Promise.all([
+          fetch("http://localhost:3000/api/v1/bookings"),
+          fetch("http://localhost:3000/api/v1/clients"),
+          fetch("http://localhost:3000/api/v1/turfs"),
+        ]);
+
+        if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
+        if (!clientsRes.ok) throw new Error("Failed to fetch clients");
+        if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
+
+        const { bookings } = await bookingsRes.json();
+        const { clients } = await clientsRes.json();
+        const { turfs } = await turfsRes.json();
+
+        const clientMap = new Map(clients.map((c: any) => [c.id, c]));
+
+        // Filter to only this owner's turfs
+        const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
+        const ownerTurfIds = new Set(ownerTurfs.map((t: any) => t.id));
+        const turfMap = new Map(ownerTurfs.map((t: any) => [t.id, t]));
+
+        // Filter bookings to only this owner's turfs
+        const ownerBookings = bookings.filter((b: any) =>
+          ownerTurfIds.has(b.turf_id),
+        );
+
+        const formatTime = (time: string) => {
+          if (!time) return "—";
+          const [hoursStr, minutes] = time.split(":");
+          let hours = parseInt(hoursStr, 10);
+          const meridiem = hours >= 12 ? "PM" : "AM";
+          if (hours === 0) hours = 12;
+          else if (hours > 12) hours -= 12;
+          return `${String(hours).padStart(2, "0")}:${minutes} ${meridiem}`;
+        };
+
+        // Group bookings by date
+        const bookingsByDate = new Map<string, Booking[]>();
+
+        ownerBookings.forEach((b: any) => {
+          const client = clientMap.get(b.client_id) as any;
+          const turf = turfMap.get(b.turf_id) as any;
+
+          const booking: Booking = {
+            id: `TK-${b.id}`,
+            customerName: client?.name ?? "Unknown Customer",
+            customerPhone: client?.phone ?? "—",
+            turfName: turf?.name ?? "Unknown Turf",
+            time: formatTime(b.start_time),
+            duration: `${b.duration_minutes} min`,
+            status: (b.status ?? "pending") as Booking["status"],
+            amount: b.price ?? 0,
+          };
+
+          const dateKey = b.date;
+          if (!bookingsByDate.has(dateKey)) {
+            bookingsByDate.set(dateKey, []);
+          }
+          bookingsByDate.get(dateKey)!.push(booking);
+        });
+
+        // Convert to DayBooking array
+        const mapped: DayBooking[] = Array.from(bookingsByDate.entries()).map(
+          ([dateStr, bookings]) => ({
+            date: new Date(dateStr + "T00:00:00"),
+            bookings,
+          }),
+        );
+
+        setDayBookings(mapped);
+      } catch (error) {
+        setFetchError(
+          error instanceof Error
+            ? error.message
+            : "Failed to load calendar data",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCalendarData();
+  }, []);
 
   const cardBg = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const todayBg = useColorModeValue("green.500", "green.600");
   const selectedBg = useColorModeValue("green.100", "green.800");
   const hoverBg = useColorModeValue("gray.100", "gray.700");
-
-  // Mock bookings data
-  const mockBookings: DayBooking[] = [
-    {
-      date: new Date(2025, 11, 4),
-      bookings: [
-        {
-          id: "TK-2025-1542",
-          customerName: "Ahmad Hassan",
-          customerPhone: "+92 300 1234567",
-          turfName: "Premier Cricket Ground",
-          time: "06:00 PM",
-          duration: "1 hour",
-          status: "confirmed",
-          amount: 2500,
-        },
-        {
-          id: "TK-2025-1544",
-          customerName: "Usman Malik",
-          customerPhone: "+92 302 5551234",
-          turfName: "Valley Cricket Pitch",
-          time: "08:00 PM",
-          duration: "2 hours",
-          status: "pending",
-          amount: 4000,
-        },
-      ],
-    },
-    {
-      date: new Date(2025, 11, 6),
-      bookings: [
-        {
-          id: "TK-2025-1545",
-          customerName: "Hassan Khan",
-          customerPhone: "+92 303 7778888",
-          turfName: "Champions Futsal Court",
-          time: "05:00 PM",
-          duration: "1 hour",
-          status: "confirmed",
-          amount: 2800,
-        },
-      ],
-    },
-    {
-      date: new Date(2025, 11, 10),
-      bookings: [
-        {
-          id: "TK-2025-1546",
-          customerName: "Bilal Ahmed",
-          customerPhone: "+92 304 1112222",
-          turfName: "Premier Cricket Ground",
-          time: "04:00 PM",
-          duration: "1 hour",
-          status: "completed",
-          amount: 2500,
-        },
-        {
-          id: "TK-2025-1547",
-          customerName: "Fahad Ali",
-          customerPhone: "+92 305 3334444",
-          turfName: "Elite Futsal Arena",
-          time: "06:00 PM",
-          duration: "1 hour",
-          status: "confirmed",
-          amount: 3000,
-        },
-      ],
-    },
-  ];
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -155,7 +183,7 @@ const AdminCalendarPage: React.FC = () => {
 
   const getBookingsForDate = (date: Date | null): Booking[] => {
     if (!date) return [];
-    const dayBooking = mockBookings.find(
+    const dayBooking = dayBookings.find(
       (db) => db.date.toDateString() === date.toDateString(),
     );
     return dayBooking ? dayBooking.bookings : [];
@@ -212,6 +240,46 @@ const AdminCalendarPage: React.FC = () => {
   };
 
   const selectedBookings = getBookingsForDate(selectedDate);
+
+  if (isLoading) {
+    return (
+      <Box
+        flex={1}
+        ml={{ base: 0, lg: "280px" }}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        minH="100vh"
+      >
+        <VStack gap={4}>
+          <Spinner size="xl" color="green.500" />
+          <Text color="gray.600">Loading calendar...</Text>
+        </VStack>
+      </Box>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <Box
+        flex={1}
+        ml={{ base: 0, lg: "280px" }}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        minH="100vh"
+      >
+        <VStack gap={2}>
+          <Text color="red.500" fontWeight="semibold">
+            Failed to load calendar
+          </Text>
+          <Text fontSize="sm" color="gray.500">
+            {fetchError}
+          </Text>
+        </VStack>
+      </Box>
+    );
+  }
 
   return (
     <Box flex={1} ml={{ base: 0, lg: "280px" }}>
@@ -271,7 +339,7 @@ const AdminCalendarPage: React.FC = () => {
                   mr={2}
                 >
                   <Text fontSize="sm" fontWeight="semibold">
-                    Admin User
+                    {owner?.name ?? "Admin"}
                   </Text>
                 </Box>
                 <Button variant="ghost">
@@ -497,7 +565,7 @@ const AdminCalendarPage: React.FC = () => {
                             </Box>
                           </HStack>
                           <Badge
-                            colorScheme={getStatusColor(booking.status)}
+                            colorPalette={getStatusColor(booking.status)}
                             fontSize="xs"
                           >
                             {booking.status}

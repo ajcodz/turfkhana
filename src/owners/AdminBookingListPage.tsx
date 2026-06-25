@@ -619,7 +619,7 @@ const AdminBookingListPage: React.FC = () => {
                         <Table.Cell fontSize="sm">{booking.time}</Table.Cell>
                         <Table.Cell>
                           <Badge
-                            colorScheme={getStatusColor(booking.status)}
+                            colorPalette={getStatusColor(booking.status)}
                             px={3}
                             py={1}
                             borderRadius="full"
