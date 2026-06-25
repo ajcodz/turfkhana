@@ -31,6 +31,7 @@ export type DashboardContext = {
 
 const DashboardPage: React.FC = () => {
   const [activeNav, setActiveNav] = useState("Dashboard");
+  const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
   const { open, onOpen, onClose } = useDisclosure();
 
   const bgColor = useColorModeValue("gray.50", "gray.900");
@@ -95,14 +96,14 @@ const DashboardPage: React.FC = () => {
       <Box p={4} borderTopWidth="1px" borderColor={borderColor}>
         <HStack gap={3}>
           <Avatar.Root size="sm" bg="green.500">
-            <Avatar.Fallback name="Admin User" />
+            <Avatar.Fallback name={owner?.name ?? "Admin"} />
           </Avatar.Root>
           <Box flex={1}>
             <Text fontSize="sm" fontWeight="semibold">
-              Admin User
+              {owner?.name ?? "Admin"}
             </Text>
             <Text fontSize="xs" color="gray.500">
-              admin@turfkhana.com
+              {owner?.email ?? "—"}
             </Text>
           </Box>
         </HStack>

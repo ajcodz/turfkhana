@@ -60,6 +60,8 @@ interface Turf {
 
 const AdminTurfListPage: React.FC = () => {
   const { onOpen } = useOutletContext<DashboardContext>();
+  const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
+  const ownerId = owner?.id ?? null;
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,7 +85,9 @@ const AdminTurfListPage: React.FC = () => {
 
         const { turfs } = await res.json();
 
-        const mappedTurfs: Turf[] = turfs.map((t: any) => ({
+        const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
+
+        const mappedTurfs: Turf[] = ownerTurfs.map((t: any) => ({
           id: t.id,
           ownerId: t.owner_id,
           name: t.name,
@@ -183,7 +187,7 @@ const AdminTurfListPage: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          owner_id: 1,
+          owner_id: ownerId,
           name: createForm.name,
           slug: null,
           type: createForm.type,
