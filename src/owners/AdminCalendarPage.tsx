@@ -568,7 +568,8 @@ const AdminCalendarPage: React.FC = () => {
                             colorPalette={getStatusColor(booking.status)}
                             fontSize="xs"
                           >
-                            {booking.status}
+                            {booking.status.charAt(0).toUpperCase() +
+                              booking.status.slice(1)}
                           </Badge>
                         </Flex>
 

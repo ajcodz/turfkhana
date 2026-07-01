@@ -35,6 +35,7 @@ import {
   Filter,
   Pencil,
   Trash2,
+  Plus,
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import type { DashboardContext } from "./DashboardPage";
@@ -65,6 +66,9 @@ const AdminBookingListPage: React.FC = () => {
   const { onOpen } = useOutletContext<DashboardContext>();
   const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
   const ownerId = owner?.id ?? null;
+  const [ownerTurfsList, setOwnerTurfsList] = useState<
+    { id: number; name: string }[]
+  >([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,6 +107,9 @@ const AdminBookingListPage: React.FC = () => {
         const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
         const ownerTurfIds = new Set(ownerTurfs.map((t: any) => t.id));
         const turfMap = new Map(ownerTurfs.map((t: any) => [t.id, t]));
+        setOwnerTurfsList(
+          ownerTurfs.map((t: any) => ({ id: t.id, name: t.name })),
+        );
 
         const formatTime = (time: string) => {
           if (!time) return "—";
@@ -181,6 +188,164 @@ const AdminBookingListPage: React.FC = () => {
 
   // Delete dialog state
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
+
+  // Create modal state
+  const [isCreating, setIsCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    customerName: "",
+    customerPhone: "",
+    customerEmail: "",
+    turfId: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    durationMinutes: "60",
+    price: "",
+    status: "confirmed",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const closeCreateModal = () => {
+    setIsCreating(false);
+    setCreateForm({
+      customerName: "",
+      customerPhone: "",
+      customerEmail: "",
+      turfId: "",
+      date: "",
+      startTime: "",
+      endTime: "",
+      durationMinutes: "60",
+      price: "",
+      status: "confirmed",
+    });
+  };
+
+  const handleCreateBooking = async () => {
+    if (
+      !createForm.customerName ||
+      !createForm.customerPhone ||
+      !createForm.turfId ||
+      !createForm.date ||
+      !createForm.startTime ||
+      !createForm.endTime ||
+      !createForm.price
+    ) {
+      toaster.error({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Step 1: Create the client
+      const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: createForm.customerName.trim(),
+          phone: createForm.customerPhone.trim(),
+          email: createForm.customerEmail.trim() || null,
+        }),
+      });
+
+      if (!clientRes.ok) {
+        const err = await clientRes.json();
+        throw new Error(err?.error?.message ?? "Failed to create client");
+      }
+
+      const { client } = await clientRes.json();
+
+      // Step 2: Create the booking
+      const bookingRes = await fetch(`${APP_BASE_URL}/bookings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: client.id,
+          turf_id: Number(createForm.turfId),
+          date: createForm.date,
+          start_time: createForm.startTime,
+          end_time: createForm.endTime,
+          duration_minutes: parseInt(createForm.durationMinutes, 10),
+          price: Number(createForm.price),
+          status: createForm.status,
+          payment_method: "cash",
+          payment_status: "pending",
+          payment_transaction_id: null,
+        }),
+      });
+
+      if (!bookingRes.ok) {
+        const err = await bookingRes.json();
+        throw new Error(err?.error?.message ?? "Failed to create booking");
+      }
+
+      const { booking: created } = await bookingRes.json();
+
+      const turf = ownerTurfsList.find(
+        (t) => t.id === Number(createForm.turfId),
+      );
+
+      const formatTime = (time: string) => {
+        if (!time) return "—";
+        const [hoursStr, minutes] = time.split(":");
+        let hours = parseInt(hoursStr, 10);
+        const meridiem = hours >= 12 ? "PM" : "AM";
+        if (hours === 0) hours = 12;
+        else if (hours > 12) hours -= 12;
+        return `${String(hours).padStart(2, "0")}:${minutes} ${meridiem}`;
+      };
+
+      const newBooking: Booking = {
+        id: `TK-${created.id}`,
+        rawId: created.id,
+        clientId: client.id,
+        turfId: Number(createForm.turfId),
+        customerName: client.name,
+        customerPhone: client.phone,
+        turfName: turf?.name ?? "Unknown Turf",
+        date: new Date(created.date).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+        rawDate: created.date,
+        time: formatTime(created.start_time),
+        rawStartTime: created.start_time,
+        rawEndTime: created.end_time,
+        durationMinutes: created.duration_minutes,
+        status: created.status,
+        amount: created.price,
+      };
+
+      setAllBookings((prev) => [newBooking, ...prev]);
+
+      toaster.success({
+        title: "Booking Created",
+        description: `Booking for ${client.name} was created successfully`,
+        duration: 3000,
+        closable: true,
+      });
+
+      closeCreateModal();
+    } catch (error) {
+      toaster.error({
+        title: "Create Failed",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+        duration: 5000,
+        closable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const [isDeleting, setIsDeleting] = useState(false);
 
   const openEditModal = (booking: Booking) => {
@@ -435,6 +600,16 @@ const AdminBookingListPage: React.FC = () => {
           </HStack>
 
           <HStack gap={3}>
+            <Button
+              colorScheme="green"
+              size="sm"
+              borderRadius="full"
+              onClick={() => setIsCreating(true)}
+            >
+              <Plus size={16} />
+              New Booking
+            </Button>
+
             <IconButton
               aria-label="Notifications"
               variant="ghost"
@@ -846,6 +1021,195 @@ const AdminBookingListPage: React.FC = () => {
                   loading={isSaving}
                 >
                   Save Changes
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+
+      {/* Create Booking Dialog */}
+      <Dialog.Root
+        open={isCreating}
+        onOpenChange={(e) => !e.open && closeCreateModal()}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Add New Booking</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack gap={4} align="stretch">
+                  <Field.Root>
+                    <Field.Label>Customer Name *</Field.Label>
+                    <Input
+                      placeholder="e.g. Ahsan Javed"
+                      value={createForm.customerName}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          customerName: e.target.value,
+                        })
+                      }
+                    />
+                  </Field.Root>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Phone Number *</Field.Label>
+                      <Input
+                        placeholder="03001234567"
+                        value={createForm.customerPhone}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            customerPhone: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>Email (optional)</Field.Label>
+                      <Input
+                        placeholder="customer@email.com"
+                        value={createForm.customerEmail}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            customerEmail: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <Field.Root>
+                    <Field.Label>Turf *</Field.Label>
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        value={createForm.turfId}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            turfId: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="">Select a turf</option>
+                        {ownerTurfsList.map((turf) => (
+                          <option key={turf.id} value={turf.id}>
+                            {turf.name}
+                          </option>
+                        ))}
+                      </NativeSelect.Field>
+                    </NativeSelect.Root>
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>Date *</Field.Label>
+                    <Input
+                      type="date"
+                      value={createForm.date}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, date: e.target.value })
+                      }
+                    />
+                  </Field.Root>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Start Time *</Field.Label>
+                      <Input
+                        type="time"
+                        step={1}
+                        value={createForm.startTime}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            startTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>End Time *</Field.Label>
+                      <Input
+                        type="time"
+                        step={1}
+                        value={createForm.endTime}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            endTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Duration (minutes)</Field.Label>
+                      <Input
+                        type="number"
+                        value={createForm.durationMinutes}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            durationMinutes: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>Price (Rs) *</Field.Label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 2000"
+                        value={createForm.price}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            price: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <Field.Root>
+                    <Field.Label>Status</Field.Label>
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        value={createForm.status}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            status: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="confirmed">Confirmed</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </NativeSelect.Field>
+                    </NativeSelect.Root>
+                  </Field.Root>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button variant="outline" onClick={closeCreateModal}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="green"
+                  onClick={handleCreateBooking}
+                  loading={isSubmitting}
+                >
+                  Create Booking
                 </Button>
               </Dialog.Footer>
             </Dialog.Content>
