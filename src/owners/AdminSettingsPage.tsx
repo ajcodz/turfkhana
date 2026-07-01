@@ -19,6 +19,7 @@ import {
   Table,
   Badge,
   NativeSelect,
+  Dialog,
 } from "@chakra-ui/react";
 import {
   Settings,
@@ -66,7 +67,12 @@ const AdminSettingsPage: React.FC = () => {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Add closed hour form state
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [isCreatingHour, setIsCreatingHour] = useState(false);
+
+  const closeCreateHourModal = () => {
+    setIsCreatingHour(false);
+    setAddForm({ blockedDate: "", blockedStartTime: "", blockedEndTime: "" });
+  };
   const [addForm, setAddForm] = useState({
     blockedDate: "",
     blockedStartTime: "",
@@ -95,30 +101,30 @@ const AdminSettingsPage: React.FC = () => {
         const { turfs } = await turfsRes.json();
         const { settings } = await settingsRes.json();
 
-        // Filter to owner's turfs only
         const filtered = turfs.filter((t: any) => t.owner_id === ownerId);
         setOwnerTurfs(filtered.map((t: any) => ({ id: t.id, name: t.name })));
 
-        // Set first turf as default selected
         if (filtered.length > 0) {
           setSelectedTurfId(String(filtered[0].id));
         }
 
         const ownerTurfIds = new Set(filtered.map((t: any) => t.id));
-
         const now = new Date();
 
-        // Filter settings to owner's turfs only and auto-delete expired ones
         const validSettings: ClosedHour[] = [];
         const expiredIds: number[] = [];
 
         settings.forEach((s: any) => {
           if (!ownerTurfIds.has(s.turf_id)) return;
 
-          // Check if this closed hour has expired
-          const endDateTime = new Date(
-            `${s.blocked_date}T${s.blocked_end_time ?? "23:59:59"}`,
+          // Strip timezone offset from time — take only HH:MM:SS part
+          const cleanEndTime = (s.blocked_end_time ?? "23:59:59").substring(
+            0,
+            8,
           );
+          const cleanDate = s.blocked_date; // already YYYY-MM-DD
+
+          const endDateTime = new Date(`${cleanDate}T${cleanEndTime}`);
 
           if (endDateTime < now) {
             expiredIds.push(s.id);
@@ -126,14 +132,13 @@ const AdminSettingsPage: React.FC = () => {
             validSettings.push({
               id: s.id,
               turfId: s.turf_id,
-              blockedDate: s.blocked_date,
-              blockedStartTime: s.blocked_start_time,
-              blockedEndTime: s.blocked_end_time,
+              blockedDate: cleanDate,
+              blockedStartTime: (s.blocked_start_time ?? "").substring(0, 8),
+              blockedEndTime: cleanEndTime,
             });
           }
         });
 
-        // Auto-delete expired closed hours from DB
         if (expiredIds.length > 0) {
           await Promise.all(
             expiredIds.map((id) =>
@@ -156,39 +161,39 @@ const AdminSettingsPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const interval = setInterval(() => {
       const now = new Date();
 
-      // Find expired closed hours
-      const expiredItems = closedHours.filter((s) => {
-        const endDateTime = new Date(
-          `${s.blockedDate}T${s.blockedEndTime ?? "23:59:59"}`,
-        );
-        return endDateTime < now;
+      setClosedHours((prev) => {
+        const expired = prev.filter((s) => {
+          const cleanEndTime = (s.blockedEndTime ?? "23:59:59").substring(0, 8);
+          const endDateTime = new Date(`${s.blockedDate}T${cleanEndTime}`);
+          return endDateTime < now;
+        });
+
+        if (expired.length > 0) {
+          // Delete expired ones from DB
+          expired.forEach((s) => {
+            fetch(`${APP_BASE_URL}/settings/${s.id}`, { method: "DELETE" });
+          });
+
+          // Return only non-expired ones
+          return prev.filter((s) => {
+            const cleanEndTime = (s.blockedEndTime ?? "23:59:59").substring(
+              0,
+              8,
+            );
+            const endDateTime = new Date(`${s.blockedDate}T${cleanEndTime}`);
+            return endDateTime >= now;
+          });
+        }
+
+        return prev;
       });
+    }, 1000); // every second
 
-      if (expiredItems.length === 0) return;
-
-      // Delete them from DB
-      await Promise.all(
-        expiredItems.map((s) =>
-          fetch(`${APP_BASE_URL}/settings/${s.id}`, { method: "DELETE" }),
-        ),
-      );
-
-      // Remove from UI
-      setClosedHours((prev) =>
-        prev.filter((s) => {
-          const endDateTime = new Date(
-            `${s.blockedDate}T${s.blockedEndTime ?? "23:59:59"}`,
-          );
-          return endDateTime >= now;
-        }),
-      );
-    }, 60000); // runs every 60 seconds
-
-    return () => clearInterval(interval); // cleanup on unmount
-  }, [closedHours]);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAddClosedHour = async () => {
     if (
@@ -254,8 +259,7 @@ const AdminSettingsPage: React.FC = () => {
         closable: true,
       });
 
-      setAddForm({ blockedDate: "", blockedStartTime: "", blockedEndTime: "" });
-      setShowAddForm(false);
+      closeCreateHourModal();
     } catch (error) {
       toaster.error({
         title: "Failed to Add",
@@ -493,7 +497,6 @@ const AdminSettingsPage: React.FC = () => {
                     value={selectedTurfId}
                     onChange={(e) => {
                       setSelectedTurfId(e.target.value);
-                      setShowAddForm(false);
                     }}
                   >
                     {ownerTurfs.map((turf) => (
@@ -539,101 +542,12 @@ const AdminSettingsPage: React.FC = () => {
                     colorScheme="green"
                     size="sm"
                     borderRadius="full"
-                    onClick={() => setShowAddForm(!showAddForm)}
+                    onClick={() => setIsCreatingHour(true)}
                   >
                     <Plus size={16} />
                     Add Closed Hour
                   </Button>
                 </Flex>
-
-                {/* Add Closed Hour Form */}
-                {showAddForm && (
-                  <Box
-                    p={5}
-                    borderRadius="lg"
-                    borderWidth="1px"
-                    borderColor="green.300"
-                    bg={useColorModeValue("green.50", "green.900")}
-                  >
-                    <VStack gap={4} align="stretch">
-                      <Heading as="h3" size="sm" color="green.700">
-                        New Closed Hour
-                      </Heading>
-
-                      <Field.Root>
-                        <Field.Label>Date *</Field.Label>
-                        <Input
-                          type="date"
-                          value={addForm.blockedDate}
-                          min={new Date().toISOString().split("T")[0]}
-                          onChange={(e) =>
-                            setAddForm({
-                              ...addForm,
-                              blockedDate: e.target.value,
-                            })
-                          }
-                          bg={cardBg}
-                        />
-                      </Field.Root>
-
-                      <HStack gap={4}>
-                        <Field.Root>
-                          <Field.Label>Start Time *</Field.Label>
-                          <Input
-                            type="time"
-                            value={addForm.blockedStartTime}
-                            onChange={(e) =>
-                              setAddForm({
-                                ...addForm,
-                                blockedStartTime: e.target.value,
-                              })
-                            }
-                            bg={cardBg}
-                          />
-                        </Field.Root>
-                        <Field.Root>
-                          <Field.Label>End Time *</Field.Label>
-                          <Input
-                            type="time"
-                            value={addForm.blockedEndTime}
-                            onChange={(e) =>
-                              setAddForm({
-                                ...addForm,
-                                blockedEndTime: e.target.value,
-                              })
-                            }
-                            bg={cardBg}
-                          />
-                        </Field.Root>
-                      </HStack>
-
-                      <HStack justify="flex-end" gap={3}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setShowAddForm(false);
-                            setAddForm({
-                              blockedDate: "",
-                              blockedStartTime: "",
-                              blockedEndTime: "",
-                            });
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          colorScheme="green"
-                          size="sm"
-                          onClick={handleAddClosedHour}
-                          loading={isSubmitting}
-                        >
-                          Save
-                        </Button>
-                      </HStack>
-                    </VStack>
-                  </Box>
-                )}
 
                 {/* Closed Hours Table */}
                 {filteredClosedHours.length === 0 ? (
@@ -734,6 +648,78 @@ const AdminSettingsPage: React.FC = () => {
           )}
         </VStack>
       </Container>
+      {/* Add Closed Hour Dialog */}
+      <Dialog.Root
+        open={isCreatingHour}
+        onOpenChange={(e) => !e.open && closeCreateHourModal()}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Add Closed Hour</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack gap={4} align="stretch">
+                  <Field.Root>
+                    <Field.Label>Date *</Field.Label>
+                    <Input
+                      type="date"
+                      value={addForm.blockedDate}
+                      min={new Date().toISOString().split("T")[0]}
+                      onChange={(e) =>
+                        setAddForm({ ...addForm, blockedDate: e.target.value })
+                      }
+                    />
+                  </Field.Root>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Start Time *</Field.Label>
+                      <Input
+                        type="time"
+                        value={addForm.blockedStartTime}
+                        onChange={(e) =>
+                          setAddForm({
+                            ...addForm,
+                            blockedStartTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>End Time *</Field.Label>
+                      <Input
+                        type="time"
+                        value={addForm.blockedEndTime}
+                        onChange={(e) =>
+                          setAddForm({
+                            ...addForm,
+                            blockedEndTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button variant="outline" onClick={closeCreateHourModal}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="green"
+                  onClick={handleAddClosedHour}
+                  loading={isSubmitting}
+                >
+                  Save
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </Box>
   );
 };
