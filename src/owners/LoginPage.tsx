@@ -14,7 +14,7 @@ import {
 import { Mail, Lock, Eye, EyeOff, Shield } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface LoginFormData {
   email: string;
@@ -231,6 +231,19 @@ const LoginPage: React.FC = () => {
               >
                 Sign In
               </Button>
+
+              {/* Back to Home */}
+              <Link to="/" style={{ textDecoration: "none" }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  w="100%"
+                  color="gray.500"
+                  _hover={{ color: "green.500" }}
+                >
+                  Back to Home
+                </Button>
+              </Link>
             </VStack>
           </Box>
 
