@@ -30,6 +30,7 @@ import {
   Calendar,
   Plus,
   Trash2,
+  Pencil,
 } from "lucide-react";
 import { toaster } from "../components/ui/toaster";
 import { useColorModeValue } from "../components/ui/color-mode";
@@ -82,6 +83,117 @@ const AdminSettingsPage: React.FC = () => {
 
   // Delete state
   const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  // Edit modal state
+  const [editingHour, setEditingHour] = useState<ClosedHour | null>(null);
+  const [editForm, setEditForm] = useState({
+    blockedDate: "",
+    blockedStartTime: "",
+    blockedEndTime: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const openEditModal = (hour: ClosedHour) => {
+    setEditingHour(hour);
+    setEditForm({
+      blockedDate: hour.blockedDate,
+      blockedStartTime: hour.blockedStartTime ?? "",
+      blockedEndTime: hour.blockedEndTime ?? "",
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditingHour(null);
+    setEditForm({ blockedDate: "", blockedStartTime: "", blockedEndTime: "" });
+  };
+
+  const handleUpdateClosedHour = async () => {
+    if (!editingHour) return;
+
+    if (
+      !editForm.blockedDate ||
+      !editForm.blockedStartTime ||
+      !editForm.blockedEndTime
+    ) {
+      toaster.error({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    if (editForm.blockedStartTime >= editForm.blockedEndTime) {
+      toaster.error({
+        title: "Validation Error",
+        description: "End time must be after start time",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const res = await fetch(`${APP_BASE_URL}/settings/${editingHour.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          turf_id: editingHour.turfId,
+          blocked_date: editForm.blockedDate,
+          blocked_start_time: editForm.blockedStartTime,
+          blocked_end_time: editForm.blockedEndTime,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error?.message ?? "Failed to update closed hour");
+      }
+
+      const { setting: updated } = await res.json();
+
+      const cleanEndTime = (updated.blocked_end_time ?? "23:59:59").substring(
+        0,
+        8,
+      );
+      const cleanStartTime = (updated.blocked_start_time ?? "").substring(0, 8);
+
+      setClosedHours((prev) =>
+        prev.map((s) =>
+          s.id === editingHour.id
+            ? {
+                ...s,
+                blockedDate: updated.blocked_date,
+                blockedStartTime: cleanStartTime,
+                blockedEndTime: cleanEndTime,
+              }
+            : s,
+        ),
+      );
+
+      toaster.success({
+        title: "Closed Hour Updated",
+        description: "The closed hour has been updated successfully",
+        duration: 3000,
+        closable: true,
+      });
+
+      closeEditModal();
+    } catch (error) {
+      toaster.error({
+        title: "Update Failed",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+        duration: 5000,
+        closable: true,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Fetch turfs and settings on load
   useEffect(() => {
@@ -246,8 +358,11 @@ const AdminSettingsPage: React.FC = () => {
         id: created.id,
         turfId: created.turf_id,
         blockedDate: created.blocked_date,
-        blockedStartTime: created.blocked_start_time,
-        blockedEndTime: created.blocked_end_time,
+        blockedStartTime: (created.blocked_start_time ?? "").substring(0, 8),
+        blockedEndTime: (created.blocked_end_time ?? "23:59:59").substring(
+          0,
+          8,
+        ),
       };
 
       setClosedHours((prev) => [...prev, newClosedHour]);
@@ -606,7 +721,7 @@ const AdminSettingsPage: React.FC = () => {
                               </Table.Cell>
                               <Table.Cell>
                                 <Badge
-                                  colorScheme={
+                                  colorPalette={
                                     isToday
                                       ? "orange"
                                       : isUpcoming
@@ -625,16 +740,27 @@ const AdminSettingsPage: React.FC = () => {
                                 </Badge>
                               </Table.Cell>
                               <Table.Cell>
-                                <IconButton
-                                  aria-label="Delete closed hour"
-                                  size="sm"
-                                  variant="ghost"
-                                  colorScheme="red"
-                                  loading={deletingId === s.id}
-                                  onClick={() => handleDeleteClosedHour(s.id)}
-                                >
-                                  <Trash2 size={16} />
-                                </IconButton>
+                                <HStack gap={1}>
+                                  <IconButton
+                                    aria-label="Edit closed hour"
+                                    size="sm"
+                                    variant="ghost"
+                                    colorScheme="blue"
+                                    onClick={() => openEditModal(s)}
+                                  >
+                                    <Pencil size={16} />
+                                  </IconButton>
+                                  <IconButton
+                                    aria-label="Delete closed hour"
+                                    size="sm"
+                                    variant="ghost"
+                                    colorScheme="red"
+                                    loading={deletingId === s.id}
+                                    onClick={() => handleDeleteClosedHour(s.id)}
+                                  >
+                                    <Trash2 size={16} />
+                                  </IconButton>
+                                </HStack>
                               </Table.Cell>
                             </Table.Row>
                           );
@@ -648,6 +774,82 @@ const AdminSettingsPage: React.FC = () => {
           )}
         </VStack>
       </Container>
+
+      {/* Edit Closed Hour Dialog */}
+      <Dialog.Root
+        open={!!editingHour}
+        onOpenChange={(e) => !e.open && closeEditModal()}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Edit Closed Hour</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack gap={4} align="stretch">
+                  <Field.Root>
+                    <Field.Label>Date *</Field.Label>
+                    <Input
+                      type="date"
+                      value={editForm.blockedDate}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          blockedDate: e.target.value,
+                        })
+                      }
+                    />
+                  </Field.Root>
+
+                  <HStack gap={4}>
+                    <Field.Root>
+                      <Field.Label>Start Time *</Field.Label>
+                      <Input
+                        type="time"
+                        value={editForm.blockedStartTime}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            blockedStartTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>End Time *</Field.Label>
+                      <Input
+                        type="time"
+                        value={editForm.blockedEndTime}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            blockedEndTime: e.target.value,
+                          })
+                        }
+                      />
+                    </Field.Root>
+                  </HStack>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button variant="outline" onClick={closeEditModal}>
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="green"
+                  onClick={handleUpdateClosedHour}
+                  loading={isSaving}
+                >
+                  Save Changes
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+
       {/* Add Closed Hour Dialog */}
       <Dialog.Root
         open={isCreatingHour}
