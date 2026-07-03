@@ -25,10 +25,11 @@ import { useTurf } from "./useTurfDetailsPage";
 interface TimeSlot {
   id: string;
   time: string;
-  startTime: string; // HH:MM:SS format
-  endTime: string; // HH:MM:SS format
+  startTime: string;
+  endTime: string;
   isBooked: boolean;
   isUnavailable: boolean;
+  isPast: boolean;
 }
 
 const TurfDetailsPage: React.FC = () => {
@@ -87,6 +88,7 @@ const TurfDetailsPage: React.FC = () => {
             endTime: formatTime24(endHour, endMin),
             isBooked: false,
             isUnavailable: false,
+            isPast: false,
           });
 
           openHour = endHour;
@@ -124,22 +126,27 @@ const TurfDetailsPage: React.FC = () => {
         });
 
         // Mark slots as booked or unavailable
+        const isToday = date.toDateString() === new Date().toDateString();
+
         const updatedSlots = slots.map((slot) => {
-          // Check if any booking overlaps with this slot
           const isBooked = turfBookings.some((b: any) => {
             const bStart = b.start_time.substring(0, 8);
             const bEnd = b.end_time.substring(0, 8);
             return bStart < slot.endTime && bEnd > slot.startTime;
           });
 
-          // Check if any closed hour overlaps with this slot
           const isUnavailable = turfClosedHours.some((s: any) => {
             const cStart = (s.blocked_start_time ?? "00:00:00").substring(0, 8);
             const cEnd = (s.blocked_end_time ?? "23:59:59").substring(0, 8);
             return cStart < slot.endTime && cEnd > slot.startTime;
           });
 
-          return { ...slot, isBooked, isUnavailable };
+          // Only mark as past for today's date
+          const isPast = isToday
+            ? new Date(`${dateStr}T${slot.endTime}`) < new Date()
+            : false;
+
+          return { ...slot, isBooked, isUnavailable, isPast };
         });
 
         setTimeSlots(updatedSlots);
@@ -280,7 +287,7 @@ const TurfDetailsPage: React.FC = () => {
         <Container maxW="container.xl" position="relative" h="100%">
           <Flex align="flex-end" h="100%" pb={8}>
             <Badge
-              colorScheme="blue"
+              colorPalette="blue"
               fontSize="md"
               px={4}
               py={2}
@@ -337,7 +344,7 @@ const TurfDetailsPage: React.FC = () => {
                   Slot Duration
                 </Heading>
                 <Badge
-                  colorScheme="green"
+                  colorPalette="green"
                   px={3}
                   py={1}
                   borderRadius="md"
@@ -393,7 +400,7 @@ const TurfDetailsPage: React.FC = () => {
                         {month}
                       </Text>
                       {isTodayDate && (
-                        <Badge colorScheme="green" fontSize="2xs">
+                        <Badge colorPalette="green" fontSize="2xs">
                           Today
                         </Badge>
                       )}
@@ -428,6 +435,10 @@ const TurfDetailsPage: React.FC = () => {
                     <Text>Not Available</Text>
                   </HStack>
                   <HStack>
+                    <Box w={4} h={4} bg="orange.300" borderRadius="sm" />
+                    <Text>Expired</Text>
+                  </HStack>
+                  <HStack>
                     <Icon as={CheckCircle} color="green.600" boxSize={4} />
                     <Text>Selected</Text>
                   </HStack>
@@ -442,18 +453,21 @@ const TurfDetailsPage: React.FC = () => {
                 <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={3}>
                   {timeSlots.map((slot) => {
                     const isSelected = selectedSlot === slot.id;
-                    const isDisabled = slot.isBooked || slot.isUnavailable;
+                    const isDisabled =
+                      slot.isBooked || slot.isUnavailable || slot.isPast;
 
                     return (
                       <Button
                         key={slot.id}
                         variant={isSelected ? "solid" : "outline"}
-                        colorScheme={
-                          slot.isUnavailable
-                            ? "red"
-                            : slot.isBooked
-                              ? "gray"
-                              : "green"
+                        colorPalette={
+                          slot.isPast
+                            ? "orange"
+                            : slot.isUnavailable
+                              ? "red"
+                              : slot.isBooked
+                                ? "gray"
+                                : "green"
                         }
                         disabled={isDisabled}
                         onClick={() => !isDisabled && setSelectedSlot(slot.id)}
@@ -469,8 +483,11 @@ const TurfDetailsPage: React.FC = () => {
                           <Text fontSize="sm" fontWeight="semibold">
                             {slot.time}
                           </Text>
-                          {slot.isBooked && <Text fontSize="xs">Booked</Text>}
-                          {slot.isUnavailable && (
+                          {slot.isPast && <Text fontSize="xs">Expired</Text>}
+                          {!slot.isPast && slot.isBooked && (
+                            <Text fontSize="xs">Booked</Text>
+                          )}
+                          {!slot.isPast && slot.isUnavailable && (
                             <Text fontSize="xs">Not Available</Text>
                           )}
                         </VStack>
@@ -528,7 +545,7 @@ const TurfDetailsPage: React.FC = () => {
               </VStack>
               {/* <Link to={`/booking-form/${turf.id}`}> */}
               <Button
-                colorScheme="green"
+                colorPalette="green"
                 size="lg"
                 px={12}
                 py={6}
