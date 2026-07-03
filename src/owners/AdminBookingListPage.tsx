@@ -282,7 +282,11 @@ const AdminBookingListPage: React.FC = () => {
 
       if (!bookingRes.ok) {
         const err = await bookingRes.json();
-        throw new Error(err?.error?.message ?? "Failed to create booking");
+        throw new Error(
+          typeof err?.error === "string"
+            ? err.error
+            : (err?.error?.message ?? "Failed to create booking"),
+        );
       }
 
       const { booking: created } = await bookingRes.json();
@@ -392,7 +396,11 @@ const AdminBookingListPage: React.FC = () => {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err?.error?.message ?? "Failed to update booking");
+        throw new Error(
+          typeof err?.error === "string"
+            ? err.error
+            : (err?.error?.message ?? "Failed to update booking"),
+        );
       }
 
       const { booking: updated } = await res.json();
