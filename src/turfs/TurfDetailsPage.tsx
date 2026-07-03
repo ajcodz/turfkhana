@@ -484,12 +484,12 @@ const TurfDetailsPage: React.FC = () => {
                             {slot.time}
                           </Text>
                           {slot.isPast && <Text fontSize="xs">Expired</Text>}
-                          {!slot.isPast && slot.isBooked && (
-                            <Text fontSize="xs">Booked</Text>
-                          )}
                           {!slot.isPast && slot.isUnavailable && (
                             <Text fontSize="xs">Not Available</Text>
                           )}
+                          {!slot.isPast &&
+                            !slot.isUnavailable &&
+                            slot.isBooked && <Text fontSize="xs">Booked</Text>}
                         </VStack>
                         {isSelected && (
                           <Icon
