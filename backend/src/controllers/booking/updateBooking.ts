@@ -3,94 +3,121 @@ import { Booking } from "../../models/booking.model";
 import { catchAsync } from "../../utils/catchAsync";
 
 export const updateBooking = catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const {
-        turf_id,
-        date,
-        start_time,
-        end_time,
-    } = req.body;
+  const { id } = req.params;
+  const { turf_id, date, start_time, end_time } = req.body;
 
-    // Check for overlapping bookings (exclude current booking)
-    const { data: existingBookings, error: bookingCheckError } = await supabase
-        .from("bookings")
-        .select("*")
-        .eq("turf_id", turf_id)
-        .eq("date", date)
-        .neq("status", "cancelled")
-        .neq("id", id); // exclude current booking
+  // Check for overlapping bookings (exclude current booking)
+  const { data: existingBookings, error: bookingCheckError } = await supabase
+    .from("bookings")
+    .select("*")
+    .eq("turf_id", turf_id)
+    .eq("date", date)
+    .neq("status", "cancelled")
+    .neq("id", id); // exclude current booking
 
-    if (bookingCheckError) return res.status(400).json({ error: bookingCheckError });
+  if (bookingCheckError)
+    return res.status(400).json({ error: bookingCheckError });
 
-    const hasBookingConflict = existingBookings?.some((b) => {
-        const bStart = b.start_time.substring(0, 8);
-        const bEnd = b.end_time.substring(0, 8);
-        const newStart = start_time.substring(0, 8);
-        const newEnd = end_time.substring(0, 8);
-        return bStart < newEnd && bEnd > newStart;
+  const hasBookingConflict = existingBookings?.some((b) => {
+    const bStart = b.start_time.substring(0, 8);
+    const bEnd = b.end_time.substring(0, 8);
+    const newStart = start_time.substring(0, 8);
+    const newEnd = end_time.substring(0, 8);
+    return bStart < newEnd && bEnd > newStart;
+  });
+
+  if (hasBookingConflict) {
+    return res.status(409).json({
+      error: "This time slot is already booked for the selected turf and date",
     });
+  }
 
-    if (hasBookingConflict) {
-        return res.status(409).json({
-            error: "This time slot is already booked for the selected turf and date",
-        });
-    }
+  // Check for overlapping closed hours
+  const { data: closedHours, error: settingsCheckError } = await supabase
+    .from("settings")
+    .select("*")
+    .eq("turf_id", turf_id)
+    .eq("blocked_date", date);
 
-    // Check for overlapping closed hours
-    const { data: closedHours, error: settingsCheckError } = await supabase
-        .from("settings")
-        .select("*")
-        .eq("turf_id", turf_id)
-        .eq("blocked_date", date);
+  if (settingsCheckError)
+    return res.status(400).json({ error: settingsCheckError });
 
-    if (settingsCheckError) return res.status(400).json({ error: settingsCheckError });
+  const hasClosedHourConflict = closedHours?.some((s) => {
+    const cStart = (s.blocked_start_time ?? "00:00:00").substring(0, 8);
+    const cEnd = (s.blocked_end_time ?? "23:59:59").substring(0, 8);
+    const newStart = start_time.substring(0, 8);
+    const newEnd = end_time.substring(0, 8);
+    return cStart < newEnd && cEnd > newStart;
+  });
 
-    const hasClosedHourConflict = closedHours?.some((s) => {
-        const cStart = (s.blocked_start_time ?? "00:00:00").substring(0, 8);
-        const cEnd = (s.blocked_end_time ?? "23:59:59").substring(0, 8);
-        const newStart = start_time.substring(0, 8);
-        const newEnd = end_time.substring(0, 8);
-        return cStart < newEnd && cEnd > newStart;
+  if (hasClosedHourConflict) {
+    return res.status(409).json({
+      error: "This time slot is not available due to a scheduled closure",
     });
+  }
 
-    if (hasClosedHourConflict) {
-        return res.status(409).json({
-            error: "This time slot is not available due to a scheduled closure",
-        });
+  // Check for expired slot (past time on today's date)
+  const today = new Date().toISOString().split("T")[0];
+  if (date === today) {
+    const slotEndDateTime = new Date(`${date}T${end_time.substring(0, 8)}`);
+    if (slotEndDateTime < new Date()) {
+      return res.status(409).json({
+        error: "This time slot has already expired",
+      });
     }
+  }
 
-    // Check for expired slot (past time on today's date)
-    const today = new Date().toISOString().split("T")[0];
-    if (date === today) {
-        const slotEndDateTime = new Date(`${date}T${end_time.substring(0, 8)}`);
-        if (slotEndDateTime < new Date()) {
-            return res.status(409).json({
-                error: "This time slot has already expired",
-            });
-        }
-    }
+  // Fetch turf to validate opening and closing times
+  const { data: turfData, error: turfError } = await supabase
+    .from("turfs")
+    .select("opening_time, closing_time")
+    .eq("id", turf_id)
+    .single();
 
-    const updateData = {
-        client_id: req.body.client_id,
-        turf_id,
-        date,
-        start_time,
-        end_time,
-        duration_minutes: req.body.duration_minutes ?? 60,
-        price: req.body.price,
-        status: req.body.status ?? null,
-        payment_method: req.body.payment_method ?? null,
-        payment_status: req.body.payment_status ?? null,
-        payment_transaction_id: req.body.payment_transaction_id ?? null,
-    };
+  if (turfError || !turfData) {
+    return res.status(404).json({ error: "Turf not found" });
+  }
 
-    const { data, error } = await supabase
-        .from("bookings")
-        .update(updateData)
-        .eq("id", id)
-        .select();
+  const turfOpen = turfData.opening_time.substring(0, 8);
+  const turfClose = turfData.closing_time.substring(0, 8);
+  const bookingStart = start_time.substring(0, 8);
+  const bookingEnd = end_time.substring(0, 8);
 
-    if (error) return res.status(400).json({ error });
+  // Check if booking is before opening time
+  if (bookingStart < turfOpen) {
+    return res.status(409).json({
+      error: `This turf opens at ${turfOpen.substring(0, 5)}. Booking cannot be made before opening time`,
+    });
+  }
 
-    res.status(200).json({ booking: data[0] as Booking });
+  // Check if booking is after closing time
+  if (bookingEnd > turfClose) {
+    return res.status(409).json({
+      error: `This turf closes at ${turfClose.substring(0, 5)}. Booking cannot be made after closing time`,
+    });
+  }
+
+  const updateData = {
+    client_id: req.body.client_id,
+    turf_id,
+    date,
+    start_time,
+    end_time,
+    duration_minutes: req.body.duration_minutes ?? 60,
+    price: req.body.price,
+    status: req.body.status ?? null,
+    payment_method: req.body.payment_method ?? null,
+    payment_status: req.body.payment_status ?? null,
+    payment_transaction_id: req.body.payment_transaction_id ?? null,
+  };
+
+  const { data, error } = await supabase
+    .from("bookings")
+    .update(updateData)
+    .eq("id", id)
+    .select();
+
+  if (error) return res.status(400).json({ error });
+
+  res.status(200).json({ booking: data[0] as Booking });
 });
