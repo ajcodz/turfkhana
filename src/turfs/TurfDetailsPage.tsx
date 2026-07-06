@@ -149,7 +149,9 @@ const TurfDetailsPage: React.FC = () => {
           return { ...slot, isBooked, isUnavailable, isPast };
         });
 
-        setTimeSlots(updatedSlots);
+        // Remove past slots from UI entirely
+        const visibleSlots = updatedSlots.filter((slot) => !slot.isPast);
+        setTimeSlots(visibleSlots);
       } catch (error) {
         console.error("Failed to generate slots:", error);
       } finally {
@@ -435,10 +437,6 @@ const TurfDetailsPage: React.FC = () => {
                     <Text>Not Available</Text>
                   </HStack>
                   <HStack>
-                    <Box w={4} h={4} bg="orange.300" borderRadius="sm" />
-                    <Text>Expired</Text>
-                  </HStack>
-                  <HStack>
                     <Icon as={CheckCircle} color="green.600" boxSize={4} />
                     <Text>Selected</Text>
                   </HStack>
@@ -453,21 +451,18 @@ const TurfDetailsPage: React.FC = () => {
                 <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={3}>
                   {timeSlots.map((slot) => {
                     const isSelected = selectedSlot === slot.id;
-                    const isDisabled =
-                      slot.isBooked || slot.isUnavailable || slot.isPast;
+                    const isDisabled = slot.isBooked || slot.isUnavailable;
 
                     return (
                       <Button
                         key={slot.id}
                         variant={isSelected ? "solid" : "outline"}
                         colorPalette={
-                          slot.isPast
-                            ? "orange"
-                            : slot.isUnavailable
-                              ? "red"
-                              : slot.isBooked
-                                ? "gray"
-                                : "green"
+                          slot.isUnavailable
+                            ? "red"
+                            : slot.isBooked
+                              ? "gray"
+                              : "green"
                         }
                         disabled={isDisabled}
                         onClick={() => !isDisabled && setSelectedSlot(slot.id)}
@@ -483,13 +478,12 @@ const TurfDetailsPage: React.FC = () => {
                           <Text fontSize="sm" fontWeight="semibold">
                             {slot.time}
                           </Text>
-                          {slot.isPast && <Text fontSize="xs">Expired</Text>}
-                          {!slot.isPast && slot.isUnavailable && (
+                          {slot.isUnavailable && (
                             <Text fontSize="xs">Not Available</Text>
                           )}
-                          {!slot.isPast &&
-                            !slot.isUnavailable &&
-                            slot.isBooked && <Text fontSize="xs">Booked</Text>}
+                          {!slot.isUnavailable && slot.isBooked && (
+                            <Text fontSize="xs">Booked</Text>
+                          )}
                         </VStack>
                         {isSelected && (
                           <Icon
