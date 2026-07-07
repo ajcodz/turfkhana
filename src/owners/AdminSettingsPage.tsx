@@ -92,6 +92,10 @@ const AdminSettingsPage: React.FC = () => {
     blockedEndTime: "",
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [showConflictConfirm, setShowConflictConfirm] = useState(false);
+  const [conflictAction, setConflictAction] = useState<
+    "create" | "edit" | null
+  >(null);
 
   const openEditModal = (hour: ClosedHour) => {
     setEditingHour(hour);
@@ -134,65 +138,23 @@ const AdminSettingsPage: React.FC = () => {
       return;
     }
 
-    setIsSaving(true);
+    // Check for booking conflicts first
+    const hasConflict = await checkBookingConflict(
+      String(editingHour.turfId),
+      editForm.blockedDate,
+      editForm.blockedStartTime,
+      editForm.blockedEndTime,
+    );
 
-    try {
-      const res = await fetch(`${APP_BASE_URL}/settings/${editingHour.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          turf_id: editingHour.turfId,
-          blocked_date: editForm.blockedDate,
-          blocked_start_time: editForm.blockedStartTime,
-          blocked_end_time: editForm.blockedEndTime,
-        }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err?.error?.message ?? "Failed to update closed hour");
-      }
-
-      const { setting: updated } = await res.json();
-
-      const cleanEndTime = (updated.blocked_end_time ?? "23:59:59").substring(
-        0,
-        8,
-      );
-      const cleanStartTime = (updated.blocked_start_time ?? "").substring(0, 8);
-
-      setClosedHours((prev) =>
-        prev.map((s) =>
-          s.id === editingHour.id
-            ? {
-                ...s,
-                blockedDate: updated.blocked_date,
-                blockedStartTime: cleanStartTime,
-                blockedEndTime: cleanEndTime,
-              }
-            : s,
-        ),
-      );
-
-      toaster.success({
-        title: "Closed Hour Updated",
-        description: "The closed hour has been updated successfully",
-        duration: 3000,
-        closable: true,
-      });
-
-      closeEditModal();
-    } catch (error) {
-      toaster.error({
-        title: "Update Failed",
-        description:
-          error instanceof Error ? error.message : "Something went wrong",
-        duration: 5000,
-        closable: true,
-      });
-    } finally {
-      setIsSaving(false);
+    if (hasConflict) {
+      // Show confirmation dialog instead of saving immediately
+      setConflictAction("edit");
+      setShowConflictConfirm(true);
+      return;
     }
+
+    // No conflict — save directly
+    await updateClosedHour();
   };
 
   // Fetch turfs and settings on load
@@ -307,32 +269,39 @@ const AdminSettingsPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleAddClosedHour = async () => {
-    if (
-      !selectedTurfId ||
-      !addForm.blockedDate ||
-      !addForm.blockedStartTime ||
-      !addForm.blockedEndTime
-    ) {
-      toaster.error({
-        title: "Validation Error",
-        description: "Please fill in all required fields",
-        duration: 3000,
-        closable: true,
-      });
-      return;
-    }
+  const checkBookingConflict = async (
+    turfId: string,
+    blockedDate: string,
+    blockedStartTime: string,
+    blockedEndTime: string,
+  ): Promise<boolean> => {
+    try {
+      const res = await fetch(`${APP_BASE_URL}/bookings`);
+      const { bookings } = await res.json();
 
-    if (addForm.blockedStartTime >= addForm.blockedEndTime) {
-      toaster.error({
-        title: "Validation Error",
-        description: "End time must be after start time",
-        duration: 3000,
-        closable: true,
-      });
-      return;
-    }
+      const conflicting = bookings.filter((b: any) => {
+        if (
+          String(b.turf_id) !== turfId ||
+          b.date !== blockedDate ||
+          b.status === "cancelled"
+        )
+          return false;
 
+        const bStart = b.start_time.substring(0, 8);
+        const bEnd = b.end_time.substring(0, 8);
+        const cStart = blockedStartTime + ":00";
+        const cEnd = blockedEndTime + ":00";
+
+        return bStart < cEnd && bEnd > cStart;
+      });
+
+      return conflicting.length > 0;
+    } catch {
+      return false;
+    }
+  };
+
+  const saveClosedHour = async () => {
     setIsSubmitting(true);
 
     try {
@@ -386,6 +355,114 @@ const AdminSettingsPage: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const updateClosedHour = async () => {
+    if (!editingHour) return;
+    setIsSaving(true);
+
+    try {
+      const res = await fetch(`${APP_BASE_URL}/settings/${editingHour.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          turf_id: editingHour.turfId,
+          blocked_date: editForm.blockedDate,
+          blocked_start_time: editForm.blockedStartTime,
+          blocked_end_time: editForm.blockedEndTime,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error?.message ?? "Failed to update closed hour");
+      }
+
+      const { setting: updated } = await res.json();
+
+      const cleanEndTime = (updated.blocked_end_time ?? "23:59:59").substring(
+        0,
+        8,
+      );
+      const cleanStartTime = (updated.blocked_start_time ?? "").substring(0, 8);
+
+      setClosedHours((prev) =>
+        prev.map((s) =>
+          s.id === editingHour.id
+            ? {
+                ...s,
+                blockedDate: updated.blocked_date,
+                blockedStartTime: cleanStartTime,
+                blockedEndTime: cleanEndTime,
+              }
+            : s,
+        ),
+      );
+
+      toaster.success({
+        title: "Closed Hour Updated",
+        description: "The closed hour has been updated successfully",
+        duration: 3000,
+        closable: true,
+      });
+
+      closeEditModal();
+    } catch (error) {
+      toaster.error({
+        title: "Update Failed",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+        duration: 5000,
+        closable: true,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddClosedHour = async () => {
+    if (
+      !selectedTurfId ||
+      !addForm.blockedDate ||
+      !addForm.blockedStartTime ||
+      !addForm.blockedEndTime
+    ) {
+      toaster.error({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    if (addForm.blockedStartTime >= addForm.blockedEndTime) {
+      toaster.error({
+        title: "Validation Error",
+        description: "End time must be after start time",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    // Check for booking conflicts first
+    const hasConflict = await checkBookingConflict(
+      selectedTurfId,
+      addForm.blockedDate,
+      addForm.blockedStartTime,
+      addForm.blockedEndTime,
+    );
+
+    if (hasConflict) {
+      // Show confirmation dialog instead of saving immediately
+      setConflictAction("create");
+      setShowConflictConfirm(true);
+      return;
+    }
+
+    // No conflict — save directly
+    await saveClosedHour();
   };
 
   const handleDeleteClosedHour = async (id: number) => {
@@ -774,6 +851,59 @@ const AdminSettingsPage: React.FC = () => {
           )}
         </VStack>
       </Container>
+
+      {/* Conflict Confirmation Dialog */}
+      <Dialog.Root
+        open={showConflictConfirm}
+        onOpenChange={(e) => !e.open && setShowConflictConfirm(false)}
+      >
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>⚠️ Booking Conflict Detected</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <VStack gap={3} align="stretch">
+                  <Text>
+                    One or more existing bookings overlap with this closed hour.
+                  </Text>
+                  <Text fontWeight="semibold" color="red.500">
+                    If you proceed, the affected bookings will still remain in
+                    the system and will need to be handled manually (e.g.
+                    contacting the customer and issuing a refund if needed).
+                  </Text>
+                  <Text>
+                    Do you want to proceed and save this closed hour anyway?
+                  </Text>
+                </VStack>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowConflictConfirm(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="red"
+                  onClick={async () => {
+                    setShowConflictConfirm(false);
+                    if (conflictAction === "create") {
+                      await saveClosedHour();
+                    } else if (conflictAction === "edit") {
+                      await updateClosedHour();
+                    }
+                  }}
+                >
+                  Proceed Anyway
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
 
       {/* Edit Closed Hour Dialog */}
       <Dialog.Root

@@ -447,6 +447,26 @@ const TurfDetailsPage: React.FC = () => {
                 <Flex justify="center" py={8}>
                   <Spinner size="lg" color="green.500" />
                 </Flex>
+              ) : timeSlots.length === 0 ? (
+                <Box
+                  p={10}
+                  textAlign="center"
+                  borderRadius="xl"
+                  borderWidth="2px"
+                  borderStyle="dashed"
+                  borderColor={borderColor}
+                >
+                  <VStack gap={3}>
+                    <Icon as={Clock} boxSize={12} color="gray.300" />
+                    <Heading as="h3" size="md" color="gray.500">
+                      No Available Slots
+                    </Heading>
+                    <Text fontSize="sm" color="gray.400" maxW="sm">
+                      All time slots for today have passed. Please select a
+                      future date to make a booking.
+                    </Text>
+                  </VStack>
+                </Box>
               ) : (
                 <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={3}>
                   {timeSlots.map((slot) => {
