@@ -9,6 +9,7 @@ export const updateClient = catchAsync(async (req, res) => {
     name: req.body.name,
     phone: req.body.phone,
     email: req.body.email ?? null,
+    password: req.body.password,
   };
 
   const { data, error } = await supabase

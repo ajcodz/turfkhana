@@ -7,7 +7,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   return <>{children}</>;

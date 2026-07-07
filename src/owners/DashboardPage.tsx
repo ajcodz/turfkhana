@@ -42,7 +42,7 @@ const DashboardPage: React.FC = () => {
 
   // Mock data
   const navItems = [
-    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+    { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Calendar", path: "calendar", icon: Calendar },
     { name: "Bookings", path: "booking-list", icon: BookOpen },
     { name: "Turfs", path: "turf-list", icon: MapPin },
