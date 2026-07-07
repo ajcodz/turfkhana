@@ -3,9 +3,13 @@ import { getClients } from "../controllers/client/getClients";
 import { createClient } from "../controllers/client/createClient";
 import { updateClient } from "../controllers/client/updateClient";
 import { deleteClient } from "../controllers/client/deleteClient";
+import { loginClient } from "../controllers/client/loginClient";
+import { signupClient } from "../controllers/client/signupClient";
 
 const router = Router();
 
+router.post("/login", loginClient);
+router.post("/signup", signupClient);
 router.post("/", createClient);
 router.get("/", getClients);
 router.put("/:id", updateClient);

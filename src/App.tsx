@@ -20,7 +20,7 @@ import AdminOverviewPage from "./owners/AdminOverviewPage";
 
 function App() {
   const location = useLocation();
-  const hideFooter = location.pathname.startsWith("/dashboard");
+  const hideFooter = location.pathname.startsWith("/admin");
 
   return (
     <>
@@ -35,9 +35,13 @@ function App() {
         />
         <Route path="/booking-failure" element={<BookingFailurePage />} />
 
+        {/* Client routes (Phase 2) */}
         <Route path="/login" element={<LoginPage />} />
+
+        {/* Owner/Admin routes */}
+        <Route path="/admin/login" element={<LoginPage />} />
         <Route
-          path="dashboard"
+          path="/admin/dashboard"
           element={
             <ProtectedRoute>
               <DashboardPage />

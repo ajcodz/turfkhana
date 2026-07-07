@@ -79,7 +79,7 @@ const Navbar: React.FC = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("owner");
     setIsLoggedIn(false);
-    navigate("/login", { replace: true });
+    navigate("/admin/login", { replace: true });
   };
 
   const bgColor = useColorModeValue("white", "gray.800");

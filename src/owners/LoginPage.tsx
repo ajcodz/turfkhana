@@ -99,7 +99,7 @@ const LoginPage: React.FC = () => {
         closable: true,
       });
 
-      navigate("/dashboard", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
     } catch (error) {
       toaster.error({
         title: "Login Failed",
