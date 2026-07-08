@@ -70,9 +70,14 @@ const Navbar: React.FC = () => {
   const { open, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isClientLoggedIn, setIsClientLoggedIn] = useState(false);
+  const [clientName, setClientName] = useState("");
 
   useEffect(() => {
     setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+    setIsClientLoggedIn(localStorage.getItem("isClientLoggedIn") === "true");
+    const client = JSON.parse(localStorage.getItem("client") ?? "{}");
+    setClientName(client?.name ?? "");
   }, [location.pathname]);
 
   const handleLogout = () => {
@@ -80,6 +85,14 @@ const Navbar: React.FC = () => {
     localStorage.removeItem("owner");
     setIsLoggedIn(false);
     navigate("/admin/login", { replace: true });
+  };
+
+  const handleClientLogout = () => {
+    localStorage.removeItem("isClientLoggedIn");
+    localStorage.removeItem("client");
+    setIsClientLoggedIn(false);
+    setClientName("");
+    navigate("/", { replace: true });
   };
 
   const bgColor = useColorModeValue("white", "gray.800");
@@ -141,6 +154,7 @@ const Navbar: React.FC = () => {
           {/* Right Side Actions */}
           <Flex alignItems="center" gap={3}>
             {isLoggedIn ? (
+              // Owner logout button — only shows on admin pages
               <Button
                 colorScheme="red"
                 variant="outline"
@@ -150,10 +164,26 @@ const Navbar: React.FC = () => {
               >
                 Logout
               </Button>
+            ) : isClientLoggedIn ? (
+              // Client logout button
+              <HStack gap={2} display={{ base: "none", sm: "flex" }}>
+                <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                  Hi, {clientName}!
+                </Text>
+                <Button
+                  colorPalette="red"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClientLogout}
+                >
+                  Logout
+                </Button>
+              </HStack>
             ) : (
+              // Not logged in — show Login button
               <Link to="/login">
                 <Button
-                  colorScheme="green"
+                  colorPalette="green"
                   size="sm"
                   display={{ base: "none", sm: "inline-flex" }}
                 >
@@ -194,7 +224,7 @@ const Navbar: React.FC = () => {
               <Drawer.Body pt={16}>
                 <Stack gap={4}>
                   {/* User Info for Mobile (if logged in) */}
-                  {isLoggedIn && (
+                  {(isLoggedIn || isClientLoggedIn) && (
                     <Box
                       p={4}
                       bg={useColorModeValue("green.50", "green.900")}
@@ -203,12 +233,20 @@ const Navbar: React.FC = () => {
                     >
                       <Flex align="center" gap={3}>
                         <Avatar.Root size="md" bg="green.500">
-                          <Avatar.Fallback name="Ahsan Javed" />
+                          <Avatar.Fallback name={clientName || "Admin"} />
                         </Avatar.Root>
                         <Box>
-                          <Text fontWeight="semibold">Ahsan Javed</Text>
+                          <Text fontWeight="semibold">
+                            {isClientLoggedIn ? clientName : "Admin"}
+                          </Text>
                           <Text fontSize="sm" color="gray.600">
-                            ajcodzhq@gmail.com
+                            {isClientLoggedIn
+                              ? (JSON.parse(
+                                  localStorage.getItem("client") ?? "{}",
+                                ).email ?? "")
+                              : (JSON.parse(
+                                  localStorage.getItem("owner") ?? "{}",
+                                ).email ?? "")}
                           </Text>
                         </Box>
                       </Flex>
@@ -225,7 +263,7 @@ const Navbar: React.FC = () => {
                   <Box borderTop="1px" borderColor={borderColor} pt={4} mt={4}>
                     {isLoggedIn ? (
                       <Button
-                        colorScheme="red"
+                        colorPalette="red"
                         variant="outline"
                         w="100%"
                         onClick={() => {
@@ -235,9 +273,21 @@ const Navbar: React.FC = () => {
                       >
                         Logout
                       </Button>
+                    ) : isClientLoggedIn ? (
+                      <Button
+                        colorPalette="red"
+                        variant="outline"
+                        w="100%"
+                        onClick={() => {
+                          handleClientLogout();
+                          onClose();
+                        }}
+                      >
+                        Logout
+                      </Button>
                     ) : (
                       <Link to="/login">
-                        <Button colorScheme="green" w="100%" onClick={onClose}>
+                        <Button colorPalette="green" w="100%" onClick={onClose}>
                           Login
                         </Button>
                       </Link>

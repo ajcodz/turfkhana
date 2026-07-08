@@ -12,6 +12,8 @@ import LoginPage from "./owners/LoginPage";
 import TurfDetailsPage from "./turfs/TurfDetailsPage";
 import AdminSettingsPage from "./owners/AdminSettingsPage";
 import TermsConditionsPage from "./policies/TermsConditionsPage";
+import ClientLoginPage from "./clients/ClientLoginPage";
+import ClientSignupPage from "./clients/ClientSignupPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -35,8 +37,9 @@ function App() {
         />
         <Route path="/booking-failure" element={<BookingFailurePage />} />
 
-        {/* Client routes (Phase 2) */}
-        <Route path="/login" element={<LoginPage />} />
+        {/* Client routes */}
+        <Route path="/login" element={<ClientLoginPage />} />
+        <Route path="/signup" element={<ClientSignupPage />} />
 
         {/* Owner/Admin routes */}
         <Route path="/admin/login" element={<LoginPage />} />
