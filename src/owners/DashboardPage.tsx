@@ -20,9 +20,10 @@ import {
   Settings,
   ChevronRight,
   MapPin,
+  LogOut,
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 export type DashboardContext = {
   setActiveNav: React.Dispatch<React.SetStateAction<string>>;
@@ -32,6 +33,13 @@ export type DashboardContext = {
 const DashboardPage: React.FC = () => {
   const [activeNav, setActiveNav] = useState("Dashboard");
   const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("owner");
+    navigate("/admin/login", { replace: true });
+  };
   const { open, onOpen, onClose } = useDisclosure();
 
   const bgColor = useColorModeValue("gray.50", "gray.900");
@@ -94,19 +102,31 @@ const DashboardPage: React.FC = () => {
 
       {/* User Profile */}
       <Box p={4} borderTopWidth="1px" borderColor={borderColor}>
-        <HStack gap={3}>
-          <Avatar.Root size="sm" bg="green.500">
-            <Avatar.Fallback name={owner?.name ?? "Admin"} />
-          </Avatar.Root>
-          <Box flex={1}>
-            <Text fontSize="sm" fontWeight="semibold">
-              {owner?.name ?? "Admin"}
-            </Text>
-            <Text fontSize="xs" color="gray.500">
-              {owner?.email ?? "—"}
-            </Text>
-          </Box>
-        </HStack>
+        <VStack gap={3} align="stretch">
+          <HStack gap={3}>
+            <Avatar.Root size="sm" bg="green.500">
+              <Avatar.Fallback name={owner?.name ?? "Admin"} />
+            </Avatar.Root>
+            <Box flex={1}>
+              <Text fontSize="sm" fontWeight="semibold">
+                {owner?.name ?? "Admin"}
+              </Text>
+              <Text fontSize="xs" color="gray.500">
+                {owner?.email ?? "—"}
+              </Text>
+            </Box>
+          </HStack>
+          <Button
+            colorPalette="red"
+            variant="outline"
+            size="sm"
+            w="100%"
+            onClick={handleLogout}
+          >
+            <Icon as={LogOut} boxSize={4} />
+            Logout
+          </Button>
+        </VStack>
       </Box>
     </VStack>
   );
