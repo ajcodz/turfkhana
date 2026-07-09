@@ -92,13 +92,14 @@ const Navbar: React.FC = () => {
     localStorage.removeItem("client");
     setIsClientLoggedIn(false);
     setClientName("");
-    navigate("/", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
 
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   // const navLinks = [
   //   { name: "Home", to: "/" },
@@ -153,10 +154,10 @@ const Navbar: React.FC = () => {
 
           {/* Right Side Actions */}
           <Flex alignItems="center" gap={3}>
-            {isLoggedIn ? (
-              // Owner logout button — only shows on admin pages
+            {isAdminPage ? null : isLoggedIn ? ( // On admin pages — show nothing for client auth
+              // Owner logout button
               <Button
-                colorScheme="red"
+                colorPalette="red"
                 variant="outline"
                 size="sm"
                 display={{ base: "none", sm: "inline-flex" }}
@@ -224,7 +225,7 @@ const Navbar: React.FC = () => {
               <Drawer.Body pt={16}>
                 <Stack gap={4}>
                   {/* User Info for Mobile (if logged in) */}
-                  {(isLoggedIn || isClientLoggedIn) && (
+                  {!isAdminPage && (isLoggedIn || isClientLoggedIn) && (
                     <Box
                       p={4}
                       bg={useColorModeValue("green.50", "green.900")}
@@ -261,7 +262,7 @@ const Navbar: React.FC = () => {
                   ))} */}
 
                   <Box borderTop="1px" borderColor={borderColor} pt={4} mt={4}>
-                    {isLoggedIn ? (
+                    {isAdminPage ? null : isLoggedIn ? (
                       <Button
                         colorPalette="red"
                         variant="outline"
