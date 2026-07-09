@@ -118,14 +118,18 @@ const ClientSignupPage: React.FC = () => {
         return;
       }
 
+      // Auto login after signup
+      localStorage.setItem("isClientLoggedIn", "true");
+      localStorage.setItem("client", JSON.stringify(data.client));
+
       toaster.success({
         title: "Account Created!",
-        description: `Welcome to TurfKhana, ${data.client.name}! Please login to continue.`,
+        description: `Welcome to TurfKhana, ${data.client.name}!`,
         duration: 4000,
         closable: true,
       });
 
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       toaster.error({
         title: "Signup Failed",
