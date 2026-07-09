@@ -73,11 +73,23 @@ const Navbar: React.FC = () => {
   const [isClientLoggedIn, setIsClientLoggedIn] = useState(false);
   const [clientName, setClientName] = useState("");
 
-  useEffect(() => {
+  const syncAuthState = () => {
     setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
     setIsClientLoggedIn(localStorage.getItem("isClientLoggedIn") === "true");
     const client = JSON.parse(localStorage.getItem("client") ?? "{}");
     setClientName(client?.name ?? "");
+  };
+
+  useEffect(() => {
+    // Sync on route change
+    syncAuthState();
+
+    // Sync across tabs when localStorage changes in another tab
+    window.addEventListener("storage", syncAuthState);
+
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+    };
   }, [location.pathname]);
 
   const handleLogout = () => {
@@ -154,18 +166,7 @@ const Navbar: React.FC = () => {
 
           {/* Right Side Actions */}
           <Flex alignItems="center" gap={3}>
-            {isAdminPage ? null : isLoggedIn ? ( // On admin pages — show nothing for client auth
-              // Owner logout button
-              <Button
-                colorPalette="red"
-                variant="outline"
-                size="sm"
-                display={{ base: "none", sm: "inline-flex" }}
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            ) : isClientLoggedIn ? (
+            {isAdminPage ? null : isClientLoggedIn ? (
               // Client logout button
               <HStack gap={2} display={{ base: "none", sm: "flex" }}>
                 <Text fontSize="sm" fontWeight="medium" color="gray.600">
@@ -225,7 +226,7 @@ const Navbar: React.FC = () => {
               <Drawer.Body pt={16}>
                 <Stack gap={4}>
                   {/* User Info for Mobile (if logged in) */}
-                  {!isAdminPage && (isLoggedIn || isClientLoggedIn) && (
+                  {!isAdminPage && isClientLoggedIn && (
                     <Box
                       p={4}
                       bg={useColorModeValue("green.50", "green.900")}
@@ -234,20 +235,13 @@ const Navbar: React.FC = () => {
                     >
                       <Flex align="center" gap={3}>
                         <Avatar.Root size="md" bg="green.500">
-                          <Avatar.Fallback name={clientName || "Admin"} />
+                          <Avatar.Fallback name={clientName} />
                         </Avatar.Root>
                         <Box>
-                          <Text fontWeight="semibold">
-                            {isClientLoggedIn ? clientName : "Admin"}
-                          </Text>
+                          <Text fontWeight="semibold">{clientName}</Text>
                           <Text fontSize="sm" color="gray.600">
-                            {isClientLoggedIn
-                              ? (JSON.parse(
-                                  localStorage.getItem("client") ?? "{}",
-                                ).email ?? "")
-                              : (JSON.parse(
-                                  localStorage.getItem("owner") ?? "{}",
-                                ).email ?? "")}
+                            {JSON.parse(localStorage.getItem("client") ?? "{}")
+                              .email ?? ""}
                           </Text>
                         </Box>
                       </Flex>
@@ -262,19 +256,7 @@ const Navbar: React.FC = () => {
                   ))} */}
 
                   <Box borderTop="1px" borderColor={borderColor} pt={4} mt={4}>
-                    {isAdminPage ? null : isLoggedIn ? (
-                      <Button
-                        colorPalette="red"
-                        variant="outline"
-                        w="100%"
-                        onClick={() => {
-                          handleLogout();
-                          onClose();
-                        }}
-                      >
-                        Logout
-                      </Button>
-                    ) : isClientLoggedIn ? (
+                    {isAdminPage ? null : isClientLoggedIn ? (
                       <Button
                         colorPalette="red"
                         variant="outline"
