@@ -119,6 +119,11 @@ const ClientSignupPage: React.FC = () => {
       }
 
       // Auto login after signup
+      // Clear owner session first
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("owner");
+
+      // Set client session
       localStorage.setItem("isClientLoggedIn", "true");
       localStorage.setItem("client", JSON.stringify(data.client));
 

@@ -93,6 +93,11 @@ const ClientLoginPage: React.FC = () => {
       }
 
       // Save client login state and client info
+      // Clear owner session first
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("owner");
+
+      // Set client session
       localStorage.setItem("isClientLoggedIn", "true");
       localStorage.setItem("client", JSON.stringify(data.client));
 
