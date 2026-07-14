@@ -5,7 +5,6 @@ import {
   HStack,
   IconButton,
   Button,
-  Menu,
   useDisclosure,
   Stack,
   Container,
@@ -68,6 +67,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const [isClientLoggedIn, setIsClientLoggedIn] = useState(false);
   const [clientName, setClientName] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const syncAuthState = () => {
     setIsClientLoggedIn(localStorage.getItem("isClientLoggedIn") === "true");
@@ -156,26 +156,52 @@ const Navbar: React.FC = () => {
           <Flex alignItems="center" gap={3}>
             {isAdminPage ? null : isClientLoggedIn ? (
               // Client Avatar with dropdown menu
-              <Menu.Root positioning={{ placement: "bottom-end", gutter: 8 }}>
-                <Menu.Trigger asChild>
-                  <Avatar.Root
-                    size="sm"
-                    bg="green.500"
-                    cursor="pointer"
-                    display={{ base: "none", sm: "flex" }}
-                    _hover={{ opacity: 0.85 }}
-                  >
-                    <Avatar.Fallback name={clientName} />
-                  </Avatar.Root>
-                </Menu.Trigger>
-                <Portal>
-                  <Menu.Positioner>
-                    <Menu.Content minW="180px">
+              <Box position="relative" display={{ base: "none", sm: "block" }}>
+                {/* Avatar trigger */}
+                <Avatar.Root
+                  size="sm"
+                  bg="green.500"
+                  cursor="pointer"
+                  _hover={{ opacity: 0.85 }}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  <Avatar.Fallback name={clientName} />
+                </Avatar.Root>
+
+                {/* Custom dropdown */}
+                {isMenuOpen && (
+                  <>
+                    {/* Invisible overlay to close menu on outside click */}
+                    <Box
+                      position="fixed"
+                      top={0}
+                      left={0}
+                      right={0}
+                      bottom={0}
+                      zIndex={998}
+                      onClick={() => setIsMenuOpen(false)}
+                    />
+
+                    {/* Dropdown content */}
+                    <Box
+                      position="absolute"
+                      top="110%"
+                      right={0}
+                      zIndex={999}
+                      bg={bgColor}
+                      borderWidth="1px"
+                      borderColor={borderColor}
+                      borderRadius="lg"
+                      shadow="lg"
+                      minW="200px"
+                      overflow="hidden"
+                    >
+                      {/* Client info header */}
                       <Box
-                        px={3}
-                        py={2}
+                        px={4}
+                        py={3}
                         borderBottomWidth="1px"
-                        borderColor="gray.100"
+                        borderColor={borderColor}
                       >
                         <Text fontSize="sm" fontWeight="semibold">
                           {clientName}
@@ -185,25 +211,48 @@ const Navbar: React.FC = () => {
                             .email ?? ""}
                         </Text>
                       </Box>
-                      <Menu.Item
-                        value="past-bookings"
-                        onClick={() => navigate("/past-bookings")}
+
+                      {/* Past Bookings */}
+                      <Box
+                        px={4}
+                        py={3}
+                        cursor="pointer"
+                        _hover={{
+                          bg: useColorModeValue("gray.50", "gray.700"),
+                        }}
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          navigate("/past-bookings");
+                        }}
                       >
-                        <BookOpen size={16} />
-                        Past Bookings
-                      </Menu.Item>
-                      <Menu.Item
-                        value="logout"
-                        color="red.500"
-                        onClick={handleClientLogout}
+                        <HStack gap={2}>
+                          <BookOpen size={16} />
+                          <Text fontSize="sm">Past Bookings</Text>
+                        </HStack>
+                      </Box>
+
+                      {/* Logout */}
+                      <Box
+                        px={4}
+                        py={3}
+                        cursor="pointer"
+                        _hover={{
+                          bg: useColorModeValue("gray.50", "gray.700"),
+                        }}
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          handleClientLogout();
+                        }}
                       >
-                        <LogOut size={16} />
-                        Logout
-                      </Menu.Item>
-                    </Menu.Content>
-                  </Menu.Positioner>
-                </Portal>
-              </Menu.Root>
+                        <HStack gap={2} color="red.500">
+                          <LogOut size={16} />
+                          <Text fontSize="sm">Logout</Text>
+                        </HStack>
+                      </Box>
+                    </Box>
+                  </>
+                )}
+              </Box>
             ) : (
               // Not logged in — show Login button
               <Link to="/login">
