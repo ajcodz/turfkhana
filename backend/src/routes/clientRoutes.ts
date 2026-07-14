@@ -5,11 +5,13 @@ import { updateClient } from "../controllers/client/updateClient";
 import { deleteClient } from "../controllers/client/deleteClient";
 import { loginClient } from "../controllers/client/loginClient";
 import { signupClient } from "../controllers/client/signupClient";
+import { getClientByEmail } from "../controllers/client/getClientByEmail";
 
 const router = Router();
 
 router.post("/login", loginClient);
 router.post("/signup", signupClient);
+router.get("/email/:email", getClientByEmail);
 router.post("/", createClient);
 router.get("/", getClients);
 router.put("/:id", updateClient);
