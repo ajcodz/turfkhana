@@ -5,14 +5,13 @@ import {
   HStack,
   IconButton,
   Button,
-  // Menu,
+  Menu,
   useDisclosure,
   Stack,
   Container,
   Drawer,
   Avatar,
   Text,
-  // Badge,
   VStack,
   Portal,
   CloseButton,
@@ -21,10 +20,8 @@ import {
 import {
   AlignJustify,
   X,
-  // User,
-  // LogOut,
-  // Settings,
-  // Calendar,
+  LogOut,
+  BookOpen,
   Phone,
   Mail,
   MapPin,
@@ -69,12 +66,10 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const { open, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isClientLoggedIn, setIsClientLoggedIn] = useState(false);
   const [clientName, setClientName] = useState("");
 
   const syncAuthState = () => {
-    setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
     setIsClientLoggedIn(localStorage.getItem("isClientLoggedIn") === "true");
     const client = JSON.parse(localStorage.getItem("client") ?? "{}");
     setClientName(client?.name ?? "");
@@ -91,13 +86,6 @@ const Navbar: React.FC = () => {
       window.removeEventListener("storage", syncAuthState);
     };
   }, [location.pathname]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("owner");
-    setIsLoggedIn(false);
-    navigate("/admin/login", { replace: true });
-  };
 
   const handleClientLogout = () => {
     localStorage.removeItem("isClientLoggedIn");
@@ -167,20 +155,55 @@ const Navbar: React.FC = () => {
           {/* Right Side Actions */}
           <Flex alignItems="center" gap={3}>
             {isAdminPage ? null : isClientLoggedIn ? (
-              // Client logout button
-              <HStack gap={2} display={{ base: "none", sm: "flex" }}>
-                <Text fontSize="sm" fontWeight="medium" color="gray.600">
-                  Hi, {clientName}!
-                </Text>
-                <Button
-                  colorPalette="red"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClientLogout}
-                >
-                  Logout
-                </Button>
-              </HStack>
+              // Client Avatar with dropdown menu
+              <Menu.Root>
+                <Menu.Trigger asChild>
+                  <Avatar.Root
+                    size="sm"
+                    bg="green.500"
+                    cursor="pointer"
+                    display={{ base: "none", sm: "flex" }}
+                    _hover={{ opacity: 0.85 }}
+                  >
+                    <Avatar.Fallback name={clientName} />
+                  </Avatar.Root>
+                </Menu.Trigger>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content minW="180px">
+                      <Box
+                        px={3}
+                        py={2}
+                        borderBottomWidth="1px"
+                        borderColor="gray.100"
+                      >
+                        <Text fontSize="sm" fontWeight="semibold">
+                          {clientName}
+                        </Text>
+                        <Text fontSize="xs" color="gray.500">
+                          {JSON.parse(localStorage.getItem("client") ?? "{}")
+                            .email ?? ""}
+                        </Text>
+                      </Box>
+                      <Menu.Item
+                        value="past-bookings"
+                        onClick={() => navigate("/past-bookings")}
+                      >
+                        <BookOpen size={16} />
+                        Past Bookings
+                      </Menu.Item>
+                      <Menu.Item
+                        value="logout"
+                        color="red.500"
+                        onClick={handleClientLogout}
+                      >
+                        <LogOut size={16} />
+                        Logout
+                      </Menu.Item>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
             ) : (
               // Not logged in — show Login button
               <Link to="/login">
@@ -257,17 +280,31 @@ const Navbar: React.FC = () => {
 
                   <Box borderTop="1px" borderColor={borderColor} pt={4} mt={4}>
                     {isAdminPage ? null : isClientLoggedIn ? (
-                      <Button
-                        colorPalette="red"
-                        variant="outline"
-                        w="100%"
-                        onClick={() => {
-                          handleClientLogout();
-                          onClose();
-                        }}
-                      >
-                        Logout
-                      </Button>
+                      <VStack gap={2} align="stretch">
+                        <Link to="/past-bookings">
+                          <Button
+                            variant="outline"
+                            colorPalette="green"
+                            w="100%"
+                            onClick={onClose}
+                          >
+                            <BookOpen size={16} />
+                            Past Bookings
+                          </Button>
+                        </Link>
+                        <Button
+                          colorPalette="red"
+                          variant="outline"
+                          w="100%"
+                          onClick={() => {
+                            handleClientLogout();
+                            onClose();
+                          }}
+                        >
+                          <LogOut size={16} />
+                          Logout
+                        </Button>
+                      </VStack>
                     ) : (
                       <Link to="/login">
                         <Button colorPalette="green" w="100%" onClick={onClose}>
