@@ -156,7 +156,7 @@ const Navbar: React.FC = () => {
           <Flex alignItems="center" gap={3}>
             {isAdminPage ? null : isClientLoggedIn ? (
               // Client Avatar with dropdown menu
-              <Menu.Root>
+              <Menu.Root positioning={{ placement: "bottom-end", gutter: 8 }}>
                 <Menu.Trigger asChild>
                   <Avatar.Root
                     size="sm"
