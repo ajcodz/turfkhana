@@ -14,7 +14,7 @@ import {
 import { Mail, Lock, Eye, EyeOff, User, Phone } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 interface SignupFormData {
   name: string;
@@ -28,6 +28,7 @@ const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 const ClientSignupPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState<SignupFormData>({
     name: "",
     phone: "",
@@ -134,7 +135,18 @@ const ClientSignupPage: React.FC = () => {
         closable: true,
       });
 
-      navigate("/", { replace: true });
+      const redirectTo = (
+        location.state as { redirectTo?: string; bookingState?: unknown } | null
+      )?.redirectTo;
+      const bookingState = (
+        location.state as { redirectTo?: string; bookingState?: unknown } | null
+      )?.bookingState;
+
+      if (redirectTo) {
+        navigate(redirectTo, { replace: true, state: bookingState });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       toaster.error({
         title: "Signup Failed",
@@ -350,7 +362,11 @@ const ClientSignupPage: React.FC = () => {
               </Button>
 
               {/* Login Link */}
-              <Link to="/login" style={{ textDecoration: "none" }}>
+              <Link
+                to="/login"
+                state={location.state}
+                style={{ textDecoration: "none" }}
+              >
                 <Button
                   variant="ghost"
                   size="sm"

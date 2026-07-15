@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -26,7 +26,7 @@ import {
   Mail,
   CreditCard,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface BookingFormData {
   fullName: string;
@@ -46,11 +46,34 @@ interface BookingLocationState {
   currency: string;
 }
 
+interface StoredClient {
+  id: number;
+  name: string;
+  phone: string;
+  email: string | null;
+}
+
+const getStoredClient = (): StoredClient | null => {
+  const isClientLoggedIn = localStorage.getItem("isClientLoggedIn") === "true";
+  if (!isClientLoggedIn) return null;
+
+  const raw = localStorage.getItem("client");
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as StoredClient;
+  } catch {
+    return null;
+  }
+};
+
 const BookingFormPage: React.FC = () => {
+  const storedClient = getStoredClient();
+
   const [formData, setFormData] = useState<BookingFormData>({
-    fullName: "",
-    phoneNumber: "",
-    email: "",
+    fullName: storedClient?.name ?? "",
+    phoneNumber: storedClient?.phone ?? "",
+    email: storedClient?.email ?? "",
   });
   const [errors, setErrors] = useState<Partial<BookingFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +85,22 @@ const BookingFormPage: React.FC = () => {
 
   const location = useLocation();
   const state = location.state as BookingLocationState | null;
+
+  const navigate = useNavigate();
+
+  const isStateValid = !!(state?.turfId && state?.timeSlot && state?.date);
+
+  useEffect(() => {
+    if (!isStateValid) {
+      toaster.error({
+        title: "Booking details missing",
+        description: "Please select a turf and time slot to continue.",
+        duration: 4000,
+        closable: true,
+      });
+      navigate("/", { replace: true });
+    }
+  }, [isStateValid, navigate]);
 
   const bookingData = {
     turfName: state?.turfName ?? "—",
@@ -246,6 +285,10 @@ const BookingFormPage: React.FC = () => {
     }
   };
 
+  if (!isStateValid) {
+    return null;
+  }
+
   return (
     <Box minH="100vh" bg={pageBg} py={{ base: 6, md: 12 }}>
       <Container maxW="container.xl">
@@ -330,15 +373,17 @@ const BookingFormPage: React.FC = () => {
                       <Field.ErrorText>{errors.phoneNumber}</Field.ErrorText>
                     </Field.Root>
 
-                    {/* Email (Optional) */}
+                    {/* Email (locked to account when logged in) */}
                     <Field.Root invalid={!!errors.email}>
                       <Field.Label>
                         <HStack>
                           <Icon as={Mail} boxSize={4} />
                           <Text>Email Address</Text>
-                          <Text fontSize="sm" color="gray.500">
-                            (Optional)
-                          </Text>
+                          {!storedClient?.email && (
+                            <Text fontSize="sm" color="gray.500">
+                              (Optional)
+                            </Text>
+                          )}
                         </HStack>
                       </Field.Label>
                       <Input
@@ -349,12 +394,22 @@ const BookingFormPage: React.FC = () => {
                         onChange={(e) =>
                           handleInputChange("email", e.target.value)
                         }
+                        disabled={!!storedClient?.email}
                         borderColor={borderColor}
                         _focus={{
                           borderColor: "green.500",
                           boxShadow: "0 0 0 1px #38A169",
                         }}
+                        _disabled={{
+                          opacity: 0.7,
+                          cursor: "not-allowed",
+                        }}
                       />
+                      {storedClient?.email && (
+                        <Text fontSize="xs" color="gray.500" mt={1}>
+                          This is your account email and can't be changed here.
+                        </Text>
+                      )}
                       <Field.ErrorText>{errors.email}</Field.ErrorText>
                     </Field.Root>
 

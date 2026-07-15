@@ -55,30 +55,52 @@ const BookingConfirmationPage: React.FC = () => {
       }
 
       try {
-        // Step 1: Create the client
-        const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: searchParams.get("fullName") ?? "",
-            phone: searchParams.get("phoneNumber") ?? "",
-            email: searchParams.get("email")?.trim() || null,
-          }),
-        });
+        // Step 1: Resolve the client — reuse the logged-in client's existing
+        // record instead of creating a new one every time, so bookings stay
+        // correctly linked to the account for past-booking tracking.
+        let clientId: number | null = null;
 
-        if (!clientRes.ok) {
-          const err = await clientRes.json();
-          throw new Error(err?.error?.message ?? "Failed to create client");
+        const storedClient = localStorage.getItem("client");
+        const isClientLoggedIn =
+          localStorage.getItem("isClientLoggedIn") === "true";
+
+        if (isClientLoggedIn && storedClient) {
+          try {
+            const parsedClient = JSON.parse(storedClient);
+            clientId = parsedClient?.id ?? null;
+          } catch {
+            clientId = null;
+          }
         }
 
-        const { client } = await clientRes.json();
+        if (!clientId) {
+          // Guest checkout (or corrupted/missing session): fall back to
+          // creating a new client record as before.
+          const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: searchParams.get("fullName") ?? "",
+              phone: searchParams.get("phoneNumber") ?? "",
+              email: searchParams.get("email")?.trim() || null,
+            }),
+          });
+
+          if (!clientRes.ok) {
+            const err = await clientRes.json();
+            throw new Error(err?.error?.message ?? "Failed to create client");
+          }
+
+          const { client } = await clientRes.json();
+          clientId = client.id;
+        }
 
         // Step 2: Create the booking
         const bookingRes = await fetch(`${APP_BASE_URL}/bookings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            client_id: client.id,
+            client_id: clientId,
             turf_id: searchParams.get("turfId"),
             date: searchParams.get("date"),
             start_time: searchParams.get("startTime"),
