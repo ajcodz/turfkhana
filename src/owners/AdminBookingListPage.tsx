@@ -243,23 +243,66 @@ const AdminBookingListPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Step 1: Create the client
-      const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: createForm.customerName.trim(),
-          phone: createForm.customerPhone.trim(),
-          email: createForm.customerEmail.trim() || null,
-        }),
-      });
+      // Step 1: Check if client with this email already exists
+      let client;
+      const trimmedEmail = createForm.customerEmail.trim();
 
-      if (!clientRes.ok) {
-        const err = await clientRes.json();
-        throw new Error(err?.error?.message ?? "Failed to create client");
+      if (trimmedEmail) {
+        const existingClientRes = await fetch(
+          `${APP_BASE_URL}/clients/email/${encodeURIComponent(trimmedEmail)}`,
+        );
+
+        if (existingClientRes.ok) {
+          // Client already exists — use their existing data
+          const { client: existingClient } = await existingClientRes.json();
+          client = existingClient;
+
+          toaster.info({
+            title: "Existing Client Found",
+            description: `Booking will be created for existing client: ${existingClient.name}`,
+            duration: 3000,
+            closable: true,
+          });
+        } else {
+          // Client doesn't exist — create a new one
+          const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: createForm.customerName.trim(),
+              phone: createForm.customerPhone.trim(),
+              email: trimmedEmail || null,
+            }),
+          });
+
+          if (!clientRes.ok) {
+            const err = await clientRes.json();
+            throw new Error(err?.error?.message ?? "Failed to create client");
+          }
+
+          const { client: newClient } = await clientRes.json();
+          client = newClient;
+        }
+      } else {
+        // No email provided — always create a new client
+        const clientRes = await fetch(`${APP_BASE_URL}/clients`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: createForm.customerName.trim(),
+            phone: createForm.customerPhone.trim(),
+            email: null,
+          }),
+        });
+
+        if (!clientRes.ok) {
+          const err = await clientRes.json();
+          throw new Error(err?.error?.message ?? "Failed to create client");
+        }
+
+        const { client: newClient } = await clientRes.json();
+        client = newClient;
       }
-
-      const { client } = await clientRes.json();
 
       // Step 2: Create the booking
       const bookingRes = await fetch(`${APP_BASE_URL}/bookings`, {
