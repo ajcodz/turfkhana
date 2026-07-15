@@ -134,8 +134,11 @@ const BookingFormPage: React.FC = () => {
 
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = "Phone number is required";
-    } else if (!/^[0-9]{11}$/.test(formData.phoneNumber.replace(/\s|-/g, ""))) {
-      newErrors.phoneNumber = "Please enter a valid 11-digit phone number";
+    } else if (
+      !/^03[0-9]{9}$/.test(formData.phoneNumber.replace(/\s|-/g, ""))
+    ) {
+      newErrors.phoneNumber =
+        "Please enter a valid Pakistani phone number (e.g. 03001234567)";
     }
 
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
