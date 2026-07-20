@@ -2,9 +2,17 @@ import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
 
 export const getAllTurfs = catchAsync(async (req, res) => {
-    const { data, error } = await supabase.from("turfs").select("*");
+  const { owner_id } = req.query;
 
-    if (error) return res.status(400).json({ error });
+  let query = supabase.from("turfs").select("*");
 
-    res.json({ turfs: data });
+  if (owner_id) {
+    query = query.eq("owner_id", Number(owner_id));
+  }
+
+  const { data, error } = await query;
+
+  if (error) return res.status(400).json({ error });
+
+  res.json({ turfs: data });
 });

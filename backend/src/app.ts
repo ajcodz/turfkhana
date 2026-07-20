@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import superAdminRoutes from "./routes/superAdminRoutes";
 import cookieParser from "cookie-parser";
 import turfRoutes from "./routes/turfRoutes";
 import bookingRoutes from "./routes/bookingRoutes";
@@ -22,6 +23,7 @@ app.use(cookieParser());
 // Routes
 const V1 = "v1";
 
+app.use(`/api/${V1}/super-admins`, superAdminRoutes);
 app.use(`/api/${V1}/turfs`, turfRoutes);
 app.use(`/api/${V1}/bookings`, bookingRoutes);
 app.use(`/api/${V1}/clients`, clientRoutes);

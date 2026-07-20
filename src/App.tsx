@@ -2,6 +2,8 @@ import LandingPage from "./LandingPage";
 import BookingFormPage from "./bookings/BookingFormPage";
 import BookingConfirmationPage from "./bookings/BookingConfirmationPage";
 import BookingFailurePage from "./bookings/BookingFailurePage";
+import SuperAdminLoginPage from "./superAdmin/SuperAdminLoginPage";
+import SuperAdminProtectedRoute from "./components/SuperAdminProtectedRoute";
 import AdminCalendarPage from "./owners/AdminCalendarPage";
 import AdminBookingListPage from "./owners/AdminBookingListPage";
 import AdminTurfListPage from "./owners/AdminTurfListPage";
@@ -24,7 +26,9 @@ import AdminOverviewPage from "./owners/AdminOverviewPage";
 
 function App() {
   const location = useLocation();
-  const hideFooter = location.pathname.startsWith("/admin");
+  const hideFooter =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/super-admin");
 
   return (
     <>
@@ -48,6 +52,17 @@ function App() {
             <ClientProtectedRoute>
               <ClientPastBookingsPage />
             </ClientProtectedRoute>
+          }
+        />
+
+        {/* Super Admin routes */}
+        <Route path="/super-admin/login" element={<SuperAdminLoginPage />} />
+        <Route
+          path="/super-admin/dashboard"
+          element={
+            <SuperAdminProtectedRoute>
+              <div>Super Admin Dashboard — coming in Section C</div>
+            </SuperAdminProtectedRoute>
           }
         />
 

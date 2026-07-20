@@ -15,7 +15,7 @@ export const requireAuth = (
   res: Response,
   next: NextFunction,
 ) => {
-  const token = req.cookies?.token;
+  const token = req.cookies?.owner_token || req.cookies?.super_admin_token;
 
   if (!token) {
     return res.status(401).json({ error: "Not authenticated" });

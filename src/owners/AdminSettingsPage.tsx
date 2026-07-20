@@ -165,17 +165,16 @@ const AdminSettingsPage: React.FC = () => {
 
       try {
         const [turfsRes, settingsRes] = await Promise.all([
-          fetch(`${APP_BASE_URL}/turfs`),
+          fetch(`${APP_BASE_URL}/turfs?owner_id=${ownerId}`),
           fetch(`${APP_BASE_URL}/settings`),
         ]);
 
         if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
         if (!settingsRes.ok) throw new Error("Failed to fetch settings");
 
-        const { turfs } = await turfsRes.json();
+        const { turfs: filtered } = await turfsRes.json();
         const { settings } = await settingsRes.json();
 
-        const filtered = turfs.filter((t: any) => t.owner_id === ownerId);
         setOwnerTurfs(filtered.map((t: any) => ({ id: t.id, name: t.name })));
 
         if (filtered.length > 0) {

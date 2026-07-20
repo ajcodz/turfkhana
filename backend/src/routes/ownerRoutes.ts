@@ -14,9 +14,9 @@ router.post("/login", loginOwner);
 router.post("/logout", logoutOwner);
 router.get("/me", requireAuth, getCurrentOwner);
 
-router.post("/", requireAuth, requireRole("owner"), createOwner);
-router.get("/", requireAuth, requireRole("owner"), getOwners);
-router.put("/:id", requireAuth, requireRole("owner"), updateOwner);
-router.delete("/:id", requireAuth, requireRole("owner"), deleteOwner);
+router.post("/", requireAuth, requireRole("super_admin"), createOwner);
+router.get("/", requireAuth, requireRole("super_admin"), getOwners);
+router.put("/:id", requireAuth, requireRole("super_admin"), updateOwner);
+router.delete("/:id", requireAuth, requireRole("super_admin"), deleteOwner);
 
 export default router;

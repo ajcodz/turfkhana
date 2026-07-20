@@ -80,14 +80,12 @@ const AdminTurfListPage: React.FC = () => {
       setFetchError(null);
 
       try {
-        const res = await fetch(`${APP_BASE_URL}/turfs`);
+        const res = await fetch(`${APP_BASE_URL}/turfs?owner_id=${ownerId}`);
         if (!res.ok) throw new Error("Failed to fetch turfs");
 
         const { turfs } = await res.json();
 
-        const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
-
-        const mappedTurfs: Turf[] = ownerTurfs.map((t: any) => ({
+        const mappedTurfs: Turf[] = turfs.map((t: any) => ({
           id: t.id,
           ownerId: t.owner_id,
           name: t.name,

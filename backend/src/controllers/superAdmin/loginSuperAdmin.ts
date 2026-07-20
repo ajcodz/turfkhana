@@ -2,7 +2,7 @@ import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
 import { signToken } from "../../utils/jwt";
 
-export const loginOwner = catchAsync(async (req, res) => {
+export const loginSuperAdmin = catchAsync(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -10,7 +10,7 @@ export const loginOwner = catchAsync(async (req, res) => {
   }
 
   const { data, error } = await supabase
-    .from("owners")
+    .from("super_admins")
     .select("*")
     .eq("email", email)
     .single();
@@ -23,9 +23,9 @@ export const loginOwner = catchAsync(async (req, res) => {
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
-  const token = signToken({ id: data.id, role: "owner" });
+  const token = signToken({ id: data.id, role: "super_admin" });
 
-  res.cookie("owner_token", token, {
+  res.cookie("super_admin_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -34,11 +34,10 @@ export const loginOwner = catchAsync(async (req, res) => {
 
   res.status(200).json({
     message: "Login successful",
-    owner: {
+    superAdmin: {
       id: data.id,
       name: data.name,
       email: data.email,
-      phone: data.phone,
     },
   });
 });

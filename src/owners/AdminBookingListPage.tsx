@@ -87,25 +87,30 @@ const AdminBookingListPage: React.FC = () => {
       setFetchError(null);
 
       try {
-        const [bookingsRes, clientsRes, turfsRes] = await Promise.all([
-          fetch(`${APP_BASE_URL}/bookings`),
+        const turfsRes = await fetch(
+          `${APP_BASE_URL}/turfs?owner_id=${ownerId}`,
+        );
+        if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
+        const { turfs: ownerTurfs } = await turfsRes.json();
+
+        const turfIds = ownerTurfs.map((t: any) => t.id).join(",");
+        const bookingsUrl = turfIds
+          ? `${APP_BASE_URL}/bookings?turf_ids=${turfIds}`
+          : null;
+
+        const [bookingsRes, clientsRes] = await Promise.all([
+          bookingsUrl ? fetch(bookingsUrl) : Promise.resolve(null),
           fetch(`${APP_BASE_URL}/clients`),
-          fetch(`${APP_BASE_URL}/turfs`),
         ]);
 
-        if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
+        if (bookingsRes && !bookingsRes.ok)
+          throw new Error("Failed to fetch bookings");
         if (!clientsRes.ok) throw new Error("Failed to fetch clients");
-        if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
 
-        const { bookings } = await bookingsRes.json();
+        const bookings = bookingsRes ? (await bookingsRes.json()).bookings : [];
         const { clients } = await clientsRes.json();
-        const { turfs } = await turfsRes.json();
 
         const clientMap = new Map(clients.map((c: any) => [c.id, c]));
-
-        // Only keep turfs that belong to the logged-in owner
-        const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
-        const ownerTurfIds = new Set(ownerTurfs.map((t: any) => t.id));
         const turfMap = new Map(ownerTurfs.map((t: any) => [t.id, t]));
         setOwnerTurfsList(
           ownerTurfs.map((t: any) => ({ id: t.id, name: t.name })),
@@ -131,11 +136,7 @@ const AdminBookingListPage: React.FC = () => {
         };
 
         // Only keep bookings for this owner's turfs
-        const ownerBookings = bookings.filter((b: any) =>
-          ownerTurfIds.has(b.turf_id),
-        );
-
-        const mappedBookings: Booking[] = ownerBookings.map((b: any) => {
+        const mappedBookings: Booking[] = bookings.map((b: any) => {
           const client = clientMap.get(b.client_id) as any;
           const turf = turfMap.get(b.turf_id) as any;
 
