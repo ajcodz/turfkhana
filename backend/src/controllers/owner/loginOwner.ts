@@ -23,6 +23,12 @@ export const loginOwner = catchAsync(async (req, res) => {
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
+  if (!data.is_active) {
+    return res.status(403).json({
+      error: "This account has been deactivated. Please contact support.",
+    });
+  }
+
   const token = signToken({ id: data.id, role: "owner" });
 
   res.cookie("owner_token", token, {

@@ -3,6 +3,8 @@ import BookingFormPage from "./bookings/BookingFormPage";
 import BookingConfirmationPage from "./bookings/BookingConfirmationPage";
 import BookingFailurePage from "./bookings/BookingFailurePage";
 import SuperAdminLoginPage from "./superAdmin/SuperAdminLoginPage";
+import SuperAdminDashboardPage from "./superAdmin/SuperAdminDashboardPage";
+import SuperAdminOwnerListPage from "./superAdmin/SuperAdminOwnerListPage";
 import SuperAdminProtectedRoute from "./components/SuperAdminProtectedRoute";
 import AdminProfilePage from "./owners/AdminProfilePage";
 import AdminCalendarPage from "./owners/AdminCalendarPage";
@@ -62,10 +64,12 @@ function App() {
           path="/super-admin/dashboard"
           element={
             <SuperAdminProtectedRoute>
-              <div>Super Admin Dashboard — coming in Section C</div>
+              <SuperAdminDashboardPage />
             </SuperAdminProtectedRoute>
           }
-        />
+        >
+          <Route index element={<SuperAdminOwnerListPage />} />
+        </Route>
 
         {/* Owner/Admin routes */}
         <Route path="/admin/login" element={<LoginPage />} />
