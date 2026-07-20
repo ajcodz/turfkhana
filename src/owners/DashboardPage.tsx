@@ -21,6 +21,7 @@ import {
   ChevronRight,
   MapPin,
   LogOut,
+  User,
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Link, Outlet, useNavigate } from "react-router-dom";
@@ -62,6 +63,7 @@ const DashboardPage: React.FC = () => {
     { name: "Bookings", path: "booking-list", icon: BookOpen },
     { name: "Turfs", path: "turf-list", icon: MapPin },
     { name: "Settings", path: "settings", icon: Settings },
+    { name: "My Profile", path: "profile", icon: User },
   ];
 
   const SidebarContent = () => (

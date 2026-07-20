@@ -4,6 +4,7 @@ import BookingConfirmationPage from "./bookings/BookingConfirmationPage";
 import BookingFailurePage from "./bookings/BookingFailurePage";
 import SuperAdminLoginPage from "./superAdmin/SuperAdminLoginPage";
 import SuperAdminProtectedRoute from "./components/SuperAdminProtectedRoute";
+import AdminProfilePage from "./owners/AdminProfilePage";
 import AdminCalendarPage from "./owners/AdminCalendarPage";
 import AdminBookingListPage from "./owners/AdminBookingListPage";
 import AdminTurfListPage from "./owners/AdminTurfListPage";
@@ -77,6 +78,7 @@ function App() {
           }
         >
           <Route index element={<AdminOverviewPage />} />
+          <Route path="profile" element={<AdminProfilePage />} />
           <Route path="calendar" element={<AdminCalendarPage />} />
           <Route path="booking-list" element={<AdminBookingListPage />} />
           <Route path="turf-list" element={<AdminTurfListPage />} />
