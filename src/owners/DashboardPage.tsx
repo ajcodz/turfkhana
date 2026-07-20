@@ -35,8 +35,15 @@ const DashboardPage: React.FC = () => {
   const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3000/api/v1/owners/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // even if the request fails, still clear local UI state below
+    }
     localStorage.removeItem("owner");
     navigate("/admin/login", { replace: true });
   };

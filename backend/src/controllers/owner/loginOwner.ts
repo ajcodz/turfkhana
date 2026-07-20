@@ -1,5 +1,6 @@
 import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
+import { signToken } from "../../utils/jwt";
 
 export const loginOwner = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -21,6 +22,15 @@ export const loginOwner = catchAsync(async (req, res) => {
   if (data.password !== password) {
     return res.status(401).json({ error: "Invalid email or password" });
   }
+
+  const token = signToken({ id: data.id, role: "owner" });
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
   res.status(200).json({
     message: "Login successful",

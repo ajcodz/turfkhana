@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import turfRoutes from "./routes/turfRoutes";
 import bookingRoutes from "./routes/bookingRoutes";
 import clientRoutes from "./routes/clientRoutes";
@@ -9,8 +10,14 @@ import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
+app.use(cookieParser());
 
 // Routes
 const V1 = "v1";
