@@ -421,6 +421,7 @@ const AdminBookingListPage: React.FC = () => {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             client_id: editingBooking.clientId,
             turf_id: editingBooking.turfId,
@@ -506,7 +507,7 @@ const AdminBookingListPage: React.FC = () => {
     try {
       const res = await fetch(
         `${APP_BASE_URL}/bookings/${deletingBooking.rawId}`,
-        { method: "DELETE" },
+        { method: "DELETE", credentials: "include" },
       );
 
       if (!res.ok) {

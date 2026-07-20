@@ -186,6 +186,7 @@ const AdminTurfListPage: React.FC = () => {
       const res = await fetch(`${APP_BASE_URL}/turfs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           owner_id: ownerId,
           name: createForm.name,
@@ -272,6 +273,7 @@ const AdminTurfListPage: React.FC = () => {
       const res = await fetch(`${APP_BASE_URL}/turfs/${editingTurf.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           owner_id: editingTurf.ownerId,
           name: editForm.name,
@@ -343,6 +345,7 @@ const AdminTurfListPage: React.FC = () => {
     try {
       const res = await fetch(`${APP_BASE_URL}/turfs/${deletingTurf.id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!res.ok) {
