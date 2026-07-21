@@ -56,6 +56,7 @@ interface Turf {
   pricePerSlot: number;
   currency: string;
   bookingWindowDays: number;
+  isActive: boolean;
 }
 
 const AdminTurfListPage: React.FC = () => {
@@ -80,7 +81,9 @@ const AdminTurfListPage: React.FC = () => {
       setFetchError(null);
 
       try {
-        const res = await fetch(`${APP_BASE_URL}/turfs?owner_id=${ownerId}`);
+        const res = await fetch(`${APP_BASE_URL}/turfs/mine`, {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error("Failed to fetch turfs");
 
         const { turfs } = await res.json();
@@ -98,6 +101,7 @@ const AdminTurfListPage: React.FC = () => {
           pricePerSlot: t.price_per_slot,
           currency: t.currency ?? "PKR",
           bookingWindowDays: t.booking_window_days,
+          isActive: t.is_active,
         }));
 
         mappedTurfs.sort((a, b) => b.id - a.id);
@@ -222,6 +226,7 @@ const AdminTurfListPage: React.FC = () => {
         pricePerSlot: created.price_per_slot,
         currency: created.currency,
         bookingWindowDays: created.booking_window_days,
+        isActive: created.is_active ?? true,
       };
 
       setAllTurfs((prev) => [newTurf, ...prev]);
@@ -248,6 +253,16 @@ const AdminTurfListPage: React.FC = () => {
   };
 
   const openEditModal = (turf: Turf) => {
+    if (!turf.isActive) {
+      toaster.error({
+        title: "Turf Disabled",
+        description:
+          "This turf has been disabled by a super admin and cannot be edited.",
+        duration: 4000,
+        closable: true,
+      });
+      return;
+    }
     setEditingTurf(turf);
     setEditForm({
       name: turf.name,
@@ -633,6 +648,7 @@ const AdminTurfListPage: React.FC = () => {
                     <Table.ColumnHeader>Hours</Table.ColumnHeader>
                     <Table.ColumnHeader>Slot</Table.ColumnHeader>
                     <Table.ColumnHeader>Price</Table.ColumnHeader>
+                    <Table.ColumnHeader>Status</Table.ColumnHeader>
                     <Table.ColumnHeader>Actions</Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
@@ -688,12 +704,18 @@ const AdminTurfListPage: React.FC = () => {
                           {turf.currency} {turf.pricePerSlot.toLocaleString()}
                         </Table.Cell>
                         <Table.Cell>
+                          <Badge colorScheme={turf.isActive ? "green" : "red"}>
+                            {turf.isActive ? "Active" : "Disabled by Admin"}
+                          </Badge>
+                        </Table.Cell>
+                        <Table.Cell>
                           <HStack gap={1}>
                             <IconButton
                               aria-label="Edit turf"
                               size="sm"
                               variant="ghost"
                               colorScheme="blue"
+                              disabled={!turf.isActive}
                               onClick={() => openEditModal(turf)}
                             >
                               <Pencil size={16} />
@@ -703,7 +725,20 @@ const AdminTurfListPage: React.FC = () => {
                               size="sm"
                               variant="ghost"
                               colorScheme="red"
-                              onClick={() => setDeletingTurf(turf)}
+                              disabled={!turf.isActive}
+                              onClick={() => {
+                                if (!turf.isActive) {
+                                  toaster.error({
+                                    title: "Turf Disabled",
+                                    description:
+                                      "This turf has been disabled by a super admin and cannot be deleted.",
+                                    duration: 4000,
+                                    closable: true,
+                                  });
+                                  return;
+                                }
+                                setDeletingTurf(turf);
+                              }}
                             >
                               <Trash2 size={16} />
                             </IconButton>
@@ -713,7 +748,7 @@ const AdminTurfListPage: React.FC = () => {
                     ))
                   ) : (
                     <Table.Row>
-                      <Table.Cell colSpan={7} textAlign="center" py={8}>
+                      <Table.Cell colSpan={8} textAlign="center" py={8}>
                         <VStack gap={2}>
                           <Icon as={MapPin} boxSize={12} color="gray.300" />
                           <Text color="gray.500">No turfs found</Text>
