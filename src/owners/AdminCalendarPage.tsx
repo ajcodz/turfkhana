@@ -81,7 +81,9 @@ const AdminCalendarPage: React.FC = () => {
 
         const [bookingsRes, clientsRes] = await Promise.all([
           bookingsUrl ? fetch(bookingsUrl) : Promise.resolve(null),
-          fetch("http://localhost:3000/api/v1/clients"),
+          fetch("http://localhost:3000/api/v1/clients/mine", {
+            credentials: "include",
+          }),
         ]);
 
         if (bookingsRes && !bookingsRes.ok)

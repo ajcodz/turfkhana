@@ -100,7 +100,7 @@ const AdminBookingListPage: React.FC = () => {
 
         const [bookingsRes, clientsRes] = await Promise.all([
           bookingsUrl ? fetch(bookingsUrl) : Promise.resolve(null),
-          fetch(`${APP_BASE_URL}/clients`),
+          fetch(`${APP_BASE_URL}/clients/mine`, { credentials: "include" }),
         ]);
 
         if (bookingsRes && !bookingsRes.ok)
