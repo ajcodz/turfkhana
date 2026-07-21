@@ -1,6 +1,7 @@
 import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
 import { Turf } from "../../models/turf.model";
+import { logAuditEvent } from "../../utils/auditLog";
 
 export const setTurfStatus = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -21,5 +22,14 @@ export const setTurfStatus = catchAsync(async (req, res) => {
     return res.status(404).json({ error: "Turf not found" });
   }
 
-  res.status(200).json({ turf: data[0] as Turf });
+  const updated = data[0] as Turf;
+
+  await logAuditEvent(req, {
+    action: is_active ? "enable_turf" : "disable_turf",
+    target_type: "turf",
+    target_id: updated.id,
+    details: { name: updated.name, owner_id: updated.owner_id },
+  });
+
+  res.status(200).json({ turf: updated });
 });

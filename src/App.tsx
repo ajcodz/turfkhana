@@ -7,6 +7,7 @@ import SuperAdminDashboardPage from "./superAdmin/SuperAdminDashboardPage";
 import SuperAdminOwnerListPage from "./superAdmin/SuperAdminOwnerListPage";
 import SuperAdminTurfListPage from "./superAdmin/SuperAdminTurfListPage";
 import SuperAdminBookingListPage from "./superAdmin/SuperAdminBookingListPage";
+import SuperAdminAuditLogPage from "./superAdmin/SuperAdminAuditLogPage";
 import SuperAdminProtectedRoute from "./components/SuperAdminProtectedRoute";
 import AdminProfilePage from "./owners/AdminProfilePage";
 import AdminCalendarPage from "./owners/AdminCalendarPage";
@@ -73,6 +74,7 @@ function App() {
           <Route index element={<SuperAdminOwnerListPage />} />
           <Route path="turfs" element={<SuperAdminTurfListPage />} />
           <Route path="bookings" element={<SuperAdminBookingListPage />} />
+          <Route path="audit-log" element={<SuperAdminAuditLogPage />} />
         </Route>
 
         {/* Owner/Admin routes */}

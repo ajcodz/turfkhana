@@ -1,8 +1,15 @@
 import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
+import { logAuditEvent } from "../../utils/auditLog";
 
 export const deleteOwner = catchAsync(async (req, res) => {
   const { id } = req.params;
+
+  const { data: existing } = await supabase
+    .from("owners")
+    .select("name, email")
+    .eq("id", id)
+    .single();
 
   const { count, error: countError } = await supabase
     .from("turfs")
@@ -20,6 +27,13 @@ export const deleteOwner = catchAsync(async (req, res) => {
   const { error } = await supabase.from("owners").delete().eq("id", id);
 
   if (error) return res.status(400).json({ error });
+
+  await logAuditEvent(req, {
+    action: "delete_owner",
+    target_type: "owner",
+    target_id: Number(id),
+    details: { name: existing?.name, email: existing?.email },
+  });
 
   res.status(200).json({ message: "Owner deleted successfully" });
 });

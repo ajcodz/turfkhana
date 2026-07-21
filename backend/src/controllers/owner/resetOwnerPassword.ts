@@ -1,5 +1,6 @@
 import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
+import { logAuditEvent } from "../../utils/auditLog";
 
 export const resetOwnerPassword = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -22,5 +23,14 @@ export const resetOwnerPassword = catchAsync(async (req, res) => {
     return res.status(404).json({ error: "Owner not found" });
   }
 
-  res.status(200).json({ owner: data[0] });
+  const updated = data[0];
+
+  await logAuditEvent(req, {
+    action: "reset_owner_password",
+    target_type: "owner",
+    target_id: updated.id,
+    details: { name: updated.name },
+  });
+
+  res.status(200).json({ owner: updated });
 });

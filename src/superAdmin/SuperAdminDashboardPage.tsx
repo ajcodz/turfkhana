@@ -17,6 +17,7 @@ import {
   Users,
   MapPin,
   BookOpen,
+  History,
   ChevronRight,
   LogOut,
   ShieldCheck,
@@ -59,6 +60,7 @@ const SuperAdminDashboardPage: React.FC = () => {
     { name: "Owners", path: "/super-admin/dashboard", icon: Users },
     { name: "Turfs", path: "turfs", icon: MapPin },
     { name: "Bookings", path: "bookings", icon: BookOpen },
+    { name: "Audit Log", path: "audit-log", icon: History },
   ];
 
   const SidebarContent = () => (

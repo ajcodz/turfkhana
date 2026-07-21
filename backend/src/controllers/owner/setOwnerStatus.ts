@@ -1,6 +1,7 @@
 import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
 import { Owner } from "../../models/owner.model";
+import { logAuditEvent } from "../../utils/auditLog";
 
 export const setOwnerStatus = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -21,5 +22,14 @@ export const setOwnerStatus = catchAsync(async (req, res) => {
     return res.status(404).json({ error: "Owner not found" });
   }
 
-  res.status(200).json({ owner: data[0] as Owner });
+  const updated = data[0] as Owner;
+
+  await logAuditEvent(req, {
+    action: is_active ? "reactivate_owner" : "deactivate_owner",
+    target_type: "owner",
+    target_id: updated.id,
+    details: { name: updated.name },
+  });
+
+  res.status(200).json({ owner: updated });
 });

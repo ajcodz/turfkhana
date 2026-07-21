@@ -1,12 +1,13 @@
 import { supabase } from "../../db/config";
 import { catchAsync } from "../../utils/catchAsync";
+import { logAuditEvent } from "../../utils/auditLog";
 
 export const deleteTurf = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const { data: turf, error: fetchError } = await supabase
     .from("turfs")
-    .select("id, owner_id")
+    .select("id, name, owner_id")
     .eq("id", id)
     .single();
 
@@ -35,6 +36,15 @@ export const deleteTurf = catchAsync(async (req, res) => {
   const { error } = await supabase.from("turfs").delete().eq("id", id);
 
   if (error) return res.status(400).json({ error });
+
+  if (req.user!.role === "super_admin") {
+    await logAuditEvent(req, {
+      action: "delete_turf",
+      target_type: "turf",
+      target_id: turf.id,
+      details: { name: turf.name, owner_id: turf.owner_id },
+    });
+  }
 
   res.status(200).json({ message: "Turf deleted successfully" });
 });
