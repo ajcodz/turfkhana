@@ -3,9 +3,19 @@ const { createBooking } = require("../controllers/booking/createBooking");
 const { getBookings } = require("../controllers/booking/getBookings");
 const { deleteBooking } = require("../controllers/booking/deleteBooking");
 const { updateBooking } = require("../controllers/booking/updateBooking");
+const {
+  getAllBookingsForSuperAdmin,
+} = require("../controllers/booking/getAllBookingsForSuperAdmin");
 import { requireAuth, requireRole } from "../middlewares/auth";
 
 const router = Router();
+
+router.get(
+  "/admin/all",
+  requireAuth,
+  requireRole("super_admin"),
+  getAllBookingsForSuperAdmin,
+);
 
 router.post("/", createBooking);
 router.get("/", getBookings);

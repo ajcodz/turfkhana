@@ -13,7 +13,14 @@ import {
   Portal,
   CloseButton,
 } from "@chakra-ui/react";
-import { Users, MapPin, ChevronRight, LogOut, ShieldCheck } from "lucide-react";
+import {
+  Users,
+  MapPin,
+  BookOpen,
+  ChevronRight,
+  LogOut,
+  ShieldCheck,
+} from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
@@ -51,6 +58,7 @@ const SuperAdminDashboardPage: React.FC = () => {
   const navItems = [
     { name: "Owners", path: "/super-admin/dashboard", icon: Users },
     { name: "Turfs", path: "turfs", icon: MapPin },
+    { name: "Bookings", path: "bookings", icon: BookOpen },
   ];
 
   const SidebarContent = () => (
