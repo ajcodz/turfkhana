@@ -17,7 +17,17 @@ router.get("/email/:email", getClientByEmail);
 router.get("/mine", requireAuth, requireRole("owner"), getMyClients);
 router.post("/", createClient);
 router.get("/", getClients);
-router.put("/:id", updateClient);
-router.delete("/:id", deleteClient);
+router.put(
+  "/:id",
+  requireAuth,
+  requireRole("owner", "super_admin"),
+  updateClient,
+);
+router.delete(
+  "/:id",
+  requireAuth,
+  requireRole("owner", "super_admin"),
+  deleteClient,
+);
 
 export default router;
