@@ -8,6 +8,7 @@ import auditLogRoutes from "./routes/auditLogRoutes";
 import clientRoutes from "./routes/clientRoutes";
 import ownerRoutes from "./routes/ownerRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
+import settingRoutes from "./routes/settingRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(`/api/${V1}/bookings`, bookingRoutes);
 app.use(`/api/${V1}/clients`, clientRoutes);
 app.use(`/api/${V1}/owners`, ownerRoutes);
 app.use(`/api/${V1}/payments`, paymentRoutes);
+app.use(`/api/${V1}/settings`, settingRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running!");
