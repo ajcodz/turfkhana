@@ -17,4 +17,4 @@ export interface Turf extends BaseEntity {
   is_active: boolean;
 }
 
-export type CreateTurfDTO = Omit<Turf, "id" | "created_at">;
+export type CreateTurfDTO = Omit<Turf, "id" | "created_at" | "is_active">;

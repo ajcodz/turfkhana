@@ -8,4 +8,4 @@ export interface Owner extends BaseEntity {
   is_active: boolean;
 }
 
-export type CreateOwnerDTO = Omit<Owner, "id" | "created_at">;
+export type CreateOwnerDTO = Omit<Owner, "id" | "created_at" | "is_active">;
