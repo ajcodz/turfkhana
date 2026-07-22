@@ -5,6 +5,29 @@ import { Turf } from "../../models/turf.model";
 export const updateTurf = catchAsync(async (req, res) => {
   const { id } = req.params;
 
+  const { data: existing, error: fetchError } = await supabase
+    .from("turfs")
+    .select("id, owner_id, is_active")
+    .eq("id", id)
+    .single();
+
+  if (fetchError || !existing) {
+    return res.status(404).json({ error: "Turf not found" });
+  }
+
+  // Owners may only edit their own turfs; super admins can edit any.
+  if (req.user!.role === "owner") {
+    if (existing.owner_id !== req.user!.id) {
+      return res.status(403).json({ error: "You do not own this turf" });
+    }
+    if (!existing.is_active) {
+      return res.status(403).json({
+        error:
+          "This turf has been disabled by a super admin and cannot be edited.",
+      });
+    }
+  }
+
   const updateData = {
     owner_id: req.body.owner_id,
     name: req.body.name,

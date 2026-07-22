@@ -29,7 +29,12 @@ router.get("/", getAllTurfs);
 router.get("/:id", getTurfById);
 
 router.post("/", requireAuth, requireRole("owner"), createTurf);
-router.put("/:id", requireAuth, requireRole("owner"), updateTurf);
+router.put(
+  "/:id",
+  requireAuth,
+  requireRole("owner", "super_admin"),
+  updateTurf,
+);
 router.delete(
   "/:id",
   requireAuth,
