@@ -18,6 +18,7 @@ import RefundCancellationPolicyPage from "./policies/RefundCancellationPolicyPag
 import DashboardPage from "./owners/DashboardPage";
 import LoginPage from "./owners/LoginPage";
 import TurfDetailsPage from "./turfs/TurfDetailsPage";
+import BrowseTurfsPage from "./turfs/BrowseTurfsPage";
 import AdminSettingsPage from "./owners/AdminSettingsPage";
 import TermsConditionsPage from "./policies/TermsConditionsPage";
 import ClientLoginPage from "./clients/ClientLoginPage";
@@ -41,6 +42,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/turfs" element={<BrowseTurfsPage />} />
         <Route path="/turf-details/:id" element={<TurfDetailsPage />} />
         <Route path="/booking-form/:id" element={<BookingFormPage />} />
         <Route
