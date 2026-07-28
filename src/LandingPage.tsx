@@ -315,6 +315,22 @@ const LandingPage: React.FC = () => {
                 </Text>
               </Flex>
             )}
+
+            {!isLoading && !isError && (
+              <Flex justify="center" pt={4}>
+                <Link to="/turfs">
+                  <Button
+                    variant="outline"
+                    colorScheme="green"
+                    size="lg"
+                    borderRadius="full"
+                    px={8}
+                  >
+                    View All Turfs
+                  </Button>
+                </Link>
+              </Flex>
+            )}
           </VStack>
         </Container>
       </Box>
