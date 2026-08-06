@@ -1,4 +1,4 @@
-import { BaseEntity } from "./base.model";
+import type { BaseEntity } from "./base.model";
 
 export interface Turf extends BaseEntity {
   owner_id: number;
