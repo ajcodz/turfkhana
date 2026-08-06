@@ -27,6 +27,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { APP_BASE_URL } from "../utils/api";
 
 interface BookingFormData {
   fullName: string;
@@ -165,7 +166,6 @@ const BookingFormPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const APP_BASE_URL = "http://localhost:3000/api/v1";
 
       // Parse the time slot string "06:00 PM - 07:00 PM" → "18:00:00" / "19:00:00"
       const parseTime = (timeStr: string): string => {

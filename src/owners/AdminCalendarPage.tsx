@@ -34,6 +34,7 @@ import {
 import { useColorModeValue } from "../components/ui/color-mode";
 import { useOutletContext } from "react-router-dom";
 import type { DashboardContext } from "./DashboardPage";
+import { APP_BASE_URL } from "../utils/api";
 
 interface Booking {
   id: string;
@@ -69,19 +70,19 @@ const AdminCalendarPage: React.FC = () => {
 
       try {
         const turfsRes = await fetch(
-          `http://localhost:3000/api/v1/turfs?owner_id=${ownerId}`,
+          `${APP_BASE_URL}/turfs?owner_id=${ownerId}`,
         );
         if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
         const { turfs: ownerTurfs } = await turfsRes.json();
 
         const turfIds = ownerTurfs.map((t: any) => t.id).join(",");
         const bookingsUrl = turfIds
-          ? `http://localhost:3000/api/v1/bookings?turf_ids=${turfIds}`
+          ? `${APP_BASE_URL}/bookings?turf_ids=${turfIds}`
           : null;
 
         const [bookingsRes, clientsRes] = await Promise.all([
           bookingsUrl ? fetch(bookingsUrl) : Promise.resolve(null),
-          fetch("http://localhost:3000/api/v1/clients/mine", {
+          fetch(`${APP_BASE_URL}/clients/mine`, {
             credentials: "include",
           }),
         ]);

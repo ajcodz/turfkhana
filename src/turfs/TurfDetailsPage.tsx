@@ -21,6 +21,7 @@ import { useColorModeValue } from "../components/ui/color-mode";
 import { MapPin, Clock, Calendar, CheckCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTurf } from "./useTurfDetailsPage";
+import { APP_BASE_URL } from "../utils/api";
 
 interface TimeSlot {
   id: string;
@@ -101,8 +102,8 @@ const TurfDetailsPage: React.FC = () => {
 
         // Fetch bookings and settings in parallel
         const [bookingsRes, settingsRes] = await Promise.all([
-          fetch(`http://localhost:3000/api/v1/bookings`),
-          fetch(`http://localhost:3000/api/v1/settings`),
+          fetch(`${APP_BASE_URL}/bookings`),
+          fetch(`${APP_BASE_URL}/settings`),
         ]);
 
         const { bookings } = await bookingsRes.json();

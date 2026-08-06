@@ -15,6 +15,7 @@ import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
 import { useNavigate, Link } from "react-router-dom";
+import { APP_BASE_URL } from "../utils/api";
 
 interface LoginFormData {
   email: string;
@@ -67,7 +68,7 @@ const SuperAdminLoginPage: React.FC = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/v1/super-admins/login",
+        `${APP_BASE_URL}/super-admins/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

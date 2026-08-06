@@ -41,8 +41,8 @@ import { useColorModeValue } from "../components/ui/color-mode";
 import type { DashboardContext } from "./DashboardPage";
 import { useOutletContext } from "react-router-dom";
 import { toaster } from "../components/ui/toaster";
+import { APP_BASE_URL } from "../utils/api";
 
-const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 interface Booking {
   id: string;
