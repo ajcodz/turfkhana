@@ -165,17 +165,16 @@ const AdminSettingsPage: React.FC = () => {
 
       try {
         const [turfsRes, settingsRes] = await Promise.all([
-          fetch(`${APP_BASE_URL}/turfs`),
+          fetch(`${APP_BASE_URL}/turfs?owner_id=${ownerId}`),
           fetch(`${APP_BASE_URL}/settings`),
         ]);
 
         if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
         if (!settingsRes.ok) throw new Error("Failed to fetch settings");
 
-        const { turfs } = await turfsRes.json();
+        const { turfs: filtered } = await turfsRes.json();
         const { settings } = await settingsRes.json();
 
-        const filtered = turfs.filter((t: any) => t.owner_id === ownerId);
         setOwnerTurfs(filtered.map((t: any) => ({ id: t.id, name: t.name })));
 
         if (filtered.length > 0) {
@@ -216,7 +215,10 @@ const AdminSettingsPage: React.FC = () => {
         if (expiredIds.length > 0) {
           await Promise.all(
             expiredIds.map((id) =>
-              fetch(`${APP_BASE_URL}/settings/${id}`, { method: "DELETE" }),
+              fetch(`${APP_BASE_URL}/settings/${id}`, {
+                method: "DELETE",
+                credentials: "include",
+              }),
             ),
           );
         }
@@ -248,7 +250,10 @@ const AdminSettingsPage: React.FC = () => {
         if (expired.length > 0) {
           // Delete expired ones from DB
           expired.forEach((s) => {
-            fetch(`${APP_BASE_URL}/settings/${s.id}`, { method: "DELETE" });
+            fetch(`${APP_BASE_URL}/settings/${s.id}`, {
+              method: "DELETE",
+              credentials: "include",
+            });
           });
 
           // Return only non-expired ones
@@ -308,6 +313,7 @@ const AdminSettingsPage: React.FC = () => {
       const res = await fetch(`${APP_BASE_URL}/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           turf_id: Number(selectedTurfId),
           blocked_date: addForm.blockedDate,
@@ -365,6 +371,7 @@ const AdminSettingsPage: React.FC = () => {
       const res = await fetch(`${APP_BASE_URL}/settings/${editingHour.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           turf_id: editingHour.turfId,
           blocked_date: editForm.blockedDate,
@@ -471,6 +478,7 @@ const AdminSettingsPage: React.FC = () => {
     try {
       const res = await fetch(`${APP_BASE_URL}/settings/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!res.ok) {

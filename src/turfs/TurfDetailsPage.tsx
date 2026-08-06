@@ -35,7 +35,7 @@ interface TimeSlot {
 const TurfDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { data: turf, isLoading, isError } = useTurf(id!);
+  const { data: turf, isLoading, isError, error } = useTurf(id!);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -226,11 +226,15 @@ const TurfDetailsPage: React.FC = () => {
   }
 
   if (isError || !turf) {
+    const isNotFound = error instanceof Error && error.message === "not_found";
+
     return (
       <Flex justify="center" align="center" minH="100vh" px={4}>
         <Alert.Root status="error" borderRadius="lg" maxW="md">
           <Alert.Description>
-            Failed to load turf details. Please try again later.
+            {isNotFound
+              ? "This turf is no longer available. It may have been removed or is temporarily unavailable."
+              : "Failed to load turf details. Please try again later."}
           </Alert.Description>
         </Alert.Root>
       </Flex>
@@ -238,47 +242,47 @@ const TurfDetailsPage: React.FC = () => {
   }
 
   const handleContinueBooking = () => {
-  if (!selectedSlot) {
-    toaster.warning({
-      title: "Please select a time slot",
-      duration: 3000,
-      closable: true,
-    });
-    return;
-  }
+    if (!selectedSlot) {
+      toaster.warning({
+        title: "Please select a time slot",
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
 
-  const bookingState = {
-    turfId: turf.id,
-    turfName: turf.name,
-    turfImage:
-      "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=200&fit=crop",
-    location: turf.address,
-    date: selectedDate.toDateString(),
-    timeSlot: timeSlots.find((s) => s.id === selectedSlot)?.time,
-    duration: `${turf.slot_duration_minutes} minutes`,
-    pricePerSlot: turf.price_per_slot,
-    currency: turf.currency,
+    const bookingState = {
+      turfId: turf.id,
+      turfName: turf.name,
+      turfImage:
+        "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=200&fit=crop",
+      location: turf.address,
+      date: selectedDate.toDateString(),
+      timeSlot: timeSlots.find((s) => s.id === selectedSlot)?.time,
+      duration: `${turf.slot_duration_minutes} minutes`,
+      pricePerSlot: turf.price_per_slot,
+      currency: turf.currency,
+    };
+
+    const isClientLoggedIn =
+      localStorage.getItem("isClientLoggedIn") === "true";
+
+    if (!isClientLoggedIn) {
+      // Not logged in: send to login, remembering where they wanted to go
+      // so we can bounce them back after a successful login.
+      navigate("/login", {
+        state: {
+          redirectTo: `/booking-form/${turf.id}`,
+          bookingState,
+        },
+      });
+      return;
+    }
+
+    navigate(`/booking-form/${turf.id}`, {
+      state: bookingState,
+    });
   };
-
-  const isClientLoggedIn =
-    localStorage.getItem("isClientLoggedIn") === "true";
-
-  if (!isClientLoggedIn) {
-    // Not logged in: send to login, remembering where they wanted to go
-    // so we can bounce them back after a successful login.
-    navigate("/login", {
-      state: {
-        redirectTo: `/booking-form/${turf.id}`,
-        bookingState,
-      },
-    });
-    return;
-  }
-
-  navigate(`/booking-form/${turf.id}`, {
-    state: bookingState,
-  });
-};
 
   return (
     <Box minH="100vh" bg={pageBg}>

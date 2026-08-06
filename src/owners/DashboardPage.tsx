@@ -21,6 +21,7 @@ import {
   ChevronRight,
   MapPin,
   LogOut,
+  User,
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Link, Outlet, useNavigate } from "react-router-dom";
@@ -35,8 +36,15 @@ const DashboardPage: React.FC = () => {
   const owner = JSON.parse(localStorage.getItem("owner") ?? "{}");
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3000/api/v1/owners/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // even if the request fails, still clear local UI state below
+    }
     localStorage.removeItem("owner");
     navigate("/admin/login", { replace: true });
   };
@@ -55,6 +63,7 @@ const DashboardPage: React.FC = () => {
     { name: "Bookings", path: "booking-list", icon: BookOpen },
     { name: "Turfs", path: "turf-list", icon: MapPin },
     { name: "Settings", path: "settings", icon: Settings },
+    { name: "My Profile", path: "profile", icon: User },
   ];
 
   const SidebarContent = () => (

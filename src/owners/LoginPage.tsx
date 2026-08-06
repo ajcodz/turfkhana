@@ -70,6 +70,7 @@ const LoginPage: React.FC = () => {
       const res = await fetch("http://localhost:3000/api/v1/owners/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           email: formData.email.trim(),
           password: formData.password,
@@ -88,13 +89,12 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      // Save login state and owner info
-      // Clear client session first
+      // Clear client session first (unrelated actor)
       localStorage.removeItem("isClientLoggedIn");
       localStorage.removeItem("client");
 
-      // Set owner session
-      localStorage.setItem("isLoggedIn", "true");
+      // Cache owner display info only — actual auth is the httpOnly cookie,
+      // this is just so the UI can show a name/email without an extra fetch.
       localStorage.setItem("owner", JSON.stringify(data.owner));
 
       toaster.success({

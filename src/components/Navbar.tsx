@@ -28,38 +28,36 @@ import {
 import { ColorModeButton, useColorModeValue } from "./ui/color-mode";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-// interface NavLinkProps {
-//   children: React.ReactNode;
-//   to?: string;
-//   onClick?: () => void;
-// }
+interface NavLinkProps {
+  children: React.ReactNode;
+  to?: string;
+  onClick?: () => void;
+}
 
-// const NavLink: React.FC<NavLinkProps> = ({ children, to = "#", onClick }) => {
-//   const hoverBg = useColorModeValue("green.50", "green.900");
+const NavLink: React.FC<NavLinkProps> = ({ children, to = "#", onClick }) => {
+  const hoverBg = useColorModeValue("green.50", "green.900");
 
-//   return (
-//     <Link to={to}>
-//       <Box
-//         px={3}
-//         py={2}
-//         rounded="md"
-//         fontSize="md"
-//         fontWeight="medium"
-//         color={useColorModeValue("gray.700", "gray.200")}
-//         _hover={{
-//           textDecoration: "none",
-//           bg: hoverBg,
-//           color: useColorModeValue("green.600", "green.300"),
-//         }}
-//         transition="all 0.2s"
-//         onClick={onClick}
-//         {...({ to: "/" } as any)}
-//       >
-//         {children}
-//       </Box>
-//     </Link>
-//   );
-// };
+  return (
+    <Link to={to} onClick={onClick}>
+      <Box
+        px={3}
+        py={2}
+        rounded="md"
+        fontSize="md"
+        fontWeight="medium"
+        color={useColorModeValue("gray.700", "gray.200")}
+        _hover={{
+          textDecoration: "none",
+          bg: hoverBg,
+          color: useColorModeValue("green.600", "green.300"),
+        }}
+        transition="all 0.2s"
+      >
+        {children}
+      </Box>
+    </Link>
+  );
+};
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -101,13 +99,7 @@ const Navbar: React.FC = () => {
   const isDashboard = location.pathname.startsWith("/dashboard");
   const isAdminPage = location.pathname.startsWith("/admin");
 
-  // const navLinks = [
-  //   { name: "Home", to: "/" },
-  //   { name: "Browse Turfs", to: "/turfs" },
-  //   { name: "Locations", to: "/locations" },
-  //   { name: "About", to: "/about" },
-  //   { name: "Contact", to: "/contact" },
-  // ];
+  const navLinks = [{ name: "Browse Turfs", to: "/turfs" }];
 
   // const handleLogout = () => {
   //   setIsLoggedIn(false);
@@ -144,13 +136,13 @@ const Navbar: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          {/* <HStack gap={1} display={{ base: "none", md: "flex" }}>
+          <HStack gap={1} display={{ base: "none", md: "flex" }}>
             {navLinks.map((link) => (
               <NavLink key={link.name} to={link.to}>
                 {link.name}
               </NavLink>
             ))}
-          </HStack> */}
+          </HStack>
 
           {/* Right Side Actions */}
           <Flex alignItems="center" gap={3}>
@@ -321,11 +313,11 @@ const Navbar: React.FC = () => {
                   )}
 
                   {/* Navigation Links */}
-                  {/* {navLinks.map((link) => (
+                  {navLinks.map((link) => (
                     <NavLink key={link.name} to={link.to} onClick={onClose}>
                       {link.name}
                     </NavLink>
-                  ))} */}
+                  ))}
 
                   <Box borderTop="1px" borderColor={borderColor} pt={4} mt={4}>
                     {isAdminPage ? null : isClientLoggedIn ? (

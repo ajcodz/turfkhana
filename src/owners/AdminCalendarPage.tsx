@@ -68,31 +68,35 @@ const AdminCalendarPage: React.FC = () => {
       setFetchError(null);
 
       try {
-        const [bookingsRes, clientsRes, turfsRes] = await Promise.all([
-          fetch("http://localhost:3000/api/v1/bookings"),
-          fetch("http://localhost:3000/api/v1/clients"),
-          fetch("http://localhost:3000/api/v1/turfs"),
+        const turfsRes = await fetch(
+          `http://localhost:3000/api/v1/turfs?owner_id=${ownerId}`,
+        );
+        if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
+        const { turfs: ownerTurfs } = await turfsRes.json();
+
+        const turfIds = ownerTurfs.map((t: any) => t.id).join(",");
+        const bookingsUrl = turfIds
+          ? `http://localhost:3000/api/v1/bookings?turf_ids=${turfIds}`
+          : null;
+
+        const [bookingsRes, clientsRes] = await Promise.all([
+          bookingsUrl ? fetch(bookingsUrl) : Promise.resolve(null),
+          fetch("http://localhost:3000/api/v1/clients/mine", {
+            credentials: "include",
+          }),
         ]);
 
-        if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
+        if (bookingsRes && !bookingsRes.ok)
+          throw new Error("Failed to fetch bookings");
         if (!clientsRes.ok) throw new Error("Failed to fetch clients");
-        if (!turfsRes.ok) throw new Error("Failed to fetch turfs");
 
-        const { bookings } = await bookingsRes.json();
+        const ownerBookings = bookingsRes
+          ? (await bookingsRes.json()).bookings
+          : [];
         const { clients } = await clientsRes.json();
-        const { turfs } = await turfsRes.json();
 
         const clientMap = new Map(clients.map((c: any) => [c.id, c]));
-
-        // Filter to only this owner's turfs
-        const ownerTurfs = turfs.filter((t: any) => t.owner_id === ownerId);
-        const ownerTurfIds = new Set(ownerTurfs.map((t: any) => t.id));
         const turfMap = new Map(ownerTurfs.map((t: any) => [t.id, t]));
-
-        // Filter bookings to only this owner's turfs
-        const ownerBookings = bookings.filter((b: any) =>
-          ownerTurfIds.has(b.turf_id),
-        );
 
         const formatTime = (time: string) => {
           if (!time) return "—";

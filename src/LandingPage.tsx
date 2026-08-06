@@ -20,21 +20,48 @@ import { Card, CardBody } from "@chakra-ui/card";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTurfs } from "./useLandingPage";
+import { useGeolocation } from "./hooks/useGeolocation";
+import { calculateDistanceKm, formatDistance } from "./utils/distance";
 
 const LandingPage: React.FC = () => {
   const { data: turfs = [], isLoading, isError } = useTurfs();
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const location = useGeolocation();
 
-  // Derive filtered turfs from API data
-  const filteredTurfs = (
+  const turfsWithDistance = turfs.map((turf) => {
+    const hasCoords = turf.lat != null && turf.lng != null;
+    const distanceKm =
+      location.status === "success" && hasCoords
+        ? calculateDistanceKm(
+            location.latitude!,
+            location.longitude!,
+            turf.lat as number,
+            turf.lng as number,
+          )
+        : null;
+    return { ...turf, distanceKm };
+  });
+
+  // Derive filtered + sorted turfs from API data
+  const categoryFiltered =
     selectedCategory === "All"
-      ? turfs
-      : turfs.filter((turf) => turf.type.toLowerCase() === selectedCategory.toLowerCase())
-  ).slice(0, 4); // top 4 only
+      ? turfsWithDistance
+      : turfsWithDistance.filter(
+          (turf) => turf.type.toLowerCase() === selectedCategory.toLowerCase(),
+        );
+
+  const sortedTurfs =
+    location.status === "success"
+      ? [...categoryFiltered].sort(
+          (a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity),
+        )
+      : categoryFiltered;
+
+  const filteredTurfs = sortedTurfs.slice(0, 4); // top 4 only
 
   const bgGradient = useColorModeValue(
     "linear(to-br, green.50, teal.50)",
-    "linear(to-br, gray.900, gray.800)"
+    "linear(to-br, gray.900, gray.800)",
   );
   const cardBg = useColorModeValue("white", "gray.700");
   const badgeBg = useColorModeValue("green.100", "green.900");
@@ -164,8 +191,16 @@ const LandingPage: React.FC = () => {
                 Available Turfs
               </Heading>
               <Text color="gray.600" fontSize="lg">
-                Book your slot at premium indoor facilities
+                {location.status === "success"
+                  ? "Sorted by distance from you"
+                  : "Book your slot at premium indoor facilities"}
               </Text>
+              {location.status === "denied" && (
+                <Text fontSize="sm" color="orange.500" mt={1}>
+                  Enable location access in your browser to see turfs nearest to
+                  you.
+                </Text>
+              )}
             </Box>
 
             {/* Loading State */}
@@ -178,7 +213,9 @@ const LandingPage: React.FC = () => {
             {/* Error State */}
             {isError && (
               <Alert.Root status="error" borderRadius="lg">
-                <Alert.Description>Failed to load turfs. Please try again later.</Alert.Description>
+                <Alert.Description>
+                  Failed to load turfs. Please try again later.
+                </Alert.Description>
               </Alert.Root>
             )}
 
@@ -209,7 +246,11 @@ const LandingPage: React.FC = () => {
                         position="absolute"
                         top={3}
                         right={3}
-                        colorScheme={turf.type.toLowerCase() === "cricket" ? "blue" : "orange"}
+                        colorScheme={
+                          turf.type.toLowerCase() === "cricket"
+                            ? "blue"
+                            : "orange"
+                        }
                         fontSize="xs"
                         px={2}
                         py={1}
@@ -227,9 +268,22 @@ const LandingPage: React.FC = () => {
                           <Icon as={MapPin} boxSize={4} />
                           <Text>{turf.address}</Text>
                         </HStack>
+                        {turf.distanceKm != null && (
+                          <Text
+                            fontSize="xs"
+                            color="green.600"
+                            fontWeight="medium"
+                          >
+                            {formatDistance(turf.distanceKm)}
+                          </Text>
+                        )}
                         <Flex justify="space-between" align="center" pt={2}>
                           <Box>
-                            <Text fontSize="2xl" fontWeight="bold" color="green.500">
+                            <Text
+                              fontSize="2xl"
+                              fontWeight="bold"
+                              color="green.500"
+                            >
                               {turf.currency} {turf.price_per_slot}
                             </Text>
                             <Text fontSize="xs" color="gray.500">
@@ -237,7 +291,11 @@ const LandingPage: React.FC = () => {
                             </Text>
                           </Box>
                           <Link to={`/turf-details/${turf.id}`}>
-                            <Button colorScheme="green" size="sm" borderRadius="full">
+                            <Button
+                              colorScheme="green"
+                              size="sm"
+                              borderRadius="full"
+                            >
                               View Details
                             </Button>
                           </Link>
@@ -255,6 +313,22 @@ const LandingPage: React.FC = () => {
                 <Text color="gray.500" fontSize="lg">
                   No turfs found for this category.
                 </Text>
+              </Flex>
+            )}
+
+            {!isLoading && !isError && (
+              <Flex justify="center" pt={4}>
+                <Link to="/turfs">
+                  <Button
+                    variant="outline"
+                    colorScheme="green"
+                    size="lg"
+                    borderRadius="full"
+                    px={8}
+                  >
+                    View All Turfs
+                  </Button>
+                </Link>
               </Flex>
             )}
           </VStack>
