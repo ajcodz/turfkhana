@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import cors from "cors";
 import superAdminRoutes from "./routes/superAdminRoutes";
 import cookieParser from "cookie-parser";
@@ -34,8 +35,22 @@ app.use(`/api/${V1}/owners`, ownerRoutes);
 app.use(`/api/${V1}/payments`, paymentRoutes);
 app.use(`/api/${V1}/settings`, settingRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Server is running!");
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+// Static frontend
+// Resolves to <repo-root>/dist from both ./src (ts-node) and ./dist (compiled).
+const FRONTEND_DIST =
+  process.env.FRONTEND_DIST_PATH || path.resolve(__dirname, "../../dist");
+
+app.use(express.static(FRONTEND_DIST));
+
+// SPA fallback: hand any non-API GET back to index.html so client-side
+// routing works on a hard refresh / direct link.
+app.use((req, res, next) => {
+  if (req.method !== "GET" || req.path.startsWith("/api/")) return next();
+  res.sendFile(path.join(FRONTEND_DIST, "index.html"));
 });
 
 // Middleware

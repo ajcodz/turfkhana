@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Flex, Spinner } from "@chakra-ui/react";
+import { APP_BASE_URL } from "../utils/api";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -10,7 +11,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   );
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/v1/owners/me", {
+    fetch(`${APP_BASE_URL}/owners/me`, {
       credentials: "include",
     })
       .then((res) => {

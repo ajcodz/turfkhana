@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { APP_BASE_URL } from "../utils/api";
 
 export type DashboardContext = {
   setActiveNav: React.Dispatch<React.SetStateAction<string>>;
@@ -38,7 +39,7 @@ const DashboardPage: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:3000/api/v1/owners/logout", {
+      await fetch(`${APP_BASE_URL}/owners/logout`, {
         method: "POST",
         credentials: "include",
       });

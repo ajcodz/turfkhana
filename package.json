@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
+    "dev:server": "npm --prefix backend run dev",
     "build": "tsc -b && vite build",
+    "build:server": "npm --prefix backend run build",
+    "build:all": "npm run build && npm run build:server",
+    "start": "npm --prefix backend run start",
     "lint": "eslint .",
     "preview": "vite preview"
   },

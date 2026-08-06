@@ -15,13 +15,13 @@ import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { APP_BASE_URL } from "../utils/api";
 
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 const ClientLoginPage: React.FC = () => {
   const navigate = useNavigate();

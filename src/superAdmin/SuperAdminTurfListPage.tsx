@@ -16,8 +16,8 @@ import {
 import { Power, Trash2 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
+import { APP_BASE_URL } from "../utils/api";
 
-const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 interface TurfRow {
   id: number;

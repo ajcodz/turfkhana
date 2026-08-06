@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { APP_BASE_URL } from "../utils/api";
 
 export type SuperAdminDashboardContext = {
   setActiveNav: React.Dispatch<React.SetStateAction<string>>;
@@ -37,7 +38,7 @@ const SuperAdminDashboardPage: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:3000/api/v1/super-admins/logout", {
+      await fetch(`${APP_BASE_URL}/super-admins/logout`, {
         method: "POST",
         credentials: "include",
       });

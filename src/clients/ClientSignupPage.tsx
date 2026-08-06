@@ -15,6 +15,7 @@ import { Mail, Lock, Eye, EyeOff, User, Phone } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { APP_BASE_URL } from "../utils/api";
 
 interface SignupFormData {
   name: string;
@@ -24,7 +25,6 @@ interface SignupFormData {
   confirmPassword: string;
 }
 
-const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 const ClientSignupPage: React.FC = () => {
   const navigate = useNavigate();

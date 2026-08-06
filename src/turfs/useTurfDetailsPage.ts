@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Turf } from "../../backend/src/models/turf.model";
+import { APP_BASE_URL } from "../utils/api";
 
-const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 const fetchTurfById = async (id: string): Promise<Turf> => {
   const res = await fetch(`${APP_BASE_URL}/turfs/${id}`);

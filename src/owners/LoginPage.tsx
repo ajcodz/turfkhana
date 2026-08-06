@@ -15,6 +15,7 @@ import { Mail, Lock, Eye, EyeOff, Shield } from "lucide-react";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
 import { useNavigate, Link } from "react-router-dom";
+import { APP_BASE_URL } from "../utils/api";
 
 interface LoginFormData {
   email: string;
@@ -67,7 +68,7 @@ const LoginPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("http://localhost:3000/api/v1/owners/login", {
+      const res = await fetch(`${APP_BASE_URL}/owners/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -26,8 +26,8 @@ import {
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toaster } from "../components/ui/toaster";
+import { APP_BASE_URL } from "../utils/api";
 
-const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 const BookingConfirmationPage: React.FC = () => {
   const [searchParams] = useSearchParams();

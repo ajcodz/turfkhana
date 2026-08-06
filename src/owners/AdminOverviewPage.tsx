@@ -35,8 +35,8 @@ import {
 } from "lucide-react";
 import { Link, useOutletContext } from "react-router-dom";
 import type { DashboardContext } from "./DashboardPage";
+import { APP_BASE_URL } from "../utils/api";
 
-const APP_BASE_URL = "http://localhost:3000/api/v1";
 
 interface Booking {
   id: string;
