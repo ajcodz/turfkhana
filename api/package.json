@@ -1,0 +1,4 @@
+{
+  "//": "Scope marker only. The root package.json is \"type\": \"module\", but everything under backend/ is CommonJS. Without this, api/index.ts is treated as ESM importing a CJS tree, which fails typecheck (TS2835) and risks a default-import interop mismatch at runtime.",
+  "type": "commonjs"
+}
