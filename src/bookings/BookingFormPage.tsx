@@ -166,7 +166,6 @@ const BookingFormPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-
       // Parse the time slot string "06:00 PM - 07:00 PM" → "18:00:00" / "19:00:00"
       const parseTime = (timeStr: string): string => {
         const [time, meridiem] = timeStr.trim().split(" ");
@@ -215,6 +214,10 @@ const BookingFormPage: React.FC = () => {
         currency: state?.currency ?? "PKR",
       }).toString();
 
+      // PayFast redirects the browser back to us, so these must be absolute
+      // and match wherever the app is actually being served from.
+      const origin = window.location.origin;
+
       // Initiate PayFast transaction (no DB writes yet)
       const paymentRes = await fetch(`${APP_BASE_URL}/payments`, {
         method: "POST",
@@ -224,9 +227,9 @@ const BookingFormPage: React.FC = () => {
           currencyCode: state?.currency ?? "PKR",
           customerEmail: formData.email.trim() || "noreply@turfkhana.com",
           customerMobile: formData.phoneNumber.trim(),
-          successUrl: `http://localhost:5173/booking-confirmation/${state?.turfId}?${bookingParams}`,
-          failureUrl: `http://localhost:5173/booking-failure?${failureParams}`,
-          checkoutUrl: `http://localhost:5173/booking-form/${state?.turfId}`,
+          successUrl: `${origin}/booking-confirmation/${state?.turfId}?${bookingParams}`,
+          failureUrl: `${origin}/booking-failure?${failureParams}`,
+          checkoutUrl: `${origin}/booking-form/${state?.turfId}`,
           items: [
             {
               SKU: `TURF-${state?.turfId}`,
