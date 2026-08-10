@@ -93,7 +93,7 @@ const BrowseTurfsPage: React.FC = () => {
             <Heading as="h1" size="xl" mb={2}>
               Browse Turfs
             </Heading>
-            <Text color="gray.600" fontSize="lg">
+            <Text color="fg.muted" fontSize="lg">
               {sorted.length} turf{sorted.length !== 1 ? "s" : ""} available
               {location.status === "success" && sortBy === "nearest"
                 ? ", sorted by distance from you"
@@ -114,7 +114,7 @@ const BrowseTurfsPage: React.FC = () => {
               align={{ base: "stretch", md: "center" }}
             >
               <InputGroup
-                startElement={<Icon as={Search} color="gray.400" />}
+                startElement={<Icon as={Search} color="fg.subtle" />}
                 flex={1}
               >
                 <Input
@@ -209,14 +209,14 @@ const BrowseTurfsPage: React.FC = () => {
                       <Heading as="h3" size="md">
                         {turf.name}
                       </Heading>
-                      <HStack fontSize="sm" color="gray.600">
+                      <HStack fontSize="sm" color="fg.muted">
                         <Icon as={MapPin} boxSize={4} />
                         <Text>{turf.address}</Text>
                       </HStack>
                       {turf.distanceKm != null && (
                         <Text
                           fontSize="xs"
-                          color="green.600"
+                          color="green.fg"
                           fontWeight="medium"
                         >
                           {formatDistance(turf.distanceKm)}
@@ -231,7 +231,7 @@ const BrowseTurfsPage: React.FC = () => {
                           >
                             {turf.currency} {turf.price_per_slot}
                           </Text>
-                          <Text fontSize="xs" color="gray.500">
+                          <Text fontSize="xs" color="fg.muted">
                             per slot
                           </Text>
                         </Box>
@@ -255,7 +255,7 @@ const BrowseTurfsPage: React.FC = () => {
           {/* Empty State */}
           {!isLoading && !isError && sorted.length === 0 && (
             <Flex justify="center" py={12}>
-              <Text color="gray.500" fontSize="lg">
+              <Text color="fg.muted" fontSize="lg">
                 No turfs match your search.
               </Text>
             </Flex>

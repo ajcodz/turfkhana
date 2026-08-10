@@ -106,7 +106,7 @@ const LandingPage: React.FC = () => {
             </Heading>
             <Text
               fontSize={{ base: "lg", md: "xl" }}
-              color="gray.600"
+              color="fg.muted"
               maxW="2xl"
             >
               Experience the best indoor cricket and futsal facilities across
@@ -129,19 +129,19 @@ const LandingPage: React.FC = () => {
             <HStack gap={8} pt={4} flexWrap="wrap" justify="center">
               <HStack>
                 <Icon as={MapPin} color="green.500" />
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color="fg.muted">
                   15+ Locations
                 </Text>
               </HStack>
               <HStack>
                 <Icon as={Calendar} color="green.500" />
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color="fg.muted">
                   24/7 Booking
                 </Text>
               </HStack>
               <HStack>
                 <Icon as={Users} color="green.500" />
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color="fg.muted">
                   5000+ Players
                 </Text>
               </HStack>
@@ -157,7 +157,7 @@ const LandingPage: React.FC = () => {
             <Heading as="h2" size="xl" mb={2}>
               Browse by Category
             </Heading>
-            <Text color="gray.600" fontSize="lg">
+            <Text color="fg.muted" fontSize="lg">
               Choose your sport and find the perfect venue
             </Text>
           </Box>
@@ -190,7 +190,7 @@ const LandingPage: React.FC = () => {
               <Heading as="h2" size="xl" mb={2}>
                 Available Turfs
               </Heading>
-              <Text color="gray.600" fontSize="lg">
+              <Text color="fg.muted" fontSize="lg">
                 {location.status === "success"
                   ? "Sorted by distance from you"
                   : "Book your slot at premium indoor facilities"}
@@ -264,14 +264,14 @@ const LandingPage: React.FC = () => {
                         <Heading as="h3" size="md">
                           {turf.name}
                         </Heading>
-                        <HStack fontSize="sm" color="gray.600">
+                        <HStack fontSize="sm" color="fg.muted">
                           <Icon as={MapPin} boxSize={4} />
                           <Text>{turf.address}</Text>
                         </HStack>
                         {turf.distanceKm != null && (
                           <Text
                             fontSize="xs"
-                            color="green.600"
+                            color="green.fg"
                             fontWeight="medium"
                           >
                             {formatDistance(turf.distanceKm)}
@@ -286,7 +286,7 @@ const LandingPage: React.FC = () => {
                             >
                               {turf.currency} {turf.price_per_slot}
                             </Text>
-                            <Text fontSize="xs" color="gray.500">
+                            <Text fontSize="xs" color="fg.muted">
                               per slot
                             </Text>
                           </Box>
@@ -310,7 +310,7 @@ const LandingPage: React.FC = () => {
             {/* Empty State */}
             {!isLoading && !isError && filteredTurfs.length === 0 && (
               <Flex justify="center" py={12}>
-                <Text color="gray.500" fontSize="lg">
+                <Text color="fg.muted" fontSize="lg">
                   No turfs found for this category.
                 </Text>
               </Flex>

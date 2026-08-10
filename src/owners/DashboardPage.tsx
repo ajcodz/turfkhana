@@ -74,7 +74,7 @@ const DashboardPage: React.FC = () => {
         <Heading as="h2" size="lg" color="green.500">
           TurfKhana
         </Heading>
-        <Text fontSize="xs" color="gray.500" mt={1}>
+        <Text fontSize="xs" color="fg.muted" mt={1}>
           Admin Portal
         </Text>
       </Box> */}
@@ -91,7 +91,7 @@ const DashboardPage: React.FC = () => {
               variant="ghost"
               justifyContent="flex-start"
               bg={activeNav === item.name ? activeNavBg : "transparent"}
-              color={activeNav === item.name ? "green.600" : "gray.600"}
+              color={activeNav === item.name ? "green.fg" : "fg.muted"}
               _hover={{ bg: navHoverBg }}
               onClick={() => {
                 setActiveNav(item.name);
@@ -121,7 +121,7 @@ const DashboardPage: React.FC = () => {
               <Text fontSize="sm" fontWeight="semibold">
                 {owner?.name ?? "Admin"}
               </Text>
-              <Text fontSize="xs" color="gray.500">
+              <Text fontSize="xs" color="fg.muted">
                 {owner?.email ?? "—"}
               </Text>
             </Box>

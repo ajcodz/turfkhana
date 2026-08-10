@@ -26,7 +26,7 @@ const PrivacyPolicyPage: React.FC = () => {
             <Heading as="h1" size="2xl" mb={4} color="green.500">
               Privacy Policy
             </Heading>
-            <Text fontSize="lg" color="gray.600">
+            <Text fontSize="lg" color="fg.muted">
               Last Updated: December 13, 2025
             </Text>
           </Box>
@@ -46,7 +46,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   1. Introduction
                 </Heading>
-                <Text color="gray.700" lineHeight="tall">
+                <Text color="fg" lineHeight="tall">
                   TurfKhana ("we," "our," or "us") is committed to protecting your privacy and
                   ensuring the security of your personal information. This Privacy Policy explains
                   how we collect, use, disclose, and safeguard your information when you use our
@@ -63,7 +63,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   2. Information We Collect
                 </Heading>
-                <Text color="gray.700" lineHeight="tall" mb={4}>
+                <Text color="fg" lineHeight="tall" mb={4}>
                   We collect several types of information from and about users of our Services,
                   including:
                 </Text>
@@ -78,7 +78,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           <strong>Full Name:</strong> Required for booking identification and
                           communication purposes
                         </Text>
@@ -87,7 +87,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           <strong>Phone Number:</strong> Used for booking confirmations, reminders,
                           and customer support
                         </Text>
@@ -96,7 +96,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           <strong>Email Address:</strong> Optional; used for electronic
                           communications and booking receipts
                         </Text>
@@ -113,7 +113,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Booking history, including dates, times, duration, and turf selection
                         </Text>
                       </List.Item>
@@ -121,7 +121,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Booking preferences and special requests
                         </Text>
                       </List.Item>
@@ -129,7 +129,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Cancellation and modification records
                         </Text>
                       </List.Item>
@@ -140,7 +140,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <Heading as="h3" size="md" mb={3}>
                       2.3 Payment Information
                     </Heading>
-                    <Text color="gray.700" lineHeight="tall">
+                    <Text color="fg" lineHeight="tall">
                       We collect payment information necessary to process your bookings. However,
                       we do not store full credit card or debit card information on our servers.
                       Payment processing is handled by our third-party payment processor, PayFast,
@@ -151,7 +151,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Transaction amounts and dates
                         </Text>
                       </List.Item>
@@ -159,7 +159,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Payment method type (e.g., credit card, bank transfer)
                         </Text>
                       </List.Item>
@@ -167,7 +167,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Transaction status and confirmation numbers
                         </Text>
                       </List.Item>
@@ -183,7 +183,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           IP address, browser type, and device information
                         </Text>
                       </List.Item>
@@ -191,7 +191,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Usage data, including pages visited and time spent on the platform
                         </Text>
                       </List.Item>
@@ -199,7 +199,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         <List.Indicator asChild color="green.500" mt={1}>
                           <CheckCircle />
                         </List.Indicator>
-                        <Text color="gray.700">
+                        <Text color="fg">
                           Cookies and similar tracking technologies
                         </Text>
                       </List.Item>
@@ -215,7 +215,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   3. How We Use Your Information
                 </Heading>
-                <Text color="gray.700" lineHeight="tall" mb={4}>
+                <Text color="fg" lineHeight="tall" mb={4}>
                   We use the information we collect for the following purposes:
                 </Text>
                 <List.Root gap={3}>
@@ -223,7 +223,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Service Delivery:</strong> To process and manage your turf bookings,
                       send confirmations, and provide customer support
                     </Text>
@@ -232,7 +232,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Communication:</strong> To send booking reminders, updates,
                       cancellation notices, and respond to your inquiries
                     </Text>
@@ -241,7 +241,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Payment Processing:</strong> To facilitate secure payment
                       transactions through our payment processor
                     </Text>
@@ -250,7 +250,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Service Improvement:</strong> To analyze usage patterns, improve our
                       platform functionality, and enhance user experience
                     </Text>
@@ -259,7 +259,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Marketing:</strong> To send promotional offers, newsletters, and
                       updates about our services (with your consent, where required)
                     </Text>
@@ -268,7 +268,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Legal Compliance:</strong> To comply with applicable laws,
                       regulations, and legal processes
                     </Text>
@@ -277,7 +277,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Security:</strong> To detect, prevent, and address fraud, security
                       breaches, and technical issues
                     </Text>
@@ -292,7 +292,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   4. Data Retention
                 </Heading>
-                <Text color="gray.700" lineHeight="tall" mb={4}>
+                <Text color="fg" lineHeight="tall" mb={4}>
                   We retain your personal information for as long as necessary to fulfill the
                   purposes outlined in this Privacy Policy, unless a longer retention period is
                   required or permitted by law. Specifically:
@@ -302,7 +302,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Account Information:</strong> Retained for the duration of your
                       account's active status and for 3 years after account closure
                     </Text>
@@ -311,7 +311,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Booking Records:</strong> Maintained for 5 years for accounting,
                       tax, and legal compliance purposes
                     </Text>
@@ -320,7 +320,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Payment Information:</strong> Transaction records retained for 7
                       years as required by financial regulations
                     </Text>
@@ -329,13 +329,13 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Technical Data:</strong> Typically retained for 24 months or as
                       required for analytical purposes
                     </Text>
                   </List.Item>
                 </List.Root>
-                <Text color="gray.700" lineHeight="tall" mt={4}>
+                <Text color="fg" lineHeight="tall" mt={4}>
                   After the retention period expires, we will securely delete or anonymize your
                   personal information in accordance with applicable data protection laws.
                 </Text>
@@ -348,7 +348,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   5. Third-Party Service Providers
                 </Heading>
-                <Text color="gray.700" lineHeight="tall" mb={4}>
+                <Text color="fg" lineHeight="tall" mb={4}>
                   We may share your information with trusted third-party service providers who
                   assist us in operating our platform and delivering our Services. These providers
                   are contractually obligated to protect your information and use it only for the
@@ -359,7 +359,7 @@ const PrivacyPolicyPage: React.FC = () => {
                   <Heading as="h3" size="md" mb={3}>
                     5.1 Payment Processor - PayFast
                   </Heading>
-                  <Text color="gray.700" lineHeight="tall" mb={3}>
+                  <Text color="fg" lineHeight="tall" mb={3}>
                     We use PayFast as our payment processing partner to handle all financial
                     transactions securely. When you make a payment through our platform:
                   </Text>
@@ -368,7 +368,7 @@ const PrivacyPolicyPage: React.FC = () => {
                       <List.Indicator asChild color="green.500" mt={1}>
                         <CheckCircle />
                       </List.Indicator>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         Your payment information is transmitted directly to PayFast's secure
                         servers
                       </Text>
@@ -377,7 +377,7 @@ const PrivacyPolicyPage: React.FC = () => {
                       <List.Indicator asChild color="green.500" mt={1}>
                         <CheckCircle />
                       </List.Indicator>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         PayFast processes your payment in compliance with PCI DSS standards
                       </Text>
                     </List.Item>
@@ -385,7 +385,7 @@ const PrivacyPolicyPage: React.FC = () => {
                       <List.Indicator asChild color="green.500" mt={1}>
                         <CheckCircle />
                       </List.Indicator>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         We receive only transaction confirmation details, not your full payment
                         card information
                       </Text>
@@ -394,7 +394,7 @@ const PrivacyPolicyPage: React.FC = () => {
                       <List.Indicator asChild color="green.500" mt={1}>
                         <CheckCircle />
                       </List.Indicator>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         PayFast's use of your information is governed by their own privacy policy
                       </Text>
                     </List.Item>
@@ -405,7 +405,7 @@ const PrivacyPolicyPage: React.FC = () => {
                   <Heading as="h3" size="md" mb={3}>
                     5.2 Other Service Providers
                   </Heading>
-                  <Text color="gray.700" lineHeight="tall" mb={2}>
+                  <Text color="fg" lineHeight="tall" mb={2}>
                     We may also work with:
                   </Text>
                   <List.Root gap={2}>
@@ -413,7 +413,7 @@ const PrivacyPolicyPage: React.FC = () => {
                       <List.Indicator asChild color="green.500" mt={1}>
                         <CheckCircle />
                       </List.Indicator>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         SMS and email service providers for communications
                       </Text>
                     </List.Item>
@@ -421,7 +421,7 @@ const PrivacyPolicyPage: React.FC = () => {
                       <List.Indicator asChild color="green.500" mt={1}>
                         <CheckCircle />
                       </List.Indicator>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         Cloud hosting and storage providers for data security
                       </Text>
                     </List.Item>
@@ -429,7 +429,7 @@ const PrivacyPolicyPage: React.FC = () => {
                       <List.Indicator asChild color="green.500" mt={1}>
                         <CheckCircle />
                       </List.Indicator>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         Analytics providers to understand platform usage
                       </Text>
                     </List.Item>
@@ -444,7 +444,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   6. Your Privacy Rights
                 </Heading>
-                <Text color="gray.700" lineHeight="tall" mb={4}>
+                <Text color="fg" lineHeight="tall" mb={4}>
                   You have certain rights regarding your personal information. Depending on your
                   location, these may include:
                 </Text>
@@ -453,7 +453,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Right to Access:</strong> You may request a copy of the personal
                       information we hold about you
                     </Text>
@@ -462,7 +462,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Right to Correction:</strong> You may request that we correct any
                       inaccurate or incomplete information
                     </Text>
@@ -471,7 +471,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Right to Deletion:</strong> You may request deletion of your
                       personal information, subject to legal retention requirements
                     </Text>
@@ -480,7 +480,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Right to Object:</strong> You may object to certain processing of
                       your personal information, including marketing communications
                     </Text>
@@ -489,7 +489,7 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Right to Data Portability:</strong> You may request a copy of your
                       data in a structured, machine-readable format
                     </Text>
@@ -498,13 +498,13 @@ const PrivacyPolicyPage: React.FC = () => {
                     <List.Indicator asChild color="green.500" mt={1}>
                       <CheckCircle />
                     </List.Indicator>
-                    <Text color="gray.700">
+                    <Text color="fg">
                       <strong>Right to Withdraw Consent:</strong> Where we rely on consent, you
                       may withdraw it at any time
                     </Text>
                   </List.Item>
                 </List.Root>
-                <Text color="gray.700" lineHeight="tall" mt={4}>
+                <Text color="fg" lineHeight="tall" mt={4}>
                   To exercise any of these rights, please contact us using the information provided
                   in the "Contact Us" section below. We will respond to your request within 30 days
                   of receipt.
@@ -518,7 +518,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   7. Data Security
                 </Heading>
-                <Text color="gray.700" lineHeight="tall">
+                <Text color="fg" lineHeight="tall">
                   We implement appropriate technical and organizational security measures to
                   protect your personal information against unauthorized access, alteration,
                   disclosure, or destruction. These measures include encryption, secure server
@@ -535,7 +535,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   8. Children's Privacy
                 </Heading>
-                <Text color="gray.700" lineHeight="tall">
+                <Text color="fg" lineHeight="tall">
                   Our Services are not intended for individuals under the age of 18. We do not
                   knowingly collect personal information from children. If you are a parent or
                   guardian and believe your child has provided us with personal information, please
@@ -550,7 +550,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   9. Changes to This Privacy Policy
                 </Heading>
-                <Text color="gray.700" lineHeight="tall">
+                <Text color="fg" lineHeight="tall">
                   We may update this Privacy Policy from time to time to reflect changes in our
                   practices, technology, legal requirements, or other factors. We will notify you of
                   any material changes by posting the new Privacy Policy on this page and updating
@@ -567,7 +567,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   10. Contact Us
                 </Heading>
-                <Text color="gray.700" lineHeight="tall" mb={4}>
+                <Text color="fg" lineHeight="tall" mb={4}>
                   If you have any questions, concerns, or requests regarding this Privacy Policy or
                   our data practices, please contact us:
                 </Text>
@@ -596,10 +596,10 @@ const PrivacyPolicyPage: React.FC = () => {
                       <Mail size={20} color="white" />
                     </Box>
                     <Box>
-                      <Text fontWeight="semibold" color="gray.800">
+                      <Text fontWeight="semibold" color="fg">
                         Email
                       </Text>
-                      <Link href="mailto:ajcodzhq@gmail.com" color="green.600" fontWeight="medium">
+                      <Link href="mailto:ajcodzhq@gmail.com" color="green.fg" fontWeight="medium">
                         ajcodzhq@gmail.com
                       </Link>
                     </Box>
@@ -620,10 +620,10 @@ const PrivacyPolicyPage: React.FC = () => {
                       <Phone size={20} color="white" />
                     </Box>
                     <Box>
-                      <Text fontWeight="semibold" color="gray.800">
+                      <Text fontWeight="semibold" color="fg">
                         WhatsApp
                       </Text>
-                      <Link href="tel:+923154807718" color="green.600" fontWeight="medium">
+                      <Link href="tel:+923154807718" color="green.fg" fontWeight="medium">
                         +92 315 4807718
                       </Link>
                     </Box>
@@ -644,10 +644,10 @@ const PrivacyPolicyPage: React.FC = () => {
                       <MapPin size={20} color="white" />
                     </Box>
                     <Box>
-                      <Text fontWeight="semibold" color="gray.800">
+                      <Text fontWeight="semibold" color="fg">
                         Address
                       </Text>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         Plot No. 59/B Koh-e-Noor Housing Scheme
                         <br />
                         Lahore, Punjab, Pakistan
@@ -656,14 +656,14 @@ const PrivacyPolicyPage: React.FC = () => {
                   </Box>
                 </VStack>
 
-                <Text color="gray.600" fontSize="sm" mt={4} fontStyle="italic">
+                <Text color="fg.muted" fontSize="sm" mt={4} fontStyle="italic">
                   We aim to respond to all privacy-related inquiries within 48 hours.
                 </Text>
               </Box>
             </VStack>
           </Box>
           {/* Footer Note */}
-          <Box textAlign="center" color="gray.500" fontSize="sm">
+          <Box textAlign="center" color="fg.muted" fontSize="sm">
             <Text>
               By using TurfKhana's services, you acknowledge that you have read and understood this
               Privacy Policy.

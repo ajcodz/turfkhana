@@ -32,7 +32,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                         <Heading as="h1" size="2xl" mb={4} color="green.500">
                             Refund & Cancellation Policy
                         </Heading>
-                        <Text fontSize="lg" color="gray.600">
+                        <Text fontSize="lg" color="fg.muted">
                             Last Updated: December 13, 2025
                         </Text>
                     </Box>
@@ -70,7 +70,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     1. Overview
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall">
+                                <Text color="fg" lineHeight="tall">
                                     At TurfKhana, we understand that plans can change. This Refund & Cancellation
                                     Policy outlines the terms and conditions under which bookings can be cancelled,
                                     rescheduled, or refunded. We strive to maintain fairness for both our customers
@@ -85,7 +85,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     2. Cancellation Time Frames & Refund Eligibility
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     The refund amount you are eligible for depends on when you cancel your booking
                                     relative to the scheduled booking time. Our tiered cancellation policy is as
                                     follows:
@@ -109,7 +109,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                                     24+ hours before booking
                                                 </Table.Cell>
                                                 <Table.Cell>
-                                                    <Text fontWeight="bold" color="green.600">
+                                                    <Text fontWeight="bold" color="green.fg">
                                                         100% refund
                                                     </Text>
                                                 </Table.Cell>
@@ -123,7 +123,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                                     12-24 hours before booking
                                                 </Table.Cell>
                                                 <Table.Cell>
-                                                    <Text fontWeight="bold" color="yellow.600">
+                                                    <Text fontWeight="bold" color="yellow.fg">
                                                         75% refund
                                                     </Text>
                                                 </Table.Cell>
@@ -137,7 +137,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                                     6-12 hours before booking
                                                 </Table.Cell>
                                                 <Table.Cell>
-                                                    <Text fontWeight="bold" color="orange.600">
+                                                    <Text fontWeight="bold" color="orange.fg">
                                                         50% refund
                                                     </Text>
                                                 </Table.Cell>
@@ -151,7 +151,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                                     Less than 6 hours before booking
                                                 </Table.Cell>
                                                 <Table.Cell>
-                                                    <Text fontWeight="bold" color="red.600">
+                                                    <Text fontWeight="bold" color="red.fg">
                                                         0% refund
                                                     </Text>
                                                 </Table.Cell>
@@ -180,7 +180,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     3. Rescheduling Policy
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     We understand that sometimes you need to change your booking time rather than
                                     cancel completely. TurfKhana offers flexible rescheduling options:
                                 </Text>
@@ -195,27 +195,27 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     >
                                         <Stack direction="row" mb={2}>
                                             <RefreshCw size={20} color="green" />
-                                            <Heading as="h3" size="sm" color="green.700">
+                                            <Heading as="h3" size="sm" color="green.fg">
                                                 Free Rescheduling (24+ Hours Notice)
                                             </Heading>
                                         </Stack>
                                         <List.Root gap={2}>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={CheckCircle} color="green.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     Unlimited free rescheduling if done at least 24 hours before your
                                                     booking time
                                                 </Text>
                                             </List.Item>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={CheckCircle} color="green.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     Subject to availability of alternative time slots
                                                 </Text>
                                             </List.Item>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={CheckCircle} color="green.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     No additional charges or fees
                                                 </Text>
                                             </List.Item>
@@ -231,26 +231,26 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     >
                                         <Stack direction="row" mb={2}>
                                             <Clock size={20} color="orange" />
-                                            <Heading as="h3" size="sm" color="yellow.700">
+                                            <Heading as="h3" size="sm" color="yellow.fg">
                                                 Limited Rescheduling (12-24 Hours Notice)
                                             </Heading>
                                         </Stack>
                                         <List.Root gap={2}>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={CheckCircle} color="yellow.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     One-time rescheduling allowed with Rs 500 processing fee
                                                 </Text>
                                             </List.Item>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={CheckCircle} color="yellow.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     Must be rescheduled to a time within the next 7 days
                                                 </Text>
                                             </List.Item>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={CheckCircle} color="yellow.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     Subject to slot availability
                                                 </Text>
                                             </List.Item>
@@ -266,20 +266,20 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     >
                                         <Stack direction="row" mb={2}>
                                             <XCircle size={20} color="red" />
-                                            <Heading as="h3" size="sm" color="red.700">
+                                            <Heading as="h3" size="sm" color="red.fg">
                                                 No Rescheduling (Less Than 12 Hours)
                                             </Heading>
                                         </Stack>
                                         <List.Root gap={2}>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={XCircle} color="red.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     Rescheduling is not permitted within 12 hours of booking time
                                                 </Text>
                                             </List.Item>
                                             <List.Item display="flex" alignItems="flex-start">
                                                 <List.Indicator as={XCircle} color="red.500" />
-                                                <Text color="gray.700" fontSize="sm">
+                                                <Text color="fg" fontSize="sm">
                                                     You may cancel and forfeit payment per the cancellation policy
                                                 </Text>
                                             </List.Item>
@@ -295,7 +295,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     4. Guaranteed Full Refund Scenarios
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     Regardless of the cancellation time frame, you are entitled to a full 100%
                                     refund in the following circumstances:
                                 </Text>
@@ -304,10 +304,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={CheckCircle} color="green.500" mt={1} boxSize={6} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="semibold" mb={1}>
+                                            <Text color="fg" fontWeight="semibold" mb={1}>
                                                 Slot Unavailability Due to Facility Issues
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 If the turf facility becomes unavailable due to maintenance, damage,
                                                 flooding, or other facility-related issues beyond your control, you will
                                                 receive a full refund within 3-5 business days.
@@ -318,10 +318,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={CheckCircle} color="green.500" mt={1} boxSize={6} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="semibold" mb={1}>
+                                            <Text color="fg" fontWeight="semibold" mb={1}>
                                                 System or Technical Failures
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 If your booking was affected by a technical glitch, system error, payment
                                                 processing failure, or any malfunction on the TurfKhana platform that
                                                 prevented proper booking confirmation, you are entitled to a full refund.
@@ -332,10 +332,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={CheckCircle} color="green.500" mt={1} boxSize={6} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="semibold" mb={1}>
+                                            <Text color="fg" fontWeight="semibold" mb={1}>
                                                 Double Booking or Administrative Errors
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 If the facility was double-booked due to an error on our part or the turf
                                                 owner's part, and an alternative time slot cannot be arranged, you will
                                                 receive a full refund plus a Rs 1,000 credit toward your next booking.
@@ -346,10 +346,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={CheckCircle} color="green.500" mt={1} boxSize={6} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="semibold" mb={1}>
+                                            <Text color="fg" fontWeight="semibold" mb={1}>
                                                 Severe Weather Conditions or Force Majeure
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 In case of extreme weather conditions (heavy rain, storms, etc.) or
                                                 force majeure events (natural disasters, government restrictions, etc.)
                                                 that make it unsafe or impossible to use the facility, full refunds will
@@ -361,10 +361,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={CheckCircle} color="green.500" mt={1} boxSize={6} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="semibold" mb={1}>
+                                            <Text color="fg" fontWeight="semibold" mb={1}>
                                                 Facility Closure Without Notice
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 If the turf facility is closed on your booking date without at least 12
                                                 hours advance notice, you are entitled to a full refund plus a 20%
                                                 discount voucher for future bookings.
@@ -381,7 +381,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     5. Refund Processing Timeline
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     Once your cancellation or refund request has been approved, the refund will be
                                     processed according to the following timeline:
                                 </Text>
@@ -390,10 +390,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={DollarSign} color="green.500" mt={1} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="medium">
+                                            <Text color="fg" fontWeight="medium">
                                                 Bank Transfers / Online Payment Methods:
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 5-7 business days from approval date
                                             </Text>
                                         </Box>
@@ -401,10 +401,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={DollarSign} color="green.500" mt={1} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="medium">
+                                            <Text color="fg" fontWeight="medium">
                                                 Credit/Debit Cards:
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 7-10 business days depending on your bank's processing time
                                             </Text>
                                         </Box>
@@ -412,10 +412,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={DollarSign} color="green.500" mt={1} />
                                         <Box>
-                                            <Text color="gray.700" fontWeight="medium">
+                                            <Text color="fg" fontWeight="medium">
                                                 TurfKhana Wallet Credit:
                                             </Text>
-                                            <Text color="gray.600" fontSize="sm">
+                                            <Text color="fg.muted" fontSize="sm">
                                                 Instant credit within 24 hours (can be used for future bookings)
                                             </Text>
                                         </Box>
@@ -439,32 +439,32 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     6. No-Show Policy
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     If you fail to show up for your confirmed booking without prior cancellation:
                                 </Text>
 
                                 <List.Root gap={3}>
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={XCircle} color="red.500" mt={1} />
-                                        <Text color="gray.700">
+                                        <Text color="fg">
                                             <strong>No refund will be issued</strong> for no-show bookings
                                         </Text>
                                     </List.Item>
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={XCircle} color="red.500" mt={1} />
-                                        <Text color="gray.700">
+                                        <Text color="fg">
                                             The full booking amount will be forfeited
                                         </Text>
                                     </List.Item>
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={XCircle} color="red.500" mt={1} />
-                                        <Text color="gray.700">
+                                        <Text color="fg">
                                             Multiple no-shows may result in restrictions on future bookings
                                         </Text>
                                     </List.Item>
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={AlertTriangle} color="yellow.500" mt={1} />
-                                        <Text color="gray.700">
+                                        <Text color="fg">
                                             If you're running late, please contact the facility immediately via the
                                             app or phone to avoid being marked as a no-show
                                         </Text>
@@ -479,7 +479,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     7. How to Request a Cancellation or Refund
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     To cancel your booking or request a refund, please follow these steps:
                                 </Text>
 
@@ -492,7 +492,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                         <Text fontWeight="semibold" mb={2}>
                                             Step 1: Access Your Booking
                                         </Text>
-                                        <Text fontSize="sm" color="gray.600">
+                                        <Text fontSize="sm" color="fg.muted">
                                             Log in to your TurfKhana account and navigate to "My Bookings"
                                         </Text>
                                     </Box>
@@ -505,7 +505,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                         <Text fontWeight="semibold" mb={2}>
                                             Step 2: Select the Booking
                                         </Text>
-                                        <Text fontSize="sm" color="gray.600">
+                                        <Text fontSize="sm" color="fg.muted">
                                             Find the booking you wish to cancel and click "Cancel Booking"
                                         </Text>
                                     </Box>
@@ -518,7 +518,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                         <Text fontWeight="semibold" mb={2}>
                                             Step 3: Provide Reason
                                         </Text>
-                                        <Text fontSize="sm" color="gray.600">
+                                        <Text fontSize="sm" color="fg.muted">
                                             Select a cancellation reason from the dropdown menu
                                         </Text>
                                     </Box>
@@ -531,7 +531,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                         <Text fontWeight="semibold" mb={2}>
                                             Step 4: Confirm Cancellation
                                         </Text>
-                                        <Text fontSize="sm" color="gray.600">
+                                        <Text fontSize="sm" color="fg.muted">
                                             Review the refund amount based on your cancellation time and confirm
                                         </Text>
                                     </Box>
@@ -544,19 +544,19 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                         <Text fontWeight="semibold" mb={2}>
                                             Step 5: Receive Confirmation
                                         </Text>
-                                        <Text fontSize="sm" color="gray.600">
+                                        <Text fontSize="sm" color="fg.muted">
                                             You will receive an email and SMS confirmation with refund details
                                         </Text>
                                     </Box>
                                 </VStack>
 
-                                <Text color="gray.600" fontSize="sm" mt={4}>
+                                <Text color="fg.muted" fontSize="sm" mt={4}>
                                     For assistance, contact our customer support at{' '}
-                                    <Text as="span" color="green.600" fontWeight="medium">
+                                    <Text as="span" color="green.fg" fontWeight="medium">
                                         ajcodzhq@gmail.com
                                     </Text>{' '}
                                     or call{' '}
-                                    <Text as="span" color="green.600" fontWeight="medium">
+                                    <Text as="span" color="green.fg" fontWeight="medium">
                                         +92 315 4807718
                                     </Text>
                                 </Text>
@@ -569,7 +569,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     8. Special Circumstances & Exceptions
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     We understand that unexpected situations may arise. In the following cases,
                                     special consideration may be given:
                                 </Text>
@@ -577,7 +577,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <List.Root gap={3}>
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={AlertTriangle} color="yellow.500" mt={1} />
-                                        <Text color="gray.700">
+                                        <Text color="fg">
                                             <strong>Medical Emergencies:</strong> If you have a documented medical
                                             emergency, please contact our support team with relevant documentation
                                             within 48 hours of your booking for case-by-case review
@@ -585,14 +585,14 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     </List.Item>
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={AlertTriangle} color="yellow.500" mt={1} />
-                                        <Text color="gray.700">
+                                        <Text color="fg">
                                             <strong>Death in Family:</strong> Full refunds are available with
                                             appropriate documentation
                                         </Text>
                                     </List.Item>
                                     <List.Item display="flex" alignItems="flex-start">
                                         <List.Indicator as={AlertTriangle} color="yellow.500" mt={1} />
-                                        <Text color="gray.700">
+                                        <Text color="fg">
                                             <strong>Government-Imposed Restrictions:</strong> If government lockdowns
                                             or restrictions prevent you from using the facility, full refunds will be
                                             automatically processed
@@ -608,7 +608,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     9. Disputes & Appeals
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     If you believe your cancellation or refund request was handled incorrectly, you
                                     may file an appeal:
                                 </Text>
@@ -621,23 +621,23 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     borderColor="blue.200"
                                 >
                                     <VStack gap={3} align="stretch">
-                                        <Text fontWeight="semibold" color="gray.800">
+                                        <Text fontWeight="semibold" color="fg">
                                             Dispute Resolution Process:
                                         </Text>
-                                        <Text fontSize="sm" color="gray.700">
+                                        <Text fontSize="sm" color="fg">
                                             1. Email us at{' '}
-                                            <Text as="span" color="blue.600" fontWeight="medium">
+                                            <Text as="span" color="blue.fg" fontWeight="medium">
                                                 ajcodzhq@gmail.com
                                             </Text>{' '}
                                             with your booking ID and dispute details
                                         </Text>
-                                        <Text fontSize="sm" color="gray.700">
+                                        <Text fontSize="sm" color="fg">
                                             2. Include any supporting documentation or evidence
                                         </Text>
-                                        <Text fontSize="sm" color="gray.700">
+                                        <Text fontSize="sm" color="fg">
                                             3. Our disputes team will review your case within 3-5 business days
                                         </Text>
-                                        <Text fontSize="sm" color="gray.700">
+                                        <Text fontSize="sm" color="fg">
                                             4. You will receive a written response with the final decision
                                         </Text>
                                     </VStack>
@@ -651,7 +651,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     10. Policy Updates
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall">
+                                <Text color="fg" lineHeight="tall">
                                     TurfKhana reserves the right to modify this Refund & Cancellation Policy at any
                                     time. Changes will be posted on this page with an updated "Last Updated" date.
                                     Bookings made after the policy change will be subject to the new terms. We
@@ -666,7 +666,7 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                 <Heading as="h2" size="lg" mb={4}>
                                     11. Contact Us
                                 </Heading>
-                                <Text color="gray.700" lineHeight="tall" mb={4}>
+                                <Text color="fg" lineHeight="tall" mb={4}>
                                     If you have any questions, concerns, or requests regarding this Refund & Cancellation Policy, please contact us:
                                 </Text>
 
@@ -694,10 +694,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                             <Mail size={20} color="white" />
                                         </Box>
                                         <Box>
-                                            <Text fontWeight="semibold" color="gray.800">
+                                            <Text fontWeight="semibold" color="fg">
                                                 Email
                                             </Text>
-                                            <Link href="mailto:ajcodzhq@gmail.com" color="green.600" fontWeight="medium">
+                                            <Link href="mailto:ajcodzhq@gmail.com" color="green.fg" fontWeight="medium">
                                                 ajcodzhq@gmail.com
                                             </Link>
                                         </Box>
@@ -718,10 +718,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                             <Phone size={20} color="white" />
                                         </Box>
                                         <Box>
-                                            <Text fontWeight="semibold" color="gray.800">
+                                            <Text fontWeight="semibold" color="fg">
                                                 WhatsApp
                                             </Text>
-                                            <Link href="tel:+923154807718" color="green.600" fontWeight="medium">
+                                            <Link href="tel:+923154807718" color="green.fg" fontWeight="medium">
                                                 +92 315 4807718
                                             </Link>
                                         </Box>
@@ -742,10 +742,10 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                             <MapPin size={20} color="white" />
                                         </Box>
                                         <Box>
-                                            <Text fontWeight="semibold" color="gray.800">
+                                            <Text fontWeight="semibold" color="fg">
                                                 Address
                                             </Text>
-                                            <Text color="gray.700">
+                                            <Text color="fg">
                                                 Plot No. 59/B Koh-e-Noor Housing Scheme
                                                 <br />
                                                 Lahore, Punjab, Pakistan
@@ -754,13 +754,13 @@ const RefundCancellationPolicyPage: React.FC = () => {
                                     </Box>
                                 </VStack>
 
-                                <Text color="gray.600" fontSize="sm" mt={4} fontStyle="italic">
+                                <Text color="fg.muted" fontSize="sm" mt={4} fontStyle="italic">
                                     We aim to respond to all refund & cancellation related inquiries within 48 hours.
                                 </Text>
                             </Box>
                         </VStack>
                     </Box>
-                    <Box textAlign="center" color="gray.500" fontSize="sm">
+                    <Box textAlign="center" color="fg.muted" fontSize="sm">
                         <Text>By using TurfKhana's services, you acknowledge that you have read and understood this Refund & Cancellation Policy.</Text>
                     </Box>
                 </VStack>

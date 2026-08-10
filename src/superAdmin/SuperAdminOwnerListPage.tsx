@@ -470,7 +470,7 @@ const SuperAdminOwnerListPage: React.FC = () => {
       >
         <Box>
           <Heading size="lg">Owners</Heading>
-          <Text color="gray.600" mt={1}>
+          <Text color="fg.muted" mt={1}>
             {owners.length} owner{owners.length !== 1 ? "s" : ""} on the
             platform
           </Text>
@@ -565,7 +565,7 @@ const SuperAdminOwnerListPage: React.FC = () => {
             {owners.length === 0 && (
               <Table.Row>
                 <Table.Cell colSpan={6}>
-                  <Text textAlign="center" color="gray.500" py={6}>
+                  <Text textAlign="center" color="fg.muted" py={6}>
                     No owners yet.
                   </Text>
                 </Table.Cell>
@@ -802,7 +802,7 @@ const SuperAdminOwnerListPage: React.FC = () => {
               </Dialog.Header>
               <Dialog.Body>
                 <VStack gap={4} align="stretch">
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color="fg.muted">
                     Set a new temporary password for this owner. Share it with
                     them securely — they can change it themselves afterward from
                     their profile page.

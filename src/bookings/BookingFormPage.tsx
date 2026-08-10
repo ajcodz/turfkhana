@@ -293,7 +293,7 @@ const BookingFormPage: React.FC = () => {
             <Heading as="h1" size={{ base: "xl", md: "2xl" }} mb={2}>
               Complete Your Booking
             </Heading>
-            <Text color="gray.600" fontSize="lg">
+            <Text color="fg.muted" fontSize="lg">
               Just a few more details to confirm your turf reservation
             </Text>
           </Box>
@@ -313,7 +313,7 @@ const BookingFormPage: React.FC = () => {
                       <Heading as="h2" size="md" mb={4}>
                         Personal Information
                       </Heading>
-                      <Text color="gray.600" fontSize="sm" mb={6}>
+                      <Text color="fg.muted" fontSize="sm" mb={6}>
                         Please provide your contact details for booking
                         confirmation
                       </Text>
@@ -375,7 +375,7 @@ const BookingFormPage: React.FC = () => {
                           <Icon as={Mail} boxSize={4} />
                           <Text>Email Address</Text>
                           {!storedClient?.email && (
-                            <Text fontSize="sm" color="gray.500">
+                            <Text fontSize="sm" color="fg.muted">
                               (Optional)
                             </Text>
                           )}
@@ -401,7 +401,7 @@ const BookingFormPage: React.FC = () => {
                         }}
                       />
                       {storedClient?.email && (
-                        <Text fontSize="xs" color="gray.500" mt={1}>
+                        <Text fontSize="xs" color="fg.muted" mt={1}>
                           This is your account email and can't be changed here.
                         </Text>
                       )}
@@ -419,12 +419,12 @@ const BookingFormPage: React.FC = () => {
                       borderColor="green.200"
                     >
                       <HStack mb={2}>
-                        <Icon as={CreditCard} color="green.600" boxSize={5} />
-                        <Heading as="h3" size="sm" color="green.700">
+                        <Icon as={CreditCard} color="green.fg" boxSize={5} />
+                        <Heading as="h3" size="sm" color="green.fg">
                           Payment Information
                         </Heading>
                       </HStack>
-                      <Text fontSize="sm" color="gray.700">
+                      <Text fontSize="sm" color="fg">
                         Payment will be collected at the venue. Please bring
                         cash or use our on-site card payment facility.
                       </Text>
@@ -448,7 +448,7 @@ const BookingFormPage: React.FC = () => {
                     </Button>
                     {/* </Link> */}
 
-                    <Text fontSize="xs" color="gray.500" textAlign="center">
+                    <Text fontSize="xs" color="fg.muted" textAlign="center">
                       By confirming, you agree to our Terms of Service and
                       Cancellation Policy
                     </Text>
@@ -488,7 +488,7 @@ const BookingFormPage: React.FC = () => {
                     <Heading as="h3" size="sm" mb={2}>
                       {bookingData.turfName}
                     </Heading>
-                    <HStack color="gray.600" fontSize="sm">
+                    <HStack color="fg.muted" fontSize="sm">
                       <Icon as={MapPin} boxSize={4} />
                       <Text>{bookingData.location}</Text>
                     </HStack>
@@ -499,7 +499,7 @@ const BookingFormPage: React.FC = () => {
                   {/* Booking Details */}
                   <VStack gap={3} align="stretch">
                     <HStack justify="space-between">
-                      <HStack color="gray.600">
+                      <HStack color="fg.muted">
                         <Icon as={Calendar} boxSize={4} />
                         <Text fontSize="sm" fontWeight="medium">
                           Date
@@ -511,7 +511,7 @@ const BookingFormPage: React.FC = () => {
                     </HStack>
 
                     <HStack justify="space-between" align="start">
-                      <HStack color="gray.600">
+                      <HStack color="fg.muted">
                         <Icon as={Clock} boxSize={4} />
                         <Text fontSize="sm" fontWeight="medium">
                           {bookingData.slots.length === 1
@@ -533,7 +533,7 @@ const BookingFormPage: React.FC = () => {
                     </HStack>
 
                     <HStack justify="space-between">
-                      <Text fontSize="sm" color="gray.600" fontWeight="medium">
+                      <Text fontSize="sm" color="fg.muted" fontWeight="medium">
                         Total Duration
                       </Text>
                       <Text fontSize="sm" fontWeight="semibold">
@@ -547,7 +547,7 @@ const BookingFormPage: React.FC = () => {
                   {/* Price Breakdown */}
                   <VStack gap={3} align="stretch">
                     <HStack justify="space-between">
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color="fg.muted">
                         Price per slot
                       </Text>
                       <Text fontSize="sm">
@@ -557,7 +557,7 @@ const BookingFormPage: React.FC = () => {
                     </HStack>
 
                     <HStack justify="space-between">
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color="fg.muted">
                         Number of slots
                       </Text>
                       <Text fontSize="sm">× {bookingData.slots.length}</Text>
@@ -582,7 +582,7 @@ const BookingFormPage: React.FC = () => {
                     bg={summaryBg}
                     borderRadius="md"
                     fontSize="xs"
-                    color="gray.600"
+                    color="fg.muted"
                   >
                     <Text fontWeight="semibold" mb={1}>
                       Cancellation Policy:

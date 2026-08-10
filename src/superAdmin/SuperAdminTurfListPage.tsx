@@ -184,7 +184,7 @@ const SuperAdminTurfListPage: React.FC = () => {
     <Box p={{ base: 4, md: 8 }}>
       <Box mb={6}>
         <Heading size="lg">Turfs</Heading>
-        <Text color="gray.600" mt={1}>
+        <Text color="fg.muted" mt={1}>
           {turfs.length} turf{turfs.length !== 1 ? "s" : ""} across the platform
         </Text>
       </Box>
@@ -254,7 +254,7 @@ const SuperAdminTurfListPage: React.FC = () => {
             {turfs.length === 0 && (
               <Table.Row>
                 <Table.Cell colSpan={5}>
-                  <Text textAlign="center" color="gray.500" py={6}>
+                  <Text textAlign="center" color="fg.muted" py={6}>
                     No turfs yet.
                   </Text>
                 </Table.Cell>

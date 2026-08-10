@@ -356,11 +356,11 @@ const TurfDetailsPage: React.FC = () => {
                     {turf.name}
                   </Heading>
                   <HStack gap={4} flexWrap="wrap" mb={3}>
-                    <HStack color="gray.600">
+                    <HStack color="fg.muted">
                       <Icon as={MapPin} />
                       <Text fontSize="md">{turf.address}</Text>
                     </HStack>
-                    <HStack color="gray.600">
+                    <HStack color="fg.muted">
                       <Icon as={Clock} />
                       <Text fontSize="md">
                         {turf.opening_time} - {turf.closing_time}
@@ -372,7 +372,7 @@ const TurfDetailsPage: React.FC = () => {
                   <Text fontSize="3xl" fontWeight="bold" color="green.500">
                     {turf.currency} {turf.price_per_slot}
                   </Text>
-                  <Text color="gray.600" fontSize="sm">
+                  <Text color="fg.muted" fontSize="sm">
                     per slot
                   </Text>
                 </Box>
@@ -420,28 +420,32 @@ const TurfDetailsPage: React.FC = () => {
                       borderRadius="lg"
                       border="2px solid"
                       borderColor={isSelected ? "green.500" : borderColor}
-                      bg={isSelected ? "green.50" : "transparent"}
+                      bg={isSelected ? "green.subtle" : "transparent"}
                       cursor="pointer"
                       transition="all 0.2s"
                       _hover={{ borderColor: "green.400", bg: hoverBg }}
                       onClick={() => setSelectedDate(date)}
                       gap={1}
                     >
-                      <Text fontSize="xs" fontWeight="medium" color="gray.600">
+                      <Text fontSize="xs" fontWeight="medium" color="fg.muted">
                         {day}
                       </Text>
                       <Text
                         fontSize="xl"
                         fontWeight="bold"
-                        color={isSelected ? "green.600" : "gray.800"}
+                        color={isSelected ? "green.fg" : "fg"}
                       >
                         {dateNum}
                       </Text>
-                      <Text fontSize="xs" color="gray.500">
+                      <Text fontSize="xs" color="fg.muted">
                         {month}
                       </Text>
                       {isTodayDate && (
-                        <Badge colorPalette="green" fontSize="2xs">
+                        <Badge
+                          colorPalette="green"
+                          variant="solid"
+                          fontSize="2xs"
+                        >
                           Today
                         </Badge>
                       )}
@@ -463,7 +467,7 @@ const TurfDetailsPage: React.FC = () => {
                       Select Time Slots
                     </Heading>
                   </HStack>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color="fg.muted">
                     Pick one or more slots — tap a selected slot again to remove
                     it.
                   </Text>
@@ -482,7 +486,7 @@ const TurfDetailsPage: React.FC = () => {
                     <Text>Not Available</Text>
                   </HStack>
                   <HStack>
-                    <Icon as={CheckCircle} color="green.600" boxSize={4} />
+                    <Icon as={CheckCircle} color="green.fg" boxSize={4} />
                     <Text>Selected</Text>
                   </HStack>
                 </HStack>
@@ -502,11 +506,11 @@ const TurfDetailsPage: React.FC = () => {
                   borderColor={borderColor}
                 >
                   <VStack gap={3}>
-                    <Icon as={Clock} boxSize={12} color="gray.300" />
-                    <Heading as="h3" size="md" color="gray.500">
+                    <Icon as={Clock} boxSize={12} color="fg.subtle" />
+                    <Heading as="h3" size="md" color="fg.muted">
                       No Available Slots
                     </Heading>
-                    <Text fontSize="sm" color="gray.400" maxW="sm">
+                    <Text fontSize="sm" color="fg.subtle" maxW="sm">
                       All time slots for today have passed. Please select a
                       future date to make a booking.
                     </Text>
@@ -591,14 +595,14 @@ const TurfDetailsPage: React.FC = () => {
                     </Button>
                   )}
                 </HStack>
-                <Text color="gray.600">
+                <Text color="fg.muted">
                   Date: <strong>{selectedDate.toDateString()}</strong>
                 </Text>
                 {selectedSlots.length === 0 ? (
-                  <Text color="gray.600">No slots selected yet</Text>
+                  <Text color="fg.muted">No slots selected yet</Text>
                 ) : (
                   <Box>
-                    <Text color="gray.600" mb={1}>
+                    <Text color="fg.muted" mb={1}>
                       {selectedSlots.length}{" "}
                       {selectedSlots.length === 1 ? "slot" : "slots"} selected:
                     </Text>
@@ -618,7 +622,7 @@ const TurfDetailsPage: React.FC = () => {
                   </Box>
                 )}
                 {selectedSlots.length === 0 ? (
-                  <Text color="gray.600">
+                  <Text color="fg.muted">
                     Price per slot:{" "}
                     <Text
                       as="span"
@@ -630,7 +634,7 @@ const TurfDetailsPage: React.FC = () => {
                     </Text>
                   </Text>
                 ) : (
-                  <Text color="gray.600">
+                  <Text color="fg.muted">
                     Total ({turf.currency} {turf.price_per_slot} ×{" "}
                     {selectedSlots.length}):{" "}
                     <Text

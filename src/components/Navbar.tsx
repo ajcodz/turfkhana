@@ -198,7 +198,7 @@ const Navbar: React.FC = () => {
                         <Text fontSize="sm" fontWeight="semibold">
                           {clientName}
                         </Text>
-                        <Text fontSize="xs" color="gray.500">
+                        <Text fontSize="xs" color="fg.muted">
                           {JSON.parse(localStorage.getItem("client") ?? "{}")
                             .email ?? ""}
                         </Text>
@@ -303,7 +303,7 @@ const Navbar: React.FC = () => {
                         </Avatar.Root>
                         <Box>
                           <Text fontWeight="semibold">{clientName}</Text>
-                          <Text fontSize="sm" color="gray.600">
+                          <Text fontSize="sm" color="fg.muted">
                             {JSON.parse(localStorage.getItem("client") ?? "{}")
                               .email ?? ""}
                           </Text>
@@ -361,20 +361,20 @@ const Navbar: React.FC = () => {
                       fontSize="sm"
                       fontWeight="semibold"
                       mb={3}
-                      color="gray.600"
+                      color="fg.muted"
                     >
                       Contact Us
                     </Text>
                     <VStack align="stretch" gap={2}>
-                      <HStack fontSize="sm" color="gray.600">
+                      <HStack fontSize="sm" color="fg.muted">
                         <Phone size={16} />
                         <Text>+92 315 4807718</Text>
                       </HStack>
-                      <HStack fontSize="sm" color="gray.600">
+                      <HStack fontSize="sm" color="fg.muted">
                         <Mail size={16} />
                         <Text>ajcodzhq@gmail.com</Text>
                       </HStack>
-                      <HStack fontSize="sm" color="gray.600">
+                      <HStack fontSize="sm" color="fg.muted">
                         <MapPin size={16} />
                         <VStack alignItems={"start"} gap={0}>
                           <Text>Plot No. 59/B</Text>

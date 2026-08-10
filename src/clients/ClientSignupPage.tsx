@@ -188,7 +188,7 @@ const ClientSignupPage: React.FC = () => {
             <Heading as="h1" size="xl" textAlign="center">
               Create Account
             </Heading>
-            <Text color="gray.600" textAlign="center">
+            <Text color="fg.muted" textAlign="center">
               Sign up to start booking turfs on TurfKhana
             </Text>
           </VStack>
@@ -371,7 +371,7 @@ const ClientSignupPage: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   w="100%"
-                  color="gray.500"
+                  color="fg.muted"
                   _hover={{ color: "green.500" }}
                 >
                   Already have an account? Login
@@ -384,7 +384,7 @@ const ClientSignupPage: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   w="100%"
-                  color="gray.500"
+                  color="fg.muted"
                   _hover={{ color: "green.500" }}
                 >
                   ← Back to Home
@@ -394,7 +394,7 @@ const ClientSignupPage: React.FC = () => {
           </Box>
 
           {/* Footer */}
-          <Text fontSize="sm" color="gray.500" textAlign="center">
+          <Text fontSize="sm" color="fg.muted" textAlign="center">
             © 2025 TurfKhana. All rights reserved.
           </Text>
         </VStack>

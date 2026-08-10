@@ -197,7 +197,7 @@ const BookingConfirmationPage: React.FC = () => {
       >
         <VStack gap={4}>
           <Spinner size="xl" color="green.500" />
-          <Text color="gray.600">Confirming your booking...</Text>
+          <Text color="fg.muted">Confirming your booking...</Text>
         </VStack>
       </Box>
     );
@@ -218,10 +218,10 @@ const BookingConfirmationPage: React.FC = () => {
           <Heading size="md" color="red.500">
             Payment Received, But Booking Failed to Save
           </Heading>
-          <Text color="gray.600" fontSize="sm">
+          <Text color="fg.muted" fontSize="sm">
             {createError}
           </Text>
-          <Text color="gray.600" fontSize="sm">
+          <Text color="fg.muted" fontSize="sm">
             Your payment was successful, but we couldn't save your booking
             automatically. Please contact support with your transaction ID:{" "}
             <strong>{basketId}</strong>
@@ -280,7 +280,7 @@ const BookingConfirmationPage: React.FC = () => {
               >
                 Booking Confirmed!
               </Heading>
-              <Text fontSize={{ base: "md", md: "lg" }} color="gray.600">
+              <Text fontSize={{ base: "md", md: "lg" }} color="fg.muted">
                 {bookingData.slots.length > 1
                   ? `Your turf has been successfully reserved for ${bookingData.slots.length} slots`
                   : "Your turf has been successfully reserved"}
@@ -326,7 +326,7 @@ const BookingConfirmationPage: React.FC = () => {
                   <Heading as="h3" size="sm" mb={3}>
                     {bookingData.turfName}
                   </Heading>
-                  <HStack color="gray.600">
+                  <HStack color="fg.muted">
                     <Icon as={MapPin} boxSize={4} />
                     <Text fontSize="sm">{bookingData.location}</Text>
                   </HStack>
@@ -342,7 +342,7 @@ const BookingConfirmationPage: React.FC = () => {
                     bg={useColorModeValue("gray.50", "gray.800")}
                     borderRadius="md"
                   >
-                    <HStack color="gray.600">
+                    <HStack color="fg.muted">
                       <Icon as={Calendar} boxSize={5} color={successColor} />
                       <Text fontWeight="medium">Date</Text>
                     </HStack>
@@ -361,7 +361,7 @@ const BookingConfirmationPage: React.FC = () => {
                     bg={useColorModeValue("gray.50", "gray.800")}
                     borderRadius="md"
                   >
-                    <HStack color="gray.600">
+                    <HStack color="fg.muted">
                       <Icon as={Clock} boxSize={5} color={successColor} />
                       <Text fontWeight="medium">
                         {bookingData.slots.length === 1
@@ -391,7 +391,7 @@ const BookingConfirmationPage: React.FC = () => {
                     Customer Information
                   </Heading>
                   <HStack justify="space-between">
-                    <Text color="gray.600" fontSize="sm">
+                    <Text color="fg.muted" fontSize="sm">
                       Name
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
@@ -399,7 +399,7 @@ const BookingConfirmationPage: React.FC = () => {
                     </Text>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text color="gray.600" fontSize="sm">
+                    <Text color="fg.muted" fontSize="sm">
                       Phone
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
@@ -407,7 +407,7 @@ const BookingConfirmationPage: React.FC = () => {
                     </Text>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text color="gray.600" fontSize="sm">
+                    <Text color="fg.muted" fontSize="sm">
                       Total Duration
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
@@ -440,7 +440,7 @@ const BookingConfirmationPage: React.FC = () => {
                   </HStack>
                   <Text
                     fontSize="xs"
-                    color="gray.600"
+                    color="fg.muted"
                     mt={2}
                     textAlign="center"
                   >
@@ -460,7 +460,7 @@ const BookingConfirmationPage: React.FC = () => {
                 >
                   <Text
                     fontSize="sm"
-                    color="gray.700"
+                    color="fg"
                     fontWeight="semibold"
                     mb={2}
                   >
@@ -470,7 +470,7 @@ const BookingConfirmationPage: React.FC = () => {
                     align="stretch"
                     gap={1}
                     fontSize="sm"
-                    color="gray.600"
+                    color="fg.muted"
                   >
                     <Text>
                       • Please arrive 10 minutes before your booking time
@@ -531,10 +531,10 @@ const BookingConfirmationPage: React.FC = () => {
 
           {/* Footer Text */}
           <VStack gap={2} textAlign="center" pt={4}>
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color="fg.muted">
               Booked on {bookingData.bookingDate}
             </Text>
-            <Text fontSize="xs" color="gray.500">
+            <Text fontSize="xs" color="fg.muted">
               A confirmation has been sent to your phone number
             </Text>
           </VStack>

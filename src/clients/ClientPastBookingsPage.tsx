@@ -239,7 +239,7 @@ const ClientPastBookingsPage: React.FC = () => {
                   <VStack align="start" gap={0}>
                     <Text>{booking.id}</Text>
                     {booking.slotIndex !== null && (
-                      <Text fontSize="xs" color="gray.500" fontWeight="normal">
+                      <Text fontSize="xs" color="fg.muted" fontWeight="normal">
                         Slot {booking.slotIndex} of {booking.slotCount}
                       </Text>
                     )}
@@ -250,7 +250,7 @@ const ClientPastBookingsPage: React.FC = () => {
                     <Text fontSize="sm" fontWeight="medium">
                       {booking.turfName}
                     </Text>
-                    <HStack color="gray.500">
+                    <HStack color="fg.muted">
                       <Icon as={MapPin} boxSize={3} />
                       <Text fontSize="xs">{booking.turfAddress}</Text>
                     </HStack>
@@ -258,13 +258,13 @@ const ClientPastBookingsPage: React.FC = () => {
                 </Table.Cell>
                 <Table.Cell>
                   <HStack>
-                    <Icon as={Calendar} boxSize={4} color="gray.400" />
+                    <Icon as={Calendar} boxSize={4} color="fg.subtle" />
                     <Text fontSize="sm">{booking.date}</Text>
                   </HStack>
                 </Table.Cell>
                 <Table.Cell>
                   <HStack>
-                    <Icon as={Clock} boxSize={4} color="gray.400" />
+                    <Icon as={Clock} boxSize={4} color="fg.subtle" />
                     <Text fontSize="sm">{booking.time}</Text>
                   </HStack>
                 </Table.Cell>
@@ -315,11 +315,11 @@ const ClientPastBookingsPage: React.FC = () => {
       textAlign="center"
     >
       <VStack gap={4}>
-        <Icon as={BookOpen} boxSize={12} color="gray.300" />
-        <Heading as="h3" size="md" color="gray.500">
+        <Icon as={BookOpen} boxSize={12} color="fg.subtle" />
+        <Heading as="h3" size="md" color="fg.muted">
           {title}
         </Heading>
-        <Text fontSize="sm" color="gray.400" maxW="sm">
+        <Text fontSize="sm" color="fg.subtle" maxW="sm">
           {description}
         </Text>
         <Link to="/">
@@ -341,7 +341,7 @@ const ClientPastBookingsPage: React.FC = () => {
       >
         <VStack gap={4}>
           <Spinner size="xl" color="green.500" />
-          <Text color="gray.600">Loading your bookings...</Text>
+          <Text color="fg.muted">Loading your bookings...</Text>
         </VStack>
       </Box>
     );
@@ -359,7 +359,7 @@ const ClientPastBookingsPage: React.FC = () => {
           <Text color="red.500" fontWeight="semibold">
             Failed to load bookings
           </Text>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="fg.muted">
             {fetchError}
           </Text>
         </VStack>
@@ -377,7 +377,7 @@ const ClientPastBookingsPage: React.FC = () => {
               <Heading as="h1" size="xl">
                 My Bookings
               </Heading>
-              <Text color="gray.500" fontSize="sm">
+              <Text color="fg.muted" fontSize="sm">
                 Showing all upcoming and past bookings for{" "}
                 {client?.name ?? "you"}
               </Text>

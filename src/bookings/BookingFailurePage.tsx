@@ -93,7 +93,7 @@ const BookingFailurePage: React.FC = () => {
               >
                 Payment Failed!
               </Heading>
-              <Text fontSize={{ base: "md", md: "lg" }} color="gray.600">
+              <Text fontSize={{ base: "md", md: "lg" }} color="fg.muted">
                 Unfortunately your transaction could not be completed
               </Text>
             </VStack>
@@ -114,7 +114,7 @@ const BookingFailurePage: React.FC = () => {
                   <Heading as="h3" size="sm" mb={3}>
                     {failureData.turfName}
                   </Heading>
-                  <HStack color="gray.600">
+                  <HStack color="fg.muted">
                     <Icon as={MapPin} boxSize={4} />
                     <Text fontSize="sm">{failureData.location}</Text>
                   </HStack>
@@ -130,7 +130,7 @@ const BookingFailurePage: React.FC = () => {
                     bg={useColorModeValue("gray.50", "gray.800")}
                     borderRadius="md"
                   >
-                    <HStack color="gray.600">
+                    <HStack color="fg.muted">
                       <Icon as={Calendar} boxSize={5} color={failureColor} />
                       <Text fontWeight="medium">Date</Text>
                     </HStack>
@@ -149,7 +149,7 @@ const BookingFailurePage: React.FC = () => {
                     bg={useColorModeValue("gray.50", "gray.800")}
                     borderRadius="md"
                   >
-                    <HStack color="gray.600">
+                    <HStack color="fg.muted">
                       <Icon as={Clock} boxSize={5} color={failureColor} />
                       <Text fontWeight="medium">
                         {failureData.slots.length === 1
@@ -188,7 +188,7 @@ const BookingFailurePage: React.FC = () => {
                     Customer Information
                   </Heading>
                   <HStack justify="space-between">
-                    <Text color="gray.600" fontSize="sm">
+                    <Text color="fg.muted" fontSize="sm">
                       Name
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
@@ -196,7 +196,7 @@ const BookingFailurePage: React.FC = () => {
                     </Text>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text color="gray.600" fontSize="sm">
+                    <Text color="fg.muted" fontSize="sm">
                       Phone
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
@@ -204,7 +204,7 @@ const BookingFailurePage: React.FC = () => {
                     </Text>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text color="gray.600" fontSize="sm">
+                    <Text color="fg.muted" fontSize="sm">
                       Total Duration
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
@@ -237,7 +237,7 @@ const BookingFailurePage: React.FC = () => {
                   </HStack>
                   <Text
                     fontSize="xs"
-                    color="gray.600"
+                    color="fg.muted"
                     mt={2}
                     textAlign="center"
                   >
@@ -257,7 +257,7 @@ const BookingFailurePage: React.FC = () => {
                 >
                   <Text
                     fontSize="sm"
-                    color="gray.700"
+                    color="fg"
                     fontWeight="semibold"
                     mb={2}
                   >
@@ -267,7 +267,7 @@ const BookingFailurePage: React.FC = () => {
                     align="stretch"
                     gap={1}
                     fontSize="sm"
-                    color="gray.600"
+                    color="fg.muted"
                   >
                     <Text>• Insufficient balance in your account</Text>
                     <Text>• Incorrect card details entered</Text>
@@ -333,10 +333,10 @@ const BookingFailurePage: React.FC = () => {
 
           {/* Footer Text */}
           <VStack gap={2} textAlign="center" pt={4}>
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color="fg.muted">
               If the issue persists, please contact our support team
             </Text>
-            <Text fontSize="xs" color="gray.500">
+            <Text fontSize="xs" color="fg.muted">
               No booking has been confirmed until payment is successful
             </Text>
           </VStack>

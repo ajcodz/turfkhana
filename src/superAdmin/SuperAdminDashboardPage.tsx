@@ -73,7 +73,7 @@ const SuperAdminDashboardPage: React.FC = () => {
             TurfKhana
           </Text>
         </HStack>
-        <Text fontSize="xs" color="gray.500" mt={1}>
+        <Text fontSize="xs" color="fg.muted" mt={1}>
           Super Admin Portal
         </Text>
       </Box>
@@ -89,7 +89,7 @@ const SuperAdminDashboardPage: React.FC = () => {
               variant="ghost"
               justifyContent="flex-start"
               bg={activeNav === item.name ? activeNavBg : "transparent"}
-              color={activeNav === item.name ? "purple.600" : "gray.600"}
+              color={activeNav === item.name ? "purple.fg" : "fg.muted"}
               _hover={{ bg: navHoverBg }}
               onClick={() => {
                 setActiveNav(item.name);
@@ -118,7 +118,7 @@ const SuperAdminDashboardPage: React.FC = () => {
               <Text fontSize="sm" fontWeight="semibold">
                 {superAdmin?.name ?? "Super Admin"}
               </Text>
-              <Text fontSize="xs" color="gray.500">
+              <Text fontSize="xs" color="fg.muted">
                 {superAdmin?.email ?? "—"}
               </Text>
             </Box>

@@ -118,7 +118,7 @@ const SuperAdminAuditLogPage: React.FC = () => {
     <Box p={{ base: 4, md: 8 }}>
       <Box mb={6}>
         <Heading size="lg">Audit Log</Heading>
-        <Text color="gray.600" mt={1}>
+        <Text color="fg.muted" mt={1}>
           {total} recorded action{total !== 1 ? "s" : ""} by super admins
         </Text>
       </Box>
@@ -143,7 +143,7 @@ const SuperAdminAuditLogPage: React.FC = () => {
           <Table.Body>
             {logs.map((log) => (
               <Table.Row key={log.id}>
-                <Table.Cell fontSize="xs" color="gray.500" whiteSpace="nowrap">
+                <Table.Cell fontSize="xs" color="fg.muted" whiteSpace="nowrap">
                   {new Date(log.created_at).toLocaleString()}
                 </Table.Cell>
                 <Table.Cell fontWeight="medium">{log.actor_name}</Table.Cell>
@@ -166,7 +166,7 @@ const SuperAdminAuditLogPage: React.FC = () => {
             {logs.length === 0 && (
               <Table.Row>
                 <Table.Cell colSpan={5}>
-                  <Text textAlign="center" color="gray.500" py={6}>
+                  <Text textAlign="center" color="fg.muted" py={6}>
                     No actions recorded yet.
                   </Text>
                 </Table.Cell>
@@ -178,7 +178,7 @@ const SuperAdminAuditLogPage: React.FC = () => {
 
       {totalPages > 1 && (
         <Flex justify="space-between" align="center" mt={4}>
-          <Text fontSize="sm" color="gray.600">
+          <Text fontSize="sm" color="fg.muted">
             Page {currentPage} of {totalPages}
           </Text>
           <Flex gap={2}>

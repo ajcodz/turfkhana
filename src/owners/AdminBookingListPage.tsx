@@ -591,7 +591,7 @@ const AdminBookingListPage: React.FC = () => {
       >
         <VStack gap={4}>
           <Spinner size="xl" color="green.500" />
-          <Text color="gray.600">Loading bookings...</Text>
+          <Text color="fg.muted">Loading bookings...</Text>
         </VStack>
       </Box>
     );
@@ -611,7 +611,7 @@ const AdminBookingListPage: React.FC = () => {
           <Text color="red.500" fontWeight="semibold">
             Failed to load bookings
           </Text>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="fg.muted">
             {fetchError}
           </Text>
         </VStack>
@@ -646,7 +646,7 @@ const AdminBookingListPage: React.FC = () => {
               <Heading as="h1" size="lg">
                 Bookings
               </Heading>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color="fg.muted">
                 Manage all turf bookings
               </Text>
             </Box>
@@ -741,7 +741,7 @@ const AdminBookingListPage: React.FC = () => {
               {/* Search Bar */}
               <InputGroup
                 startElement={
-                  <Icon pointerEvents="none" as={Search} color="gray.400" />
+                  <Icon pointerEvents="none" as={Search} color="fg.subtle" />
                 }
                 maxW={{ base: "100%", md: "400px" }}
                 flex={1}
@@ -761,7 +761,7 @@ const AdminBookingListPage: React.FC = () => {
               <HStack gap={3}>
                 <Icon
                   as={Filter}
-                  color="gray.500"
+                  color="fg.muted"
                   display={{ base: "none", md: "block" }}
                 />
                 <NativeSelect.Root size="lg" maxW="200px">
@@ -783,7 +783,7 @@ const AdminBookingListPage: React.FC = () => {
             </Flex>
 
             {/* Results Count */}
-            <Text fontSize="sm" color="gray.600" mt={4}>
+            <Text fontSize="sm" color="fg.muted" mt={4}>
               Showing {startIndex + 1}-
               {Math.min(endIndex, filteredBookings.length)} of{" "}
               {filteredBookings.length} bookings
@@ -834,7 +834,7 @@ const AdminBookingListPage: React.FC = () => {
                               <Text fontSize="sm" fontWeight="medium">
                                 {booking.customerName}
                               </Text>
-                              <Text fontSize="xs" color="gray.500">
+                              <Text fontSize="xs" color="fg.muted">
                                 {booking.customerPhone}
                               </Text>
                             </Box>
@@ -887,9 +887,9 @@ const AdminBookingListPage: React.FC = () => {
                     <Table.Row>
                       <Table.Cell colSpan={8} textAlign="center" py={8}>
                         <VStack gap={2}>
-                          <Icon as={BookOpen} boxSize={12} color="gray.300" />
-                          <Text color="gray.500">No bookings found</Text>
-                          <Text fontSize="sm" color="gray.400">
+                          <Icon as={BookOpen} boxSize={12} color="fg.subtle" />
+                          <Text color="fg.muted">No bookings found</Text>
+                          <Text fontSize="sm" color="fg.subtle">
                             Try adjusting your search or filters
                           </Text>
                         </VStack>
@@ -904,7 +904,7 @@ const AdminBookingListPage: React.FC = () => {
           {/* Pagination */}
           {filteredBookings.length > itemsPerPage && (
             <Flex justify="space-between" align="center">
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color="fg.muted">
                 Page {currentPage} of {totalPages}
               </Text>
               <HStack gap={2}>
@@ -928,7 +928,7 @@ const AdminBookingListPage: React.FC = () => {
                     const elements = [];
                     if (index > 0 && array[index - 1] !== page - 1) {
                       elements.push(
-                        <Text key={`ellipsis-${page}`} color="gray.500">
+                        <Text key={`ellipsis-${page}`} color="fg.muted">
                           ...
                         </Text>,
                       );

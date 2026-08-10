@@ -27,7 +27,7 @@ const TermsConditionsPage: React.FC = () => {
             <Heading as="h1" size="2xl" mb={4} color="green.500">
               Terms & Conditions
             </Heading>
-            <Text fontSize="lg" color="gray.600">
+            <Text fontSize="lg" color="fg.muted">
               Last Updated: December 13, 2025
             </Text>
           </Box>
@@ -45,9 +45,9 @@ const TermsConditionsPage: React.FC = () => {
               <Box>
                 <Heading as="h2" size="lg" mb={4}>1. Definitions</Heading>
                 <List.Root gap={2}>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700"><strong>"TurfKhana"</strong> refers to our company and services</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700"><strong>"User"</strong> refers to anyone using our platform</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700"><strong>"Services"</strong> refers to our booking platform and related services</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg"><strong>"TurfKhana"</strong> refers to our company and services</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg"><strong>"User"</strong> refers to anyone using our platform</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg"><strong>"Services"</strong> refers to our booking platform and related services</Text></List.Item>
                 </List.Root>
               </Box>
 
@@ -61,15 +61,15 @@ const TermsConditionsPage: React.FC = () => {
                     <List.Root gap={2}>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">You must provide accurate information during registration</Text>
+                        <Text color="fg">You must provide accurate information during registration</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">You are responsible for maintaining account security</Text>
+                        <Text color="fg">You are responsible for maintaining account security</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Must be 18+ or have parental consent</Text>
+                        <Text color="fg">Must be 18+ or have parental consent</Text>
                       </List.Item>
                     </List.Root>
 
@@ -77,19 +77,19 @@ const TermsConditionsPage: React.FC = () => {
                     <List.Root gap={2}>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={AlertTriangle} color="red.500" mt={1} />
-                        <Text color="gray.700">No fraudulent bookings or payment chargebacks</Text>
+                        <Text color="fg">No fraudulent bookings or payment chargebacks</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={AlertTriangle} color="red.500" mt={1} />
-                        <Text color="gray.700">No automated systems or bots</Text>
+                        <Text color="fg">No automated systems or bots</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={AlertTriangle} color="red.500" mt={1} />
-                        <Text color="gray.700">No harassment or abusive behavior</Text>
+                        <Text color="fg">No harassment or abusive behavior</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={AlertTriangle} color="red.500" mt={1} />
-                        <Text color="gray.700">No unauthorized access attempts</Text>
+                        <Text color="fg">No unauthorized access attempts</Text>
                       </List.Item>
                     </List.Root>
                   </Box>
@@ -103,23 +103,23 @@ const TermsConditionsPage: React.FC = () => {
                 <List.Root gap={2}>
                   <List.Item display="flex" alignItems="flex-start">
                     <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                    <Text color="gray.700">All prices are in Pakistani Rupees (PKR) including applicable taxes</Text>
+                    <Text color="fg">All prices are in Pakistani Rupees (PKR) including applicable taxes</Text>
                   </List.Item>
                   <List.Item display="flex" alignItems="flex-start">
                     <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                    <Text color="gray.700">Full payment required at booking confirmation</Text>
+                    <Text color="fg">Full payment required at booking confirmation</Text>
                   </List.Item>
                   <List.Item display="flex" alignItems="flex-start">
                     <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                    <Text color="gray.700">Payments processed securely through PayFast</Text>
+                    <Text color="fg">Payments processed securely through PayFast</Text>
                   </List.Item>
                   <List.Item display="flex" alignItems="flex-start">
                     <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                    <Text color="gray.700">Failed payments result in booking cancellation</Text>
+                    <Text color="fg">Failed payments result in booking cancellation</Text>
                   </List.Item>
                   <List.Item display="flex" alignItems="flex-start">
                     <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                    <Text color="gray.700">You authorize charges to your payment method</Text>
+                    <Text color="fg">You authorize charges to your payment method</Text>
                   </List.Item>
                 </List.Root>
               </Box>
@@ -134,15 +134,15 @@ const TermsConditionsPage: React.FC = () => {
                     <List.Root gap={2}>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Maximum 5 active future bookings at once</Text>
+                        <Text color="fg">Maximum 5 active future bookings at once</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Cannot book more than 30 days in advance</Text>
+                        <Text color="fg">Cannot book more than 30 days in advance</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Mass booking or hoarding prohibited</Text>
+                        <Text color="fg">Mass booking or hoarding prohibited</Text>
                       </List.Item>
                     </List.Root>
 
@@ -150,19 +150,19 @@ const TermsConditionsPage: React.FC = () => {
                     <List.Root gap={2}>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Arrive on time; late arrivals don't extend booking time</Text>
+                        <Text color="fg">Arrive on time; late arrivals don't extend booking time</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Respect facility rules and property</Text>
+                        <Text color="fg">Respect facility rules and property</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Do not exceed maximum capacity</Text>
+                        <Text color="fg">Do not exceed maximum capacity</Text>
                       </List.Item>
                       <List.Item display="flex" alignItems="flex-start">
                         <List.Indicator as={CheckCircle} color="green.500" mt={1} />
-                        <Text color="gray.700">Vacate promptly at booking end</Text>
+                        <Text color="fg">Vacate promptly at booking end</Text>
                       </List.Item>
                     </List.Root>
                   </Box>
@@ -173,42 +173,42 @@ const TermsConditionsPage: React.FC = () => {
 
               <Box>
                 <Heading as="h2" size="lg" mb={4}>5. Cancellation & Conduct Responsibilities</Heading>
-                <Text color="gray.700" mb={3}>Cancellations are governed by our Refund & Cancellation Policy.</Text>
+                <Text color="fg" mb={3}>Cancellations are governed by our Refund & Cancellation Policy.</Text>
 
                 <VStack gap={4} align="stretch" pl={4}>
                   <Box>
                     <Heading as="h3" size="md" mb={3}>5.1 User Conduct</Heading>
                     <List.Root gap={2}>
-                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Behave respectfully to staff and other users</Text></List.Item>
-                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">No abusive, threatening, or discriminatory behavior</Text></List.Item>
-                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">No illegal activities at facilities</Text></List.Item>
-                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Accept liability for damages caused by you or your group</Text></List.Item>
+                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Behave respectfully to staff and other users</Text></List.Item>
+                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">No abusive, threatening, or discriminatory behavior</Text></List.Item>
+                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">No illegal activities at facilities</Text></List.Item>
+                      <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Accept liability for damages caused by you or your group</Text></List.Item>
                     </List.Root>
                   </Box>
                 </VStack>
 
-                <Text color="gray.700" mt={3}>Misconduct may result in booking termination without refund, account suspension, and legal action.</Text>
+                <Text color="fg" mt={3}>Misconduct may result in booking termination without refund, account suspension, and legal action.</Text>
               </Box>
 
               <Separator />
 
               <Box>
                 <Heading as="h2" size="lg" mb={4}>6. Limitation of Liability</Heading>
-                <Text color="gray.700" mb={3}>Services provided "AS IS" without warranties. We are not liable for:</Text>
+                <Text color="fg" mb={3}>Services provided "AS IS" without warranties. We are not liable for:</Text>
                 <List.Root gap={2}>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Service interruptions or technical issues</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Third-party facility conditions or safety</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Injuries or accidents at facilities</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Disputes with facility owners</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Service interruptions or technical issues</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Third-party facility conditions or safety</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Injuries or accidents at facilities</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Disputes with facility owners</Text></List.Item>
                 </List.Root>
-                <Text color="gray.700" mt={3} fontWeight="semibold">Maximum liability: Lesser of PKR 10,000 or amount paid in last 12 months.</Text>
+                <Text color="fg" mt={3} fontWeight="semibold">Maximum liability: Lesser of PKR 10,000 or amount paid in last 12 months.</Text>
               </Box>
 
               <Separator />
 
               <Box>
                 <Heading as="h2" size="lg" mb={4}>7. Indemnification</Heading>
-                <Text color="gray.700">You agree to indemnify TurfKhana from claims arising from your use of Services, violation of Terms, conduct at facilities, or violation of others' rights.</Text>
+                <Text color="fg">You agree to indemnify TurfKhana from claims arising from your use of Services, violation of Terms, conduct at facilities, or violation of others' rights.</Text>
               </Box>
 
               <Separator />
@@ -218,13 +218,13 @@ const TermsConditionsPage: React.FC = () => {
                 <VStack gap={4} align="stretch" pl={4}>
                   <Box>
                     <Heading as="h3" size="md" mb={3}>8.1 Informal Resolution</Heading>
-                    <Text color="gray.700" mb={3}>Contact ajcodzhq@gmail.com first. We'll work to resolve within 30 days.</Text>
+                    <Text color="fg" mb={3}>Contact ajcodzhq@gmail.com first. We'll work to resolve within 30 days.</Text>
 
                     <Heading as="h3" size="md" mb={3}>8.2 Arbitration</Heading>
-                    <Text color="gray.700" mb={3}>Unresolved disputes go to binding arbitration in Lahore under Pakistan's Arbitration Act, 1940.</Text>
+                    <Text color="fg" mb={3}>Unresolved disputes go to binding arbitration in Lahore under Pakistan's Arbitration Act, 1940.</Text>
 
                     <Heading as="h3" size="md" mb={3}>8.3 Class Action Waiver</Heading>
-                    <Text color="gray.700">Disputes resolved individually only, not as class actions.</Text>
+                    <Text color="fg">Disputes resolved individually only, not as class actions.</Text>
                   </Box>
                 </VStack>
               </Box>
@@ -233,34 +233,34 @@ const TermsConditionsPage: React.FC = () => {
 
               <Box>
                 <Heading as="h2" size="lg" mb={4}>9. Governing Law</Heading>
-                <Text color="gray.700" mb={2}>These Terms are governed by the laws of Pakistan, specifically:</Text>
+                <Text color="fg" mb={2}>These Terms are governed by the laws of Pakistan, specifically:</Text>
                 <List.Root gap={2}>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Contract Act, 1872</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Electronic Transactions Ordinance, 2002</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Prevention of Electronic Crimes Act, 2016</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Contract Act, 1872</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Electronic Transactions Ordinance, 2002</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Prevention of Electronic Crimes Act, 2016</Text></List.Item>
                 </List.Root>
-                <Text color="gray.700" mt={3}>Courts in Lahore, Pakistan have exclusive jurisdiction.</Text>
+                <Text color="fg" mt={3}>Courts in Lahore, Pakistan have exclusive jurisdiction.</Text>
               </Box>
 
               <Separator />
 
               <Box>
                 <Heading as="h2" size="lg" mb={4}>10. Modifications to Terms</Heading>
-                <Text color="gray.700">We may modify these Terms at any time. Changes effective upon posting. Continued use constitutes acceptance. Material changes will be notified via email or platform notification.</Text>
+                <Text color="fg">We may modify these Terms at any time. Changes effective upon posting. Continued use constitutes acceptance. Material changes will be notified via email or platform notification.</Text>
               </Box>
 
               <Separator />
 
               <Box>
                 <Heading as="h2" size="lg" mb={4}>11. Termination</Heading>
-                <Text color="gray.700" mb={3}>We may suspend or terminate your account for:</Text>
+                <Text color="fg" mb={3}>We may suspend or terminate your account for:</Text>
                 <List.Root gap={2}>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Violation of these Terms</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Fraudulent activity or chargebacks</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Multiple no-shows</Text></List.Item>
-                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="gray.700">Abusive behavior</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Violation of these Terms</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Fraudulent activity or chargebacks</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Multiple no-shows</Text></List.Item>
+                  <List.Item display="flex" alignItems="flex-start"><List.Indicator as={CheckCircle} color="green.500" mt={1} /><Text color="fg">Abusive behavior</Text></List.Item>
                 </List.Root>
-                <Text color="gray.700" mt={3}>You may terminate your account anytime through account settings.</Text>
+                <Text color="fg" mt={3}>You may terminate your account anytime through account settings.</Text>
               </Box>
 
               <Separator />
@@ -270,7 +270,7 @@ const TermsConditionsPage: React.FC = () => {
                 <Heading as="h2" size="lg" mb={4}>
                   12. Contact Us
                 </Heading>
-                <Text color="gray.700" lineHeight="tall" mb={4}>
+                <Text color="fg" lineHeight="tall" mb={4}>
                   If you have any questions, concerns, or requests regarding this Terms & Conditions, please contact us:
                 </Text>
 
@@ -298,10 +298,10 @@ const TermsConditionsPage: React.FC = () => {
                       <Mail size={20} color="white" />
                     </Box>
                     <Box>
-                      <Text fontWeight="semibold" color="gray.800">
+                      <Text fontWeight="semibold" color="fg">
                         Email
                       </Text>
-                      <Link href="mailto:ajcodzhq@gmail.com" color="green.600" fontWeight="medium">
+                      <Link href="mailto:ajcodzhq@gmail.com" color="green.fg" fontWeight="medium">
                         ajcodzhq@gmail.com
                       </Link>
                     </Box>
@@ -322,10 +322,10 @@ const TermsConditionsPage: React.FC = () => {
                       <Phone size={20} color="white" />
                     </Box>
                     <Box>
-                      <Text fontWeight="semibold" color="gray.800">
+                      <Text fontWeight="semibold" color="fg">
                         WhatsApp
                       </Text>
-                      <Link href="tel:+923154807718" color="green.600" fontWeight="medium">
+                      <Link href="tel:+923154807718" color="green.fg" fontWeight="medium">
                         +92 315 4807718
                       </Link>
                     </Box>
@@ -346,10 +346,10 @@ const TermsConditionsPage: React.FC = () => {
                       <MapPin size={20} color="white" />
                     </Box>
                     <Box>
-                      <Text fontWeight="semibold" color="gray.800">
+                      <Text fontWeight="semibold" color="fg">
                         Address
                       </Text>
-                      <Text color="gray.700">
+                      <Text color="fg">
                         Plot No. 59/B Koh-e-Noor Housing Scheme
                         <br />
                         Lahore, Punjab, Pakistan
@@ -358,14 +358,14 @@ const TermsConditionsPage: React.FC = () => {
                   </Box>
                 </VStack>
 
-                <Text color="gray.600" fontSize="sm" mt={4} fontStyle="italic">
+                <Text color="fg.muted" fontSize="sm" mt={4} fontStyle="italic">
                   We aim to respond to all terms & conditions related inquiries within 48 hours.
                 </Text>
               </Box>
 
             </VStack>
           </Box>
-          <Box textAlign="center" color="gray.500" fontSize="sm">
+          <Box textAlign="center" color="fg.muted" fontSize="sm">
             <Text>By using TurfKhana's services, you acknowledge that you have read and understood these Terms & Conditions.</Text>
           </Box>
         </VStack>

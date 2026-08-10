@@ -543,7 +543,7 @@ const AdminSettingsPage: React.FC = () => {
       >
         <VStack gap={4}>
           <Spinner size="xl" color="green.500" />
-          <Text color="gray.600">Loading settings...</Text>
+          <Text color="fg.muted">Loading settings...</Text>
         </VStack>
       </Box>
     );
@@ -563,7 +563,7 @@ const AdminSettingsPage: React.FC = () => {
           <Text color="red.500" fontWeight="semibold">
             Failed to load settings
           </Text>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="fg.muted">
             {fetchError}
           </Text>
         </VStack>
@@ -598,7 +598,7 @@ const AdminSettingsPage: React.FC = () => {
               <Heading as="h1" size="lg">
                 Settings
               </Heading>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color="fg.muted">
                 Manage closed hours for your turfs
               </Text>
             </Box>
@@ -681,14 +681,14 @@ const AdminSettingsPage: React.FC = () => {
                   <Heading as="h2" size="md">
                     Select Turf
                   </Heading>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color="fg.muted">
                     Choose a turf to manage its closed hours
                   </Text>
                 </Box>
               </HStack>
 
               {ownerTurfs.length === 0 ? (
-                <Text color="gray.500" fontSize="sm">
+                <Text color="fg.muted" fontSize="sm">
                   No turfs found. Please add a turf first.
                 </Text>
               ) : (
@@ -728,7 +728,7 @@ const AdminSettingsPage: React.FC = () => {
                       <Heading as="h2" size="md">
                         Closed Hours
                       </Heading>
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color="fg.muted">
                         Upcoming closed periods for{" "}
                         {
                           ownerTurfs.find(
@@ -759,11 +759,11 @@ const AdminSettingsPage: React.FC = () => {
                     borderColor={borderColor}
                     borderStyle="dashed"
                   >
-                    <Icon as={Calendar} boxSize={10} color="gray.300" mb={3} />
-                    <Text color="gray.500" fontWeight="medium">
+                    <Icon as={Calendar} boxSize={10} color="fg.subtle" mb={3} />
+                    <Text color="fg.muted" fontWeight="medium">
                       No closed hours scheduled
                     </Text>
-                    <Text fontSize="sm" color="gray.400" mt={1}>
+                    <Text fontSize="sm" color="fg.subtle" mt={1}>
                       Click "Add Closed Hour" to schedule maintenance or
                       closures
                     </Text>

@@ -150,7 +150,7 @@ const SuperAdminBookingListPage: React.FC = () => {
     <Box p={{ base: 4, md: 8 }}>
       <Box mb={6}>
         <Heading size="lg">Bookings</Heading>
-        <Text color="gray.600" mt={1}>
+        <Text color="fg.muted" mt={1}>
           {filteredBookings.length} of {bookings.length} booking
           {bookings.length !== 1 ? "s" : ""} across the platform
         </Text>
@@ -170,7 +170,7 @@ const SuperAdminBookingListPage: React.FC = () => {
           align={{ base: "stretch", md: "center" }}
         >
           <InputGroup
-            startElement={<Icon as={Search} color="gray.400" />}
+            startElement={<Icon as={Search} color="fg.subtle" />}
             flex={1}
           >
             <Input
@@ -219,7 +219,7 @@ const SuperAdminBookingListPage: React.FC = () => {
               <Table.Row key={b.id}>
                 <Table.Cell>
                   <Text fontWeight="medium">{b.clientName}</Text>
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="xs" color="fg.muted">
                     {b.clientPhone}
                   </Text>
                 </Table.Cell>
@@ -227,7 +227,7 @@ const SuperAdminBookingListPage: React.FC = () => {
                 <Table.Cell>{b.ownerName}</Table.Cell>
                 <Table.Cell fontSize="sm">
                   {b.date}
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="xs" color="fg.muted">
                     {formatTime(b.startTime)} – {formatTime(b.endTime)}
                   </Text>
                 </Table.Cell>
@@ -249,7 +249,7 @@ const SuperAdminBookingListPage: React.FC = () => {
             {filteredBookings.length === 0 && (
               <Table.Row>
                 <Table.Cell colSpan={7}>
-                  <Text textAlign="center" color="gray.500" py={6}>
+                  <Text textAlign="center" color="fg.muted" py={6}>
                     No bookings found.
                   </Text>
                 </Table.Cell>

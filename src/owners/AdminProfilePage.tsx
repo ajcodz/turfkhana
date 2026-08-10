@@ -218,7 +218,7 @@ const AdminProfilePage: React.FC = () => {
       <VStack align="stretch" gap={8}>
         <Box>
           <Heading size="lg">My Profile</Heading>
-          <Text color="gray.600" mt={1}>
+          <Text color="fg.muted" mt={1}>
             Update your account details and password.
           </Text>
         </Box>

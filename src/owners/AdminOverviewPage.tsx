@@ -269,7 +269,7 @@ const AdminOverviewPage: React.FC = () => {
       >
         <VStack gap={4}>
           <Spinner size="xl" color="green.500" />
-          <Text color="gray.600">Loading dashboard...</Text>
+          <Text color="fg.muted">Loading dashboard...</Text>
         </VStack>
       </Box>
     );
@@ -289,7 +289,7 @@ const AdminOverviewPage: React.FC = () => {
           <Text color="red.500" fontWeight="semibold">
             Failed to load dashboard
           </Text>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="fg.muted">
             {fetchError}
           </Text>
         </VStack>
@@ -324,7 +324,7 @@ const AdminOverviewPage: React.FC = () => {
               <Heading as="h1" size="lg">
                 Dashboard
               </Heading>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color="fg.muted">
                 Welcome back, {owner?.name ?? "Admin"}
               </Text>
             </Box>
@@ -421,7 +421,7 @@ const AdminOverviewPage: React.FC = () => {
                     />
                   </Box>
                 </HStack>
-                <Text fontSize="sm" color="gray.600" mb={1}>
+                <Text fontSize="sm" color="fg.muted" mb={1}>
                   {stat.title}
                 </Text>
                 <Heading as="h3" size="xl" mb={2}>
@@ -433,7 +433,7 @@ const AdminOverviewPage: React.FC = () => {
                     boxSize={4}
                     color={stat.isPositive ? "green.500" : "red.500"}
                   />
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="xs" color="fg.muted">
                     {stat.change}
                   </Text>
                 </HStack>
@@ -456,7 +456,7 @@ const AdminOverviewPage: React.FC = () => {
                   <Heading as="h2" size="md" mb={1}>
                     Recent Bookings
                   </Heading>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color="fg.muted">
                     Latest booking activities
                   </Text>
                 </Box>
@@ -507,7 +507,7 @@ const AdminOverviewPage: React.FC = () => {
                       <Table.Cell fontSize="sm">{booking.turfName}</Table.Cell>
                       <Table.Cell fontSize="sm">
                         <Text>{booking.date}</Text>
-                        <Text color="gray.500" fontSize="xs">
+                        <Text color="fg.muted" fontSize="xs">
                           {booking.time}
                         </Text>
                       </Table.Cell>

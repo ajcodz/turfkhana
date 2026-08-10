@@ -162,7 +162,7 @@ const ClientLoginPage: React.FC = () => {
             <Heading as="h1" size="xl" textAlign="center">
               Welcome Back!
             </Heading>
-            <Text color="gray.600" textAlign="center">
+            <Text color="fg.muted" textAlign="center">
               Sign in to your TurfKhana account
             </Text>
           </VStack>
@@ -261,7 +261,7 @@ const ClientLoginPage: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   w="100%"
-                  color="gray.500"
+                  color="fg.muted"
                   _hover={{ color: "green.500" }}
                 >
                   Don't have an account? Sign Up
@@ -274,7 +274,7 @@ const ClientLoginPage: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   w="100%"
-                  color="gray.500"
+                  color="fg.muted"
                   _hover={{ color: "green.500" }}
                 >
                   ← Back to Home
@@ -284,7 +284,7 @@ const ClientLoginPage: React.FC = () => {
           </Box>
 
           {/* Footer */}
-          <Text fontSize="sm" color="gray.500" textAlign="center">
+          <Text fontSize="sm" color="fg.muted" textAlign="center">
             © 2025 TurfKhana. All rights reserved.
           </Text>
         </VStack>

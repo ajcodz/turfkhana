@@ -258,7 +258,7 @@ const AdminCalendarPage: React.FC = () => {
       >
         <VStack gap={4}>
           <Spinner size="xl" color="green.500" />
-          <Text color="gray.600">Loading calendar...</Text>
+          <Text color="fg.muted">Loading calendar...</Text>
         </VStack>
       </Box>
     );
@@ -278,7 +278,7 @@ const AdminCalendarPage: React.FC = () => {
           <Text color="red.500" fontWeight="semibold">
             Failed to load calendar
           </Text>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="fg.muted">
             {fetchError}
           </Text>
         </VStack>
@@ -313,7 +313,7 @@ const AdminCalendarPage: React.FC = () => {
               <Heading as="h1" size="lg">
                 Calendar
               </Heading>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color="fg.muted">
                 Manage your turf bookings
               </Text>
             </Box>
@@ -426,7 +426,7 @@ const AdminCalendarPage: React.FC = () => {
               <Grid templateColumns="repeat(7, 1fr)" gap={2}>
                 {weekDays.map((day) => (
                   <Box key={day} textAlign="center" py={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.600">
+                    <Text fontSize="sm" fontWeight="semibold" color="fg.muted">
                       {day}
                     </Text>
                   </Box>
@@ -474,7 +474,7 @@ const AdminCalendarPage: React.FC = () => {
                           <Text
                             fontSize="sm"
                             fontWeight={isTodayDay ? "bold" : "medium"}
-                            color={isTodayDay ? todayBg : "gray.700"}
+                            color={isTodayDay ? todayBg : "fg"}
                           >
                             {date.getDate()}
                           </Text>
@@ -490,7 +490,7 @@ const AdminCalendarPage: React.FC = () => {
                                 />
                               ))}
                               {bookings.length > 2 && (
-                                <Text fontSize="2xs" color="gray.500">
+                                <Text fontSize="2xs" color="fg.muted">
                                   +{bookings.length - 2}
                                 </Text>
                               )}
@@ -563,7 +563,7 @@ const AdminCalendarPage: React.FC = () => {
                               <Text fontWeight="semibold" fontSize="sm">
                                 {booking.customerName}
                               </Text>
-                              <HStack fontSize="xs" color="gray.500">
+                              <HStack fontSize="xs" color="fg.muted">
                                 <Icon as={Phone} boxSize={3} />
                                 <Text>{booking.customerPhone}</Text>
                               </HStack>
@@ -582,22 +582,22 @@ const AdminCalendarPage: React.FC = () => {
 
                         <VStack gap={2} align="stretch" fontSize="sm">
                           <HStack>
-                            <Icon as={MapPin} boxSize={4} color="gray.500" />
+                            <Icon as={MapPin} boxSize={4} color="fg.muted" />
                             <Text>{booking.turfName}</Text>
                           </HStack>
                           <HStack justify="space-between">
                             <HStack>
-                              <Icon as={Clock} boxSize={4} color="gray.500" />
+                              <Icon as={Clock} boxSize={4} color="fg.muted" />
                               <Text>{booking.time}</Text>
                             </HStack>
-                            <Text color="gray.500">{booking.duration}</Text>
+                            <Text color="fg.muted">{booking.duration}</Text>
                           </HStack>
                         </VStack>
 
                         <Separator />
 
                         <Flex justify="space-between" align="center">
-                          <Text fontSize="xs" color="gray.500">
+                          <Text fontSize="xs" color="fg.muted">
                             {booking.id}
                           </Text>
                           <Text fontWeight="bold" color="green.500">
@@ -610,8 +610,8 @@ const AdminCalendarPage: React.FC = () => {
                 </VStack>
               ) : (
                 <VStack gap={4} py={8}>
-                  <Icon as={CalendarDays} boxSize={12} color="gray.300" />
-                  <Text color="gray.500" textAlign="center">
+                  <Icon as={CalendarDays} boxSize={12} color="fg.subtle" />
+                  <Text color="fg.muted" textAlign="center">
                     No bookings for this date
                   </Text>
                 </VStack>
