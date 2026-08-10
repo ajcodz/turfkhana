@@ -5,26 +5,21 @@ import {
   Heading,
   Text,
   SimpleGrid,
-  Image,
   VStack,
-  HStack,
-  Badge,
   Flex,
   Icon,
   Alert,
-  Spinner,
   Input,
   InputGroup,
   NativeSelect,
   Button,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../components/ui/color-mode";
-import { Card, CardBody } from "@chakra-ui/card";
-import { Search, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, SearchX } from "lucide-react";
 import { useTurfs } from "../useLandingPage";
 import { useGeolocation } from "../hooks/useGeolocation";
-import { calculateDistanceKm, formatDistance } from "../utils/distance";
+import { calculateDistanceKm } from "../utils/distance";
+import { TurfCard, TurfCardSkeleton } from "./TurfCard";
 
 type SortOption = "nearest" | "price_low" | "price_high" | "name";
 
@@ -38,8 +33,16 @@ const BrowseTurfsPage: React.FC = () => {
 
   const cardBg = useColorModeValue("white", "gray.700");
   const bgColor = useColorModeValue("gray.50", "gray.800");
+  const borderColor = useColorModeValue("gray.200", "gray.600");
 
   const categories = ["All", "Cricket", "Futsal"];
+
+  const hasActiveFilters = searchQuery.trim() !== "" || selectedCategory !== "All";
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("All");
+  };
 
   const turfsWithDistance = turfs.map((turf) => {
     const hasCoords = turf.lat != null && turf.lng != null;
@@ -107,10 +110,17 @@ const BrowseTurfsPage: React.FC = () => {
           </Box>
 
           {/* Search + Filters */}
-          <Box bg={cardBg} p={4} borderRadius="xl" shadow="sm">
+          <Box
+            bg={cardBg}
+            p={4}
+            borderRadius="xl"
+            shadow="sm"
+            borderWidth="1px"
+            borderColor={borderColor}
+          >
             <Flex
               direction={{ base: "column", md: "row" }}
-              gap={4}
+              gap={3}
               align={{ base: "stretch", md: "center" }}
             >
               <InputGroup
@@ -124,19 +134,6 @@ const BrowseTurfsPage: React.FC = () => {
                 />
               </InputGroup>
 
-              <NativeSelect.Root maxW={{ base: "100%", md: "180px" }}>
-                <NativeSelect.Field
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </NativeSelect.Field>
-              </NativeSelect.Root>
-
               <NativeSelect.Root maxW={{ base: "100%", md: "220px" }}>
                 <NativeSelect.Field
                   value={sortBy}
@@ -149,13 +146,41 @@ const BrowseTurfsPage: React.FC = () => {
                 </NativeSelect.Field>
               </NativeSelect.Root>
             </Flex>
+
+            {/* Category pills, matching the landing page's filter */}
+            <Flex mt={3} gap={2} flexWrap="wrap" align="center">
+              {categories.map((c) => (
+                <Button
+                  key={c}
+                  size="sm"
+                  borderRadius="full"
+                  colorPalette="green"
+                  variant={c === selectedCategory ? "solid" : "outline"}
+                  onClick={() => setSelectedCategory(c)}
+                >
+                  {c}
+                </Button>
+              ))}
+              {hasActiveFilters && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  ms="auto"
+                  onClick={clearFilters}
+                >
+                  Clear filters
+                </Button>
+              )}
+            </Flex>
           </Box>
 
           {/* Loading */}
           {isLoading && (
-            <Flex justify="center" py={12}>
-              <Spinner size="xl" color="green.500" />
-            </Flex>
+            <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} gap={6}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <TurfCardSkeleton key={i} />
+              ))}
+            </SimpleGrid>
           )}
 
           {/* Error */}
@@ -168,97 +193,44 @@ const BrowseTurfsPage: React.FC = () => {
           )}
 
           {/* Results Grid */}
-          {!isLoading && !isError && (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
+          {!isLoading && !isError && sorted.length > 0 && (
+            <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} gap={6}>
               {sorted.map((turf) => (
-                <Card
-                  key={turf.id}
-                  bg={cardBg}
-                  overflow="hidden"
-                  transition="all 0.3s"
-                  _hover={{ transform: "translateY(-8px)", shadow: "2xl" }}
-                  borderRadius="xl"
-                >
-                  <Box position="relative">
-                    <Image
-                      src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=500&h=300&fit=crop"
-                      alt={turf.name}
-                      h="200px"
-                      w="100%"
-                      objectFit="cover"
-                    />
-                    <Badge
-                      position="absolute"
-                      top={3}
-                      right={3}
-                      colorScheme={
-                        turf.type.toLowerCase() === "cricket"
-                          ? "blue"
-                          : "orange"
-                      }
-                      fontSize="xs"
-                      px={2}
-                      py={1}
-                      borderRadius="md"
-                    >
-                      {turf.type.toUpperCase()}
-                    </Badge>
-                  </Box>
-                  <CardBody>
-                    <VStack align="stretch" gap={3}>
-                      <Heading as="h3" size="md">
-                        {turf.name}
-                      </Heading>
-                      <HStack fontSize="sm" color="fg.muted">
-                        <Icon as={MapPin} boxSize={4} />
-                        <Text>{turf.address}</Text>
-                      </HStack>
-                      {turf.distanceKm != null && (
-                        <Text
-                          fontSize="xs"
-                          color="green.fg"
-                          fontWeight="medium"
-                        >
-                          {formatDistance(turf.distanceKm)}
-                        </Text>
-                      )}
-                      <Flex justify="space-between" align="center" pt={2}>
-                        <Box>
-                          <Text
-                            fontSize="2xl"
-                            fontWeight="bold"
-                            color="green.500"
-                          >
-                            {turf.currency} {turf.price_per_slot}
-                          </Text>
-                          <Text fontSize="xs" color="fg.muted">
-                            per slot
-                          </Text>
-                        </Box>
-                        <Link to={`/turf-details/${turf.id}`}>
-                          <Button
-                            colorScheme="green"
-                            size="sm"
-                            borderRadius="full"
-                          >
-                            View Details
-                          </Button>
-                        </Link>
-                      </Flex>
-                    </VStack>
-                  </CardBody>
-                </Card>
+                <TurfCard key={turf.id} turf={turf} />
               ))}
             </SimpleGrid>
           )}
 
           {/* Empty State */}
           {!isLoading && !isError && sorted.length === 0 && (
-            <Flex justify="center" py={12}>
-              <Text color="fg.muted" fontSize="lg">
-                No turfs match your search.
+            <VStack
+              py={16}
+              gap={3}
+              bg={cardBg}
+              borderWidth="2px"
+              borderStyle="dashed"
+              borderColor={borderColor}
+              borderRadius="xl"
+            >
+              <Icon as={SearchX} boxSize={10} color="fg.subtle" />
+              <Heading as="h3" size="md">
+                No turfs match your search
+              </Heading>
+              <Text color="fg.muted" fontSize="sm" textAlign="center" maxW="sm">
+                Try a different name or location, or widen the category filter.
               </Text>
-            </Flex>
+              {hasActiveFilters && (
+                <Button
+                  variant="outline"
+                  colorPalette="green"
+                  size="sm"
+                  borderRadius="full"
+                  onClick={clearFilters}
+                >
+                  Clear filters
+                </Button>
+              )}
+            </VStack>
           )}
         </VStack>
       </Container>

@@ -22,7 +22,7 @@ import { MapPin, Clock, Calendar, CheckCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTurf } from "./useTurfDetailsPage";
 import { APP_BASE_URL } from "../utils/api";
-import { sortSlots } from "../bookings/bookingSlots";
+import { formatTime12, sortSlots } from "../bookings/bookingSlots";
 
 interface TimeSlot {
   id: string;
@@ -363,7 +363,8 @@ const TurfDetailsPage: React.FC = () => {
                     <HStack color="fg.muted">
                       <Icon as={Clock} />
                       <Text fontSize="md">
-                        {turf.opening_time} - {turf.closing_time}
+                        {formatTime12(turf.opening_time)} –{" "}
+                        {formatTime12(turf.closing_time)}
                       </Text>
                     </HStack>
                   </HStack>

@@ -6,22 +6,20 @@ import {
   Heading,
   Text,
   SimpleGrid,
-  Image,
   VStack,
   HStack,
   Badge,
   Flex,
   Icon,
   Alert,
-  Spinner,
 } from "@chakra-ui/react";
 import { useColorModeValue } from "./components/ui/color-mode";
-import { Card, CardBody } from "@chakra-ui/card";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTurfs } from "./useLandingPage";
 import { useGeolocation } from "./hooks/useGeolocation";
-import { calculateDistanceKm, formatDistance } from "./utils/distance";
+import { calculateDistanceKm } from "./utils/distance";
+import { TurfCard, TurfCardSkeleton } from "./turfs/TurfCard";
 
 const LandingPage: React.FC = () => {
   const { data: turfs = [], isLoading, isError } = useTurfs();
@@ -59,11 +57,9 @@ const LandingPage: React.FC = () => {
 
   const filteredTurfs = sortedTurfs.slice(0, 4); // top 4 only
 
-  const bgGradient = useColorModeValue(
-    "linear(to-br, green.50, teal.50)",
-    "linear(to-br, gray.900, gray.800)",
-  );
-  const cardBg = useColorModeValue("white", "gray.700");
+  const heroGradientFrom = useColorModeValue("green.50", "gray.900");
+  const heroGradientTo = useColorModeValue("teal.50", "gray.800");
+  const borderColor = useColorModeValue("gray.200", "gray.600");
   const badgeBg = useColorModeValue("green.100", "green.900");
   const badgeColor = useColorModeValue("green.800", "green.100");
 
@@ -73,7 +69,9 @@ const LandingPage: React.FC = () => {
     <Box minH="100vh">
       {/* Hero Section */}
       <Box
-        bgGradient={bgGradient}
+        bgGradient="to-br"
+        gradientFrom={heroGradientFrom}
+        gradientTo={heroGradientTo}
         py={{ base: 16, md: 24 }}
         px={4}
         position="relative"
@@ -84,7 +82,7 @@ const LandingPage: React.FC = () => {
             <Badge
               bg={badgeBg}
               color={badgeColor}
-              colorScheme="green"
+              colorPalette="green"
               fontSize="sm"
               px={3}
               py={1}
@@ -114,7 +112,7 @@ const LandingPage: React.FC = () => {
             </Text>
             <Link to="/turf-details/1">
               <Button
-                colorScheme="green"
+                colorPalette="green"
                 size="lg"
                 px={8}
                 py={6}
@@ -167,7 +165,7 @@ const LandingPage: React.FC = () => {
               <Button
                 key={category}
                 variant={category === selectedCategory ? "solid" : "outline"}
-                colorScheme="green"
+                colorPalette="green"
                 size="lg"
                 borderRadius="full"
                 px={8}
@@ -205,9 +203,11 @@ const LandingPage: React.FC = () => {
 
             {/* Loading State */}
             {isLoading && (
-              <Flex justify="center" py={12}>
-                <Spinner size="xl" color="green.500" />
-              </Flex>
+              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} gap={6}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <TurfCardSkeleton key={i} />
+                ))}
+              </SimpleGrid>
             )}
 
             {/* Error State */}
@@ -220,115 +220,54 @@ const LandingPage: React.FC = () => {
             )}
 
             {/* Turfs Grid */}
-            {!isLoading && !isError && (
-              <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
+            {!isLoading && !isError && filteredTurfs.length > 0 && (
+              <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} gap={6}>
                 {filteredTurfs.map((turf) => (
-                  <Card
-                    key={turf.id}
-                    bg={cardBg}
-                    overflow="hidden"
-                    transition="all 0.3s"
-                    _hover={{
-                      transform: "translateY(-8px)",
-                      shadow: "2xl",
-                    }}
-                    borderRadius="xl"
-                  >
-                    <Box position="relative">
-                      <Image
-                        src={`https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=500&h=300&fit=crop`}
-                        alt={turf.name}
-                        h="200px"
-                        w="100%"
-                        objectFit="cover"
-                      />
-                      <Badge
-                        position="absolute"
-                        top={3}
-                        right={3}
-                        colorScheme={
-                          turf.type.toLowerCase() === "cricket"
-                            ? "blue"
-                            : "orange"
-                        }
-                        fontSize="xs"
-                        px={2}
-                        py={1}
-                        borderRadius="md"
-                      >
-                        {turf.type.toUpperCase()}
-                      </Badge>
-                    </Box>
-                    <CardBody>
-                      <VStack align="stretch" gap={3}>
-                        <Heading as="h3" size="md">
-                          {turf.name}
-                        </Heading>
-                        <HStack fontSize="sm" color="fg.muted">
-                          <Icon as={MapPin} boxSize={4} />
-                          <Text>{turf.address}</Text>
-                        </HStack>
-                        {turf.distanceKm != null && (
-                          <Text
-                            fontSize="xs"
-                            color="green.fg"
-                            fontWeight="medium"
-                          >
-                            {formatDistance(turf.distanceKm)}
-                          </Text>
-                        )}
-                        <Flex justify="space-between" align="center" pt={2}>
-                          <Box>
-                            <Text
-                              fontSize="2xl"
-                              fontWeight="bold"
-                              color="green.500"
-                            >
-                              {turf.currency} {turf.price_per_slot}
-                            </Text>
-                            <Text fontSize="xs" color="fg.muted">
-                              per slot
-                            </Text>
-                          </Box>
-                          <Link to={`/turf-details/${turf.id}`}>
-                            <Button
-                              colorScheme="green"
-                              size="sm"
-                              borderRadius="full"
-                            >
-                              View Details
-                            </Button>
-                          </Link>
-                        </Flex>
-                      </VStack>
-                    </CardBody>
-                  </Card>
+                  <TurfCard key={turf.id} turf={turf} />
                 ))}
               </SimpleGrid>
             )}
 
             {/* Empty State */}
             {!isLoading && !isError && filteredTurfs.length === 0 && (
-              <Flex justify="center" py={12}>
+              <VStack
+                py={14}
+                gap={3}
+                borderWidth="2px"
+                borderStyle="dashed"
+                borderColor={borderColor}
+                borderRadius="xl"
+              >
+                <Icon as={MapPin} boxSize={10} color="fg.subtle" />
                 <Text color="fg.muted" fontSize="lg">
-                  No turfs found for this category.
+                  No {selectedCategory.toLowerCase()} turfs available right now.
                 </Text>
-              </Flex>
+                {selectedCategory !== "All" && (
+                  <Button
+                    variant="outline"
+                    colorPalette="green"
+                    size="sm"
+                    borderRadius="full"
+                    onClick={() => setSelectedCategory("All")}
+                  >
+                    Show all turfs
+                  </Button>
+                )}
+              </VStack>
             )}
 
             {!isLoading && !isError && (
               <Flex justify="center" pt={4}>
-                <Link to="/turfs">
-                  <Button
-                    variant="outline"
-                    colorScheme="green"
-                    size="lg"
-                    borderRadius="full"
-                    px={8}
-                  >
-                    View All Turfs
-                  </Button>
-                </Link>
+                <Button
+                  asChild
+                  variant="outline"
+                  colorPalette="green"
+                  size="lg"
+                  borderRadius="full"
+                  px={8}
+                >
+                  <Link to="/turfs">View All Turfs</Link>
+                </Button>
               </Flex>
             )}
           </VStack>
