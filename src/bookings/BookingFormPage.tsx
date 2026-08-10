@@ -28,23 +28,16 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { APP_BASE_URL } from "../utils/api";
+import {
+  encodeSlots,
+  sortSlots,
+  type BookingLocationState,
+} from "./bookingSlots";
 
 interface BookingFormData {
   fullName: string;
   phoneNumber: string;
   email: string;
-}
-
-interface BookingLocationState {
-  turfId: string;
-  turfName: string;
-  turfImage: string;
-  location: string;
-  date: string;
-  timeSlot: string;
-  duration: string;
-  pricePerSlot: number;
-  currency: string;
 }
 
 interface StoredClient {
@@ -89,7 +82,9 @@ const BookingFormPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const isStateValid = !!(state?.turfId && state?.timeSlot && state?.date);
+  const slots = sortSlots(state?.slots ?? []);
+
+  const isStateValid = !!(state?.turfId && slots.length > 0 && state?.date);
 
   useEffect(() => {
     if (!isStateValid) {
@@ -103,6 +98,9 @@ const BookingFormPage: React.FC = () => {
     }
   }, [isStateValid, navigate]);
 
+  const pricePerSlot = state?.pricePerSlot ?? 0;
+  const slotDurationMinutes = state?.slotDurationMinutes ?? 60;
+
   const bookingData = {
     turfName: state?.turfName ?? "—",
     turfImage:
@@ -110,9 +108,11 @@ const BookingFormPage: React.FC = () => {
       "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=200&fit=crop",
     location: state?.location ?? "—",
     date: state?.date ?? "—",
-    timeSlot: state?.timeSlot ?? "—",
-    duration: state?.duration ?? "—",
-    pricePerSlot: state?.pricePerSlot ?? 0,
+    slots,
+    slotDurationMinutes,
+    totalDurationMinutes: slotDurationMinutes * slots.length,
+    pricePerSlot,
+    totalAmount: pricePerSlot * slots.length,
     currency: state?.currency ?? "Rs",
   };
 
@@ -166,22 +166,12 @@ const BookingFormPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Parse the time slot string "06:00 PM - 07:00 PM" → "18:00:00" / "19:00:00"
-      const parseTime = (timeStr: string): string => {
-        const [time, meridiem] = timeStr.trim().split(" ");
-        let [hours, minutes] = time.split(":").map(Number);
-        if (meridiem === "PM" && hours !== 12) hours += 12;
-        if (meridiem === "AM" && hours === 12) hours = 0;
-        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
-      };
-
-      const [startRaw, endRaw] = (state?.timeSlot ?? "").split(" - ");
-      const startTime = parseTime(startRaw ?? "");
-      const endTime = parseTime(endRaw ?? "");
-
       // Parse date string (e.g. "Wed May 10 2026") → "YYYY-MM-DD"
       const dateObj = new Date(state?.date ?? "");
       const bookingDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
+
+      // All selected slots ride along as a single compact param
+      const encodedSlots = encodeSlots(slots);
 
       // Bundle all booking + client details to pass through PayFast redirect URLs
       const bookingParams = new URLSearchParams({
@@ -190,14 +180,12 @@ const BookingFormPage: React.FC = () => {
         location: state?.location ?? "",
         date: bookingDate,
         displayDate: state?.date ?? "",
-        timeSlot: state?.timeSlot ?? "",
-        startTime,
-        endTime,
-        duration: String(state?.duration ?? ""),
+        slots: encodedSlots,
+        slotDuration: String(slotDurationMinutes),
         fullName: formData.fullName.trim(),
         phoneNumber: formData.phoneNumber.trim(),
         email: formData.email.trim(),
-        pricePerSlot: String(state?.pricePerSlot ?? 0),
+        pricePerSlot: String(pricePerSlot),
         currency: state?.currency ?? "PKR",
       }).toString();
 
@@ -206,11 +194,12 @@ const BookingFormPage: React.FC = () => {
         turfName: state?.turfName ?? "",
         location: state?.location ?? "",
         date: state?.date ?? "",
-        timeSlot: state?.timeSlot ?? "",
-        duration: String(state?.duration ?? ""),
+        slots: encodedSlots,
+        slotDuration: String(slotDurationMinutes),
         customerName: formData.fullName.trim(),
         phoneNumber: formData.phoneNumber.trim(),
-        amountToPay: String(state?.pricePerSlot ?? 0),
+        amountToPay: String(bookingData.totalAmount),
+        pricePerSlot: String(pricePerSlot),
         currency: state?.currency ?? "PKR",
       }).toString();
 
@@ -223,7 +212,7 @@ const BookingFormPage: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          transAmount: String(state?.pricePerSlot ?? 0),
+          transAmount: String(bookingData.totalAmount),
           currencyCode: state?.currency ?? "PKR",
           customerEmail: formData.email.trim() || "noreply@turfkhana.com",
           customerMobile: formData.phoneNumber.trim(),
@@ -234,8 +223,8 @@ const BookingFormPage: React.FC = () => {
             {
               SKU: `TURF-${state?.turfId}`,
               NAME: state?.turfName,
-              PRICE: String(state?.pricePerSlot ?? 0),
-              QTY: "1",
+              PRICE: String(pricePerSlot),
+              QTY: String(slots.length),
             },
           ],
         }),
@@ -521,24 +510,34 @@ const BookingFormPage: React.FC = () => {
                       </Text>
                     </HStack>
 
-                    <HStack justify="space-between">
+                    <HStack justify="space-between" align="start">
                       <HStack color="gray.600">
                         <Icon as={Clock} boxSize={4} />
                         <Text fontSize="sm" fontWeight="medium">
-                          Time
+                          {bookingData.slots.length === 1
+                            ? "Time"
+                            : `Time Slots (${bookingData.slots.length})`}
                         </Text>
                       </HStack>
-                      <Text fontSize="sm" fontWeight="semibold">
-                        {bookingData.timeSlot}
-                      </Text>
+                      <VStack align="end" gap={1}>
+                        {bookingData.slots.map((slot) => (
+                          <Text
+                            key={slot.startTime}
+                            fontSize="sm"
+                            fontWeight="semibold"
+                          >
+                            {slot.time}
+                          </Text>
+                        ))}
+                      </VStack>
                     </HStack>
 
                     <HStack justify="space-between">
                       <Text fontSize="sm" color="gray.600" fontWeight="medium">
-                        Duration
+                        Total Duration
                       </Text>
                       <Text fontSize="sm" fontWeight="semibold">
-                        {bookingData.duration}
+                        {bookingData.totalDurationMinutes} minutes
                       </Text>
                     </HStack>
                   </VStack>
@@ -559,9 +558,9 @@ const BookingFormPage: React.FC = () => {
 
                     <HStack justify="space-between">
                       <Text fontSize="sm" color="gray.600">
-                        Duration
+                        Number of slots
                       </Text>
-                      <Text fontSize="sm">{bookingData.duration}</Text>
+                      <Text fontSize="sm">× {bookingData.slots.length}</Text>
                     </HStack>
 
                     <Separator />
@@ -572,7 +571,7 @@ const BookingFormPage: React.FC = () => {
                       </Text>
                       <Text fontSize="2xl" fontWeight="bold" color="green.500">
                         {bookingData.currency}{" "}
-                        {bookingData.pricePerSlot.toLocaleString()}
+                        {bookingData.totalAmount.toLocaleString()}
                       </Text>
                     </HStack>
                   </VStack>

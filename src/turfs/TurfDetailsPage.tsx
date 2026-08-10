@@ -22,6 +22,7 @@ import { MapPin, Clock, Calendar, CheckCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTurf } from "./useTurfDetailsPage";
 import { APP_BASE_URL } from "../utils/api";
+import { sortSlots } from "../bookings/bookingSlots";
 
 interface TimeSlot {
   id: string;
@@ -39,16 +40,24 @@ const TurfDetailsPage: React.FC = () => {
   const { data: turf, isLoading, isError, error } = useTurf(id!);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [isSlotsLoading, setIsSlotsLoading] = useState(false);
+
+  const toggleSlot = (slotId: string) => {
+    setSelectedSlotIds((prev) =>
+      prev.includes(slotId)
+        ? prev.filter((id) => id !== slotId)
+        : [...prev, slotId],
+    );
+  };
 
   const generateAndCheckSlots = useCallback(
     async (date: Date) => {
       if (!turf) return;
 
       setIsSlotsLoading(true);
-      setSelectedSlot(null);
+      setSelectedSlotIds([]);
 
       try {
         // Parse opening and closing times (strip timezone offset)
@@ -242,10 +251,18 @@ const TurfDetailsPage: React.FC = () => {
     );
   }
 
+  const selectedSlots = sortSlots(
+    timeSlots
+      .filter((slot) => selectedSlotIds.includes(slot.id))
+      .map(({ time, startTime, endTime }) => ({ time, startTime, endTime })),
+  );
+
+  const totalPrice = turf.price_per_slot * selectedSlots.length;
+
   const handleContinueBooking = () => {
-    if (!selectedSlot) {
+    if (selectedSlots.length === 0) {
       toaster.warning({
-        title: "Please select a time slot",
+        title: "Please select at least one time slot",
         duration: 3000,
         closable: true,
       });
@@ -259,8 +276,8 @@ const TurfDetailsPage: React.FC = () => {
         "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=400&h=200&fit=crop",
       location: turf.address,
       date: selectedDate.toDateString(),
-      timeSlot: timeSlots.find((s) => s.id === selectedSlot)?.time,
-      duration: `${turf.slot_duration_minutes} minutes`,
+      slots: selectedSlots,
+      slotDurationMinutes: turf.slot_duration_minutes,
       pricePerSlot: turf.price_per_slot,
       currency: turf.currency,
     };
@@ -439,12 +456,18 @@ const TurfDetailsPage: React.FC = () => {
           <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
             <VStack align="stretch" gap={6}>
               <HStack justify="space-between" flexWrap="wrap">
-                <HStack>
-                  <Icon as={Clock} color="green.500" boxSize={6} />
-                  <Heading as="h2" size="lg">
-                    Select Time Slot
-                  </Heading>
-                </HStack>
+                <VStack align="flex-start" gap={1}>
+                  <HStack>
+                    <Icon as={Clock} color="green.500" boxSize={6} />
+                    <Heading as="h2" size="lg">
+                      Select Time Slots
+                    </Heading>
+                  </HStack>
+                  <Text fontSize="sm" color="gray.600">
+                    Pick one or more slots — tap a selected slot again to remove
+                    it.
+                  </Text>
+                </VStack>
                 <HStack gap={4} fontSize="sm" flexWrap="wrap">
                   <HStack>
                     <Box w={4} h={4} bg="green.500" borderRadius="sm" />
@@ -492,7 +515,7 @@ const TurfDetailsPage: React.FC = () => {
               ) : (
                 <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={3}>
                   {timeSlots.map((slot) => {
-                    const isSelected = selectedSlot === slot.id;
+                    const isSelected = selectedSlotIds.includes(slot.id);
                     const isDisabled = slot.isBooked || slot.isUnavailable;
 
                     return (
@@ -507,7 +530,7 @@ const TurfDetailsPage: React.FC = () => {
                               : "green"
                         }
                         disabled={isDisabled}
-                        onClick={() => !isDisabled && setSelectedSlot(slot.id)}
+                        onClick={() => !isDisabled && toggleSlot(slot.id)}
                         h="60px"
                         position="relative"
                         borderWidth="2px"
@@ -553,31 +576,73 @@ const TurfDetailsPage: React.FC = () => {
               gap={4}
             >
               <VStack align="flex-start" gap={2}>
-                <Heading as="h3" size="md">
-                  Booking Summary
-                </Heading>
+                <HStack>
+                  <Heading as="h3" size="md">
+                    Booking Summary
+                  </Heading>
+                  {selectedSlots.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      colorPalette="green"
+                      onClick={() => setSelectedSlotIds([])}
+                    >
+                      Clear selection
+                    </Button>
+                  )}
+                </HStack>
                 <Text color="gray.600">
                   Date: <strong>{selectedDate.toDateString()}</strong>
                 </Text>
-                {selectedSlot && (
+                {selectedSlots.length === 0 ? (
+                  <Text color="gray.600">No slots selected yet</Text>
+                ) : (
+                  <Box>
+                    <Text color="gray.600" mb={1}>
+                      {selectedSlots.length}{" "}
+                      {selectedSlots.length === 1 ? "slot" : "slots"} selected:
+                    </Text>
+                    <HStack flexWrap="wrap" gap={2}>
+                      {selectedSlots.map((slot) => (
+                        <Badge
+                          key={slot.startTime}
+                          colorPalette="green"
+                          px={2}
+                          py={1}
+                          borderRadius="md"
+                        >
+                          {slot.time}
+                        </Badge>
+                      ))}
+                    </HStack>
+                  </Box>
+                )}
+                {selectedSlots.length === 0 ? (
                   <Text color="gray.600">
-                    Time:{" "}
-                    <strong>
-                      {timeSlots.find((s) => s.id === selectedSlot)?.time}
-                    </strong>
+                    Price per slot:{" "}
+                    <Text
+                      as="span"
+                      color="green.500"
+                      fontWeight="bold"
+                      fontSize="lg"
+                    >
+                      {turf.currency} {turf.price_per_slot.toLocaleString()}
+                    </Text>
+                  </Text>
+                ) : (
+                  <Text color="gray.600">
+                    Total ({turf.currency} {turf.price_per_slot} ×{" "}
+                    {selectedSlots.length}):{" "}
+                    <Text
+                      as="span"
+                      color="green.500"
+                      fontWeight="bold"
+                      fontSize="lg"
+                    >
+                      {turf.currency} {totalPrice.toLocaleString()}
+                    </Text>
                   </Text>
                 )}
-                <Text color="gray.600">
-                  Price:{" "}
-                  <Text
-                    as="span"
-                    color="green.500"
-                    fontWeight="bold"
-                    fontSize="lg"
-                  >
-                    {turf.currency} {turf.price_per_slot}
-                  </Text>
-                </Text>
               </VStack>
               {/* <Link to={`/booking-form/${turf.id}`}> */}
               <Button
@@ -588,7 +653,7 @@ const TurfDetailsPage: React.FC = () => {
                 fontSize="lg"
                 borderRadius="full"
                 onClick={handleContinueBooking}
-                disabled={!selectedSlot}
+                disabled={selectedSlots.length === 0}
                 _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
                 transition="all 0.2s"
               >

@@ -204,7 +204,7 @@ const Navbar: React.FC = () => {
                         </Text>
                       </Box>
 
-                      {/* Past Bookings */}
+                      {/* My Bookings */}
                       <Box
                         px={4}
                         py={3}
@@ -219,7 +219,7 @@ const Navbar: React.FC = () => {
                       >
                         <HStack gap={2}>
                           <BookOpen size={16} />
-                          <Text fontSize="sm">Past Bookings</Text>
+                          <Text fontSize="sm">My Bookings</Text>
                         </HStack>
                       </Box>
 
@@ -330,7 +330,7 @@ const Navbar: React.FC = () => {
                             onClick={onClose}
                           >
                             <BookOpen size={16} />
-                            Past Bookings
+                            My Bookings
                           </Button>
                         </Link>
                         <Button

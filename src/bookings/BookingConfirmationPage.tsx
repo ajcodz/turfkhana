@@ -27,13 +27,17 @@ import {
 import { Link, useSearchParams } from "react-router-dom";
 import { toaster } from "../components/ui/toaster";
 import { APP_BASE_URL } from "../utils/api";
-
+import { decodeSlots, sortSlots } from "./bookingSlots";
 
 const BookingConfirmationPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [isCreating, setIsCreating] = useState(true);
-  const [createdBookingId, setCreatedBookingId] = useState<number | null>(null);
+  const [createdBookingIds, setCreatedBookingIds] = useState<number[]>([]);
   const [createError, setCreateError] = useState<string | null>(null);
+
+  const slots = sortSlots(decodeSlots(searchParams.get("slots")));
+  const slotDurationMinutes = Number(searchParams.get("slotDuration") ?? 60);
+  const pricePerSlot = Number(searchParams.get("pricePerSlot") ?? 0);
 
   const cardBg = useColorModeValue("white", "gray.700");
   const successBg = useColorModeValue("green.50", "green.900");
@@ -49,12 +53,20 @@ const BookingConfirmationPage: React.FC = () => {
       const alreadyCreated = sessionStorage.getItem(storageKey);
 
       if (alreadyCreated) {
-        setCreatedBookingId(Number(alreadyCreated));
+        try {
+          setCreatedBookingIds(JSON.parse(alreadyCreated));
+        } catch {
+          setCreatedBookingIds([]);
+        }
         setIsCreating(false);
         return;
       }
 
       try {
+        if (slots.length === 0) {
+          throw new Error("No time slots were found for this booking.");
+        }
+
         // Step 1: Resolve the client — reuse the logged-in client's existing
         // record instead of creating a new one every time, so bookings stay
         // correctly linked to the account for past-booking tracking.
@@ -95,18 +107,21 @@ const BookingConfirmationPage: React.FC = () => {
           clientId = client.id;
         }
 
-        // Step 2: Create the booking
-        const bookingRes = await fetch(`${APP_BASE_URL}/bookings`, {
+        // Step 2: Create one booking per selected slot, in a single request so
+        // an unavailable slot rejects the whole set instead of half-booking it.
+        const bookingRes = await fetch(`${APP_BASE_URL}/bookings/bulk`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             client_id: clientId,
             turf_id: searchParams.get("turfId"),
             date: searchParams.get("date"),
-            start_time: searchParams.get("startTime"),
-            end_time: searchParams.get("endTime"),
-            duration_minutes: parseInt(searchParams.get("duration") ?? "60"),
-            price: Number(searchParams.get("pricePerSlot") ?? 0),
+            slots: slots.map((slot) => ({
+              start_time: slot.startTime,
+              end_time: slot.endTime,
+              duration_minutes: slotDurationMinutes,
+              price: pricePerSlot,
+            })),
             status: "confirmed",
             payment_method: "card",
             payment_status: "paid",
@@ -116,13 +131,18 @@ const BookingConfirmationPage: React.FC = () => {
 
         if (!bookingRes.ok) {
           const err = await bookingRes.json();
-          throw new Error(err?.error?.message ?? "Failed to create booking");
+          const message =
+            typeof err?.error === "string"
+              ? err.error
+              : (err?.error?.message ?? "Failed to create booking");
+          throw new Error(message);
         }
 
-        const { booking } = await bookingRes.json();
+        const { bookings } = await bookingRes.json();
+        const ids = bookings.map((b: { id: number }) => b.id);
 
-        sessionStorage.setItem(storageKey, String(booking.id));
-        setCreatedBookingId(booking.id);
+        sessionStorage.setItem(storageKey, JSON.stringify(ids));
+        setCreatedBookingIds(ids);
       } catch (error) {
         const message =
           error instanceof Error
@@ -145,15 +165,15 @@ const BookingConfirmationPage: React.FC = () => {
   }, []);
 
   const bookingData = {
-    bookingId: createdBookingId ? `TK-${createdBookingId}` : "—",
+    bookingIds: createdBookingIds.map((id) => `TK-${id}`),
     turfName: searchParams.get("turfName") ?? "—",
     location: searchParams.get("location") ?? "—",
     date: searchParams.get("displayDate") ?? "—",
-    timeSlot: searchParams.get("timeSlot") ?? "—",
-    duration: searchParams.get("duration") ?? "—",
+    slots,
+    totalDuration: slotDurationMinutes * slots.length,
     customerName: searchParams.get("fullName") ?? "—",
     phoneNumber: searchParams.get("phoneNumber") ?? "—",
-    amountPaid: Number(searchParams.get("pricePerSlot") ?? 0),
+    amountPaid: pricePerSlot * slots.length,
     currency: searchParams.get("currency") ?? "Rs",
     bookingDate: new Date().toLocaleString(),
   };
@@ -261,24 +281,34 @@ const BookingConfirmationPage: React.FC = () => {
                 Booking Confirmed!
               </Heading>
               <Text fontSize={{ base: "md", md: "lg" }} color="gray.600">
-                Your turf has been successfully reserved
+                {bookingData.slots.length > 1
+                  ? `Your turf has been successfully reserved for ${bookingData.slots.length} slots`
+                  : "Your turf has been successfully reserved"}
               </Text>
             </VStack>
 
-            {/* Booking ID Badge */}
-            <Badge
-              colorScheme="green"
-              fontSize={{ base: "md", md: "lg" }}
-              px={6}
-              py={3}
-              borderRadius="full"
-              display="flex"
-              alignItems="center"
-              gap={2}
-            >
-              <Icon as={Hash} boxSize={5} />
-              <Text fontWeight="bold">{bookingData.bookingId}</Text>
-            </Badge>
+            {/* Booking ID Badges — one per reserved slot */}
+            <HStack gap={3} flexWrap="wrap" justify="center">
+              {(bookingData.bookingIds.length > 0
+                ? bookingData.bookingIds
+                : ["—"]
+              ).map((bookingId) => (
+                <Badge
+                  key={bookingId}
+                  colorScheme="green"
+                  fontSize={{ base: "md", md: "lg" }}
+                  px={6}
+                  py={3}
+                  borderRadius="full"
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                >
+                  <Icon as={Hash} boxSize={5} />
+                  <Text fontWeight="bold">{bookingId}</Text>
+                </Badge>
+              ))}
+            </HStack>
           </VStack>
 
           {/* Booking Details Card */}
@@ -326,20 +356,30 @@ const BookingConfirmationPage: React.FC = () => {
 
                   <HStack
                     justify="space-between"
+                    align="start"
                     p={3}
                     bg={useColorModeValue("gray.50", "gray.800")}
                     borderRadius="md"
                   >
                     <HStack color="gray.600">
                       <Icon as={Clock} boxSize={5} color={successColor} />
-                      <Text fontWeight="medium">Time Slot</Text>
+                      <Text fontWeight="medium">
+                        {bookingData.slots.length === 1
+                          ? "Time Slot"
+                          : `Time Slots (${bookingData.slots.length})`}
+                      </Text>
                     </HStack>
-                    <Text
-                      fontWeight="semibold"
-                      fontSize={{ base: "sm", md: "md" }}
-                    >
-                      {bookingData.timeSlot}
-                    </Text>
+                    <VStack align="end" gap={1}>
+                      {bookingData.slots.map((slot) => (
+                        <Text
+                          key={slot.startTime}
+                          fontWeight="semibold"
+                          fontSize={{ base: "sm", md: "md" }}
+                        >
+                          {slot.time}
+                        </Text>
+                      ))}
+                    </VStack>
                   </HStack>
                 </VStack>
 
@@ -368,10 +408,10 @@ const BookingConfirmationPage: React.FC = () => {
                   </HStack>
                   <HStack justify="space-between">
                     <Text color="gray.600" fontSize="sm">
-                      Duration
+                      Total Duration
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
-                      {bookingData.duration}
+                      {bookingData.totalDuration} minutes
                     </Text>
                   </HStack>
                 </VStack>

@@ -21,9 +21,13 @@ import {
   Home,
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import { decodeSlots, sortSlots } from "./bookingSlots";
 
 const BookingFailurePage: React.FC = () => {
   const [searchParams] = useSearchParams();
+
+  const slots = sortSlots(decodeSlots(searchParams.get("slots")));
+  const slotDurationMinutes = Number(searchParams.get("slotDuration") ?? 60);
 
   const cardBg = useColorModeValue("white", "gray.700");
   const failureBg = useColorModeValue("red.50", "red.900");
@@ -36,11 +40,12 @@ const BookingFailurePage: React.FC = () => {
     turfName: searchParams.get("turfName") ?? "—",
     location: searchParams.get("location") ?? "—",
     date: searchParams.get("date") ?? "—",
-    timeSlot: searchParams.get("timeSlot") ?? "—",
-    duration: searchParams.get("duration") ?? "—",
+    slots,
+    totalDuration: slotDurationMinutes * slots.length,
     customerName: searchParams.get("customerName") ?? "—",
     phoneNumber: searchParams.get("phoneNumber") ?? "—",
     amountToPay: Number(searchParams.get("amountToPay")) ?? 0,
+    pricePerSlot: Number(searchParams.get("pricePerSlot") ?? 0),
     currency: searchParams.get("currency") ?? "PKR",
   };
 
@@ -139,20 +144,39 @@ const BookingFailurePage: React.FC = () => {
 
                   <HStack
                     justify="space-between"
+                    align="start"
                     p={3}
                     bg={useColorModeValue("gray.50", "gray.800")}
                     borderRadius="md"
                   >
                     <HStack color="gray.600">
                       <Icon as={Clock} boxSize={5} color={failureColor} />
-                      <Text fontWeight="medium">Time Slot</Text>
+                      <Text fontWeight="medium">
+                        {failureData.slots.length === 1
+                          ? "Time Slot"
+                          : `Time Slots (${failureData.slots.length})`}
+                      </Text>
                     </HStack>
-                    <Text
-                      fontWeight="semibold"
-                      fontSize={{ base: "sm", md: "md" }}
-                    >
-                      {failureData.timeSlot}
-                    </Text>
+                    <VStack align="end" gap={1}>
+                      {failureData.slots.length === 0 ? (
+                        <Text
+                          fontWeight="semibold"
+                          fontSize={{ base: "sm", md: "md" }}
+                        >
+                          —
+                        </Text>
+                      ) : (
+                        failureData.slots.map((slot) => (
+                          <Text
+                            key={slot.startTime}
+                            fontWeight="semibold"
+                            fontSize={{ base: "sm", md: "md" }}
+                          >
+                            {slot.time}
+                          </Text>
+                        ))
+                      )}
+                    </VStack>
                   </HStack>
                 </VStack>
 
@@ -181,10 +205,10 @@ const BookingFailurePage: React.FC = () => {
                   </HStack>
                   <HStack justify="space-between">
                     <Text color="gray.600" fontSize="sm">
-                      Duration
+                      Total Duration
                     </Text>
                     <Text fontWeight="medium" fontSize="sm">
-                      {failureData.duration}
+                      {failureData.totalDuration} minutes
                     </Text>
                   </HStack>
                 </VStack>
@@ -266,9 +290,9 @@ const BookingFailurePage: React.FC = () => {
                 turfName: failureData.turfName,
                 location: failureData.location,
                 date: failureData.date,
-                timeSlot: failureData.timeSlot,
-                duration: failureData.duration,
-                pricePerSlot: failureData.amountToPay,
+                slots: failureData.slots,
+                slotDurationMinutes,
+                pricePerSlot: failureData.pricePerSlot,
                 currency: failureData.currency,
               }}
               style={{ width: "100%", display: "block" }}

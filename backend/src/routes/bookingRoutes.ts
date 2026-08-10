@@ -1,5 +1,6 @@
 import { Router } from "express";
 const { createBooking } = require("../controllers/booking/createBooking");
+const { createBookings } = require("../controllers/booking/createBookings");
 const { getBookings } = require("../controllers/booking/getBookings");
 const { deleteBooking } = require("../controllers/booking/deleteBooking");
 const { updateBooking } = require("../controllers/booking/updateBooking");
@@ -17,6 +18,7 @@ router.get(
   getAllBookingsForSuperAdmin,
 );
 
+router.post("/bulk", createBookings);
 router.post("/", createBooking);
 router.get("/", getBookings);
 
