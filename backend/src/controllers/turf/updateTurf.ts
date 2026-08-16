@@ -34,6 +34,8 @@ export const updateTurf = catchAsync(async (req, res) => {
     slug: req.body.slug ?? null,
     type: req.body.type,
     address: req.body.address,
+    phone: req.body.phone ?? null,
+    google_maps_url: req.body.google_maps_url ?? null,
     lat: req.body.lat ?? null,
     lng: req.body.lng ?? null,
     opening_time: req.body.opening_time,
