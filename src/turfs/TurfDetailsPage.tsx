@@ -15,10 +15,18 @@ import {
   Separator,
   Alert,
   Spinner,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { toaster } from "../components/ui/toaster";
 import { useColorModeValue } from "../components/ui/color-mode";
-import { MapPin, Clock, Calendar, CheckCircle } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  Calendar,
+  CheckCircle,
+  Phone,
+  ExternalLink,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTurf } from "./useTurfDetailsPage";
 import { APP_BASE_URL } from "../utils/api";
@@ -54,7 +62,9 @@ const TurfDetailsPage: React.FC = () => {
 
   const generateAndCheckSlots = useCallback(
     async (date: Date) => {
-      if (!turf) return;
+      // Unclaimed turfs have no owner and no slot pricing, so there is nothing
+      // to build a booking grid from.
+      if (!turf || turf.status === "unclaimed") return;
 
       setIsSlotsLoading(true);
       setSelectedSlotIds([]);
@@ -251,6 +261,9 @@ const TurfDetailsPage: React.FC = () => {
     );
   }
 
+  // Listed for discovery only: no owner, so no price, no slots, no booking.
+  const isUnclaimed = turf.status === "unclaimed";
+
   const selectedSlots = sortSlots(
     timeSlots
       .filter((slot) => selectedSlotIds.includes(slot.id))
@@ -369,304 +382,348 @@ const TurfDetailsPage: React.FC = () => {
                     </HStack>
                   </HStack>
                 </Box>
-                <Box textAlign={{ base: "left", md: "right" }}>
-                  <Text fontSize="3xl" fontWeight="bold" color="green.500">
-                    {turf.currency} {turf.price_per_slot}
-                  </Text>
-                  <Text color="fg.muted" fontSize="sm">
-                    per slot
-                  </Text>
-                </Box>
+                {!isUnclaimed && (
+                  <Box textAlign={{ base: "left", md: "right" }}>
+                    <Text fontSize="3xl" fontWeight="bold" color="green.500">
+                      {turf.currency} {turf.price_per_slot}
+                    </Text>
+                    <Text color="fg.muted" fontSize="sm">
+                      per slot
+                    </Text>
+                  </Box>
+                )}
               </Flex>
 
-              <Separator />
+              {!isUnclaimed && (
+                <>
+                  <Separator />
 
-              <Box>
-                <Heading as="h3" size="sm" mb={3}>
-                  Slot Duration
-                </Heading>
-                <Badge
-                  colorPalette="green"
-                  px={3}
-                  py={1}
-                  borderRadius="md"
-                  fontSize="xs"
-                >
-                  {turf.slot_duration_minutes} minutes per slot
-                </Badge>
-              </Box>
-            </VStack>
-          </Box>
-
-          {/* Date Selection */}
-          <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
-            <VStack align="stretch" gap={6}>
-              <HStack>
-                <Icon as={Calendar} color="green.500" boxSize={6} />
-                <Heading as="h2" size="lg">
-                  Select Date
-                </Heading>
-              </HStack>
-
-              <SimpleGrid columns={{ base: 7 }} gap={3}>
-                {dates.map((date, index) => {
-                  const { day, date: dateNum, month } = formatDate(date);
-                  const isSelected = isSameDate(date, selectedDate);
-                  const isTodayDate = isToday(date);
-
-                  return (
-                    <VStack
-                      key={index}
-                      p={3}
-                      borderRadius="lg"
-                      border="2px solid"
-                      borderColor={isSelected ? "green.500" : borderColor}
-                      bg={isSelected ? "green.subtle" : "transparent"}
-                      cursor="pointer"
-                      transition="all 0.2s"
-                      _hover={{ borderColor: "green.400", bg: hoverBg }}
-                      onClick={() => setSelectedDate(date)}
-                      gap={1}
+                  <Box>
+                    <Heading as="h3" size="sm" mb={3}>
+                      Slot Duration
+                    </Heading>
+                    <Badge
+                      colorPalette="green"
+                      px={3}
+                      py={1}
+                      borderRadius="md"
+                      fontSize="xs"
                     >
-                      <Text fontSize="xs" fontWeight="medium" color="fg.muted">
-                        {day}
-                      </Text>
-                      <Text
-                        fontSize="xl"
-                        fontWeight="bold"
-                        color={isSelected ? "green.fg" : "fg"}
-                      >
-                        {dateNum}
-                      </Text>
-                      <Text fontSize="xs" color="fg.muted">
-                        {month}
-                      </Text>
-                      {isTodayDate && (
-                        <Badge
-                          colorPalette="green"
-                          variant="solid"
-                          fontSize="2xs"
-                        >
-                          Today
-                        </Badge>
-                      )}
-                    </VStack>
-                  );
-                })}
-              </SimpleGrid>
-            </VStack>
-          </Box>
-
-          {/* Time Slot Selection */}
-          <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
-            <VStack align="stretch" gap={6}>
-              <HStack justify="space-between" flexWrap="wrap">
-                <VStack align="flex-start" gap={1}>
-                  <HStack>
-                    <Icon as={Clock} color="green.500" boxSize={6} />
-                    <Heading as="h2" size="lg">
-                      Select Time Slots
-                    </Heading>
-                  </HStack>
-                  <Text fontSize="sm" color="fg.muted">
-                    Pick one or more slots — tap a selected slot again to remove
-                    it.
-                  </Text>
-                </VStack>
-                <HStack gap={4} fontSize="sm" flexWrap="wrap">
-                  <HStack>
-                    <Box w={4} h={4} bg="green.500" borderRadius="sm" />
-                    <Text>Available</Text>
-                  </HStack>
-                  <HStack>
-                    <Box w={4} h={4} bg="gray.300" borderRadius="sm" />
-                    <Text>Booked</Text>
-                  </HStack>
-                  <HStack>
-                    <Box w={4} h={4} bg="red.400" borderRadius="sm" />
-                    <Text>Not Available</Text>
-                  </HStack>
-                  <HStack>
-                    <Icon as={CheckCircle} color="green.fg" boxSize={4} />
-                    <Text>Selected</Text>
-                  </HStack>
-                </HStack>
-              </HStack>
-
-              {isSlotsLoading ? (
-                <Flex justify="center" py={8}>
-                  <Spinner size="lg" color="green.500" />
-                </Flex>
-              ) : timeSlots.length === 0 ? (
-                <Box
-                  p={10}
-                  textAlign="center"
-                  borderRadius="xl"
-                  borderWidth="2px"
-                  borderStyle="dashed"
-                  borderColor={borderColor}
-                >
-                  <VStack gap={3}>
-                    <Icon as={Clock} boxSize={12} color="fg.subtle" />
-                    <Heading as="h3" size="md" color="fg.muted">
-                      No Available Slots
-                    </Heading>
-                    <Text fontSize="sm" color="fg.subtle" maxW="sm">
-                      All time slots for today have passed. Please select a
-                      future date to make a booking.
-                    </Text>
-                  </VStack>
-                </Box>
-              ) : (
-                <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={3}>
-                  {timeSlots.map((slot) => {
-                    const isSelected = selectedSlotIds.includes(slot.id);
-                    const isDisabled = slot.isBooked || slot.isUnavailable;
-
-                    return (
-                      <Button
-                        key={slot.id}
-                        variant={isSelected ? "solid" : "outline"}
-                        colorPalette={
-                          slot.isUnavailable
-                            ? "red"
-                            : slot.isBooked
-                              ? "gray"
-                              : "green"
-                        }
-                        disabled={isDisabled}
-                        onClick={() => !isDisabled && toggleSlot(slot.id)}
-                        h="60px"
-                        position="relative"
-                        borderWidth="2px"
-                        _disabled={{
-                          opacity: 0.6,
-                          cursor: "not-allowed",
-                        }}
-                      >
-                        <VStack gap={0}>
-                          <Text fontSize="sm" fontWeight="semibold">
-                            {slot.time}
-                          </Text>
-                          {slot.isUnavailable && (
-                            <Text fontSize="xs">Not Available</Text>
-                          )}
-                          {!slot.isUnavailable && slot.isBooked && (
-                            <Text fontSize="xs">Booked</Text>
-                          )}
-                        </VStack>
-                        {isSelected && (
-                          <Icon
-                            as={CheckCircle}
-                            position="absolute"
-                            top={2}
-                            right={2}
-                            boxSize={4}
-                          />
-                        )}
-                      </Button>
-                    );
-                  })}
-                </SimpleGrid>
+                      {turf.slot_duration_minutes} minutes per slot
+                    </Badge>
+                  </Box>
+                </>
               )}
             </VStack>
           </Box>
 
-          {/* Booking Summary & CTA */}
-          <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
-            <Flex
-              direction={{ base: "column", md: "row" }}
-              justify="space-between"
-              align={{ base: "stretch", md: "center" }}
-              gap={4}
-            >
-              <VStack align="flex-start" gap={2}>
-                <HStack>
-                  <Heading as="h3" size="md">
-                    Booking Summary
-                  </Heading>
-                  {selectedSlots.length > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="xs"
-                      colorPalette="green"
-                      onClick={() => setSelectedSlotIds([])}
-                    >
-                      Clear selection
-                    </Button>
-                  )}
-                </HStack>
+          {isUnclaimed ? (
+            <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
+              <VStack align="stretch" gap={4}>
+                <Heading as="h2" size="lg">
+                  Not bookable on TurfKhana yet
+                </Heading>
                 <Text color="fg.muted">
-                  Date: <strong>{selectedDate.toDateString()}</strong>
+                  This venue is listed so you can find it, but no owner has
+                  claimed it yet — there are no online slots or pricing. Contact
+                  the venue directly to arrange a game.
                 </Text>
-                {selectedSlots.length === 0 ? (
-                  <Text color="fg.muted">No slots selected yet</Text>
-                ) : (
-                  <Box>
-                    <Text color="fg.muted" mb={1}>
-                      {selectedSlots.length}{" "}
-                      {selectedSlots.length === 1 ? "slot" : "slots"} selected:
-                    </Text>
-                    <HStack flexWrap="wrap" gap={2}>
-                      {selectedSlots.map((slot) => (
-                        <Badge
-                          key={slot.startTime}
-                          colorPalette="green"
-                          px={2}
-                          py={1}
-                          borderRadius="md"
-                        >
-                          {slot.time}
-                        </Badge>
-                      ))}
-                    </HStack>
-                  </Box>
-                )}
-                {selectedSlots.length === 0 ? (
-                  <Text color="fg.muted">
-                    Price per slot:{" "}
-                    <Text
-                      as="span"
-                      color="green.500"
-                      fontWeight="bold"
-                      fontSize="lg"
-                    >
-                      {turf.currency} {turf.price_per_slot.toLocaleString()}
-                    </Text>
-                  </Text>
-                ) : (
-                  <Text color="fg.muted">
-                    Total ({turf.currency} {turf.price_per_slot} ×{" "}
-                    {selectedSlots.length}):{" "}
-                    <Text
-                      as="span"
-                      color="green.500"
-                      fontWeight="bold"
-                      fontSize="lg"
-                    >
-                      {turf.currency} {totalPrice.toLocaleString()}
-                    </Text>
-                  </Text>
+                {(turf.phone || turf.google_maps_url) && (
+                  <VStack align="flex-start" gap={2}>
+                    {turf.phone && (
+                      <HStack color="fg.muted">
+                        <Icon as={Phone} />
+                        <Text>{turf.phone}</Text>
+                      </HStack>
+                    )}
+                    {turf.google_maps_url && (
+                      <ChakraLink
+                        href={turf.google_maps_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        colorPalette="green"
+                      >
+                        <Icon as={ExternalLink} me={2} />
+                        View on Google Maps
+                      </ChakraLink>
+                    )}
+                  </VStack>
                 )}
               </VStack>
-              {/* <Link to={`/booking-form/${turf.id}`}> */}
-              <Button
-                colorPalette="green"
-                size="lg"
-                px={12}
-                py={6}
-                fontSize="lg"
-                borderRadius="full"
-                onClick={handleContinueBooking}
-                disabled={selectedSlots.length === 0}
-                _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
-                transition="all 0.2s"
+            </Box>
+          ) : (
+            <>
+            {/* Date Selection */}
+            <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
+              <VStack align="stretch" gap={6}>
+                <HStack>
+                  <Icon as={Calendar} color="green.500" boxSize={6} />
+                  <Heading as="h2" size="lg">
+                    Select Date
+                  </Heading>
+                </HStack>
+
+                <SimpleGrid columns={{ base: 7 }} gap={3}>
+                  {dates.map((date, index) => {
+                    const { day, date: dateNum, month } = formatDate(date);
+                    const isSelected = isSameDate(date, selectedDate);
+                    const isTodayDate = isToday(date);
+
+                    return (
+                      <VStack
+                        key={index}
+                        p={3}
+                        borderRadius="lg"
+                        border="2px solid"
+                        borderColor={isSelected ? "green.500" : borderColor}
+                        bg={isSelected ? "green.subtle" : "transparent"}
+                        cursor="pointer"
+                        transition="all 0.2s"
+                        _hover={{ borderColor: "green.400", bg: hoverBg }}
+                        onClick={() => setSelectedDate(date)}
+                        gap={1}
+                      >
+                        <Text fontSize="xs" fontWeight="medium" color="fg.muted">
+                          {day}
+                        </Text>
+                        <Text
+                          fontSize="xl"
+                          fontWeight="bold"
+                          color={isSelected ? "green.fg" : "fg"}
+                        >
+                          {dateNum}
+                        </Text>
+                        <Text fontSize="xs" color="fg.muted">
+                          {month}
+                        </Text>
+                        {isTodayDate && (
+                          <Badge
+                            colorPalette="green"
+                            variant="solid"
+                            fontSize="2xs"
+                          >
+                            Today
+                          </Badge>
+                        )}
+                      </VStack>
+                    );
+                  })}
+                </SimpleGrid>
+              </VStack>
+            </Box>
+
+            {/* Time Slot Selection */}
+            <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
+              <VStack align="stretch" gap={6}>
+                <HStack justify="space-between" flexWrap="wrap">
+                  <VStack align="flex-start" gap={1}>
+                    <HStack>
+                      <Icon as={Clock} color="green.500" boxSize={6} />
+                      <Heading as="h2" size="lg">
+                        Select Time Slots
+                      </Heading>
+                    </HStack>
+                    <Text fontSize="sm" color="fg.muted">
+                      Pick one or more slots — tap a selected slot again to remove
+                      it.
+                    </Text>
+                  </VStack>
+                  <HStack gap={4} fontSize="sm" flexWrap="wrap">
+                    <HStack>
+                      <Box w={4} h={4} bg="green.500" borderRadius="sm" />
+                      <Text>Available</Text>
+                    </HStack>
+                    <HStack>
+                      <Box w={4} h={4} bg="gray.300" borderRadius="sm" />
+                      <Text>Booked</Text>
+                    </HStack>
+                    <HStack>
+                      <Box w={4} h={4} bg="red.400" borderRadius="sm" />
+                      <Text>Not Available</Text>
+                    </HStack>
+                    <HStack>
+                      <Icon as={CheckCircle} color="green.fg" boxSize={4} />
+                      <Text>Selected</Text>
+                    </HStack>
+                  </HStack>
+                </HStack>
+
+                {isSlotsLoading ? (
+                  <Flex justify="center" py={8}>
+                    <Spinner size="lg" color="green.500" />
+                  </Flex>
+                ) : timeSlots.length === 0 ? (
+                  <Box
+                    p={10}
+                    textAlign="center"
+                    borderRadius="xl"
+                    borderWidth="2px"
+                    borderStyle="dashed"
+                    borderColor={borderColor}
+                  >
+                    <VStack gap={3}>
+                      <Icon as={Clock} boxSize={12} color="fg.subtle" />
+                      <Heading as="h3" size="md" color="fg.muted">
+                        No Available Slots
+                      </Heading>
+                      <Text fontSize="sm" color="fg.subtle" maxW="sm">
+                        All time slots for today have passed. Please select a
+                        future date to make a booking.
+                      </Text>
+                    </VStack>
+                  </Box>
+                ) : (
+                  <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={3}>
+                    {timeSlots.map((slot) => {
+                      const isSelected = selectedSlotIds.includes(slot.id);
+                      const isDisabled = slot.isBooked || slot.isUnavailable;
+
+                      return (
+                        <Button
+                          key={slot.id}
+                          variant={isSelected ? "solid" : "outline"}
+                          colorPalette={
+                            slot.isUnavailable
+                              ? "red"
+                              : slot.isBooked
+                                ? "gray"
+                                : "green"
+                          }
+                          disabled={isDisabled}
+                          onClick={() => !isDisabled && toggleSlot(slot.id)}
+                          h="60px"
+                          position="relative"
+                          borderWidth="2px"
+                          _disabled={{
+                            opacity: 0.6,
+                            cursor: "not-allowed",
+                          }}
+                        >
+                          <VStack gap={0}>
+                            <Text fontSize="sm" fontWeight="semibold">
+                              {slot.time}
+                            </Text>
+                            {slot.isUnavailable && (
+                              <Text fontSize="xs">Not Available</Text>
+                            )}
+                            {!slot.isUnavailable && slot.isBooked && (
+                              <Text fontSize="xs">Booked</Text>
+                            )}
+                          </VStack>
+                          {isSelected && (
+                            <Icon
+                              as={CheckCircle}
+                              position="absolute"
+                              top={2}
+                              right={2}
+                              boxSize={4}
+                            />
+                          )}
+                        </Button>
+                      );
+                    })}
+                  </SimpleGrid>
+                )}
+              </VStack>
+            </Box>
+
+            {/* Booking Summary & CTA */}
+            <Box bg={cardBg} p={{ base: 6, md: 8 }} borderRadius="xl" shadow="sm">
+              <Flex
+                direction={{ base: "column", md: "row" }}
+                justify="space-between"
+                align={{ base: "stretch", md: "center" }}
+                gap={4}
               >
-                Continue to Booking
-              </Button>
-              {/* </Link> */}
-            </Flex>
-          </Box>
+                <VStack align="flex-start" gap={2}>
+                  <HStack>
+                    <Heading as="h3" size="md">
+                      Booking Summary
+                    </Heading>
+                    {selectedSlots.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        colorPalette="green"
+                        onClick={() => setSelectedSlotIds([])}
+                      >
+                        Clear selection
+                      </Button>
+                    )}
+                  </HStack>
+                  <Text color="fg.muted">
+                    Date: <strong>{selectedDate.toDateString()}</strong>
+                  </Text>
+                  {selectedSlots.length === 0 ? (
+                    <Text color="fg.muted">No slots selected yet</Text>
+                  ) : (
+                    <Box>
+                      <Text color="fg.muted" mb={1}>
+                        {selectedSlots.length}{" "}
+                        {selectedSlots.length === 1 ? "slot" : "slots"} selected:
+                      </Text>
+                      <HStack flexWrap="wrap" gap={2}>
+                        {selectedSlots.map((slot) => (
+                          <Badge
+                            key={slot.startTime}
+                            colorPalette="green"
+                            px={2}
+                            py={1}
+                            borderRadius="md"
+                          >
+                            {slot.time}
+                          </Badge>
+                        ))}
+                      </HStack>
+                    </Box>
+                  )}
+                  {selectedSlots.length === 0 ? (
+                    <Text color="fg.muted">
+                      Price per slot:{" "}
+                      <Text
+                        as="span"
+                        color="green.500"
+                        fontWeight="bold"
+                        fontSize="lg"
+                      >
+                        {turf.currency} {turf.price_per_slot.toLocaleString()}
+                      </Text>
+                    </Text>
+                  ) : (
+                    <Text color="fg.muted">
+                      Total ({turf.currency} {turf.price_per_slot} ×{" "}
+                      {selectedSlots.length}):{" "}
+                      <Text
+                        as="span"
+                        color="green.500"
+                        fontWeight="bold"
+                        fontSize="lg"
+                      >
+                        {turf.currency} {totalPrice.toLocaleString()}
+                      </Text>
+                    </Text>
+                  )}
+                </VStack>
+                {/* <Link to={`/booking-form/${turf.id}`}> */}
+                <Button
+                  colorPalette="green"
+                  size="lg"
+                  px={12}
+                  py={6}
+                  fontSize="lg"
+                  borderRadius="full"
+                  onClick={handleContinueBooking}
+                  disabled={selectedSlots.length === 0}
+                  _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
+                  transition="all 0.2s"
+                >
+                  Continue to Booking
+                </Button>
+                {/* </Link> */}
+              </Flex>
+            </Box>
+            </>
+          )}
         </VStack>
       </Container>
     </Box>

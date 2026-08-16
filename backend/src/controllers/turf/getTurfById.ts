@@ -7,7 +7,7 @@ export const getTurfById = catchAsync(async (req, res) => {
 
   const { data, error } = await supabase
     .from("turfs")
-    .select("*, owners!inner(is_active)")
+    .select("*, owners(is_active)")
     .eq("id", id)
     .single();
 
@@ -15,7 +15,11 @@ export const getTurfById = catchAsync(async (req, res) => {
 
   const row = data as any;
 
-  if (!row.owners?.is_active || !row.is_active) {
+  // Unclaimed turfs have no owner to gate on; claimed ones stay hidden while
+  // their owner is disabled.
+  const ownerAllows = row.status === "unclaimed" || row.owners?.is_active;
+
+  if (!ownerAllows || !row.is_active) {
     return res.status(404).json({ error: "Turf not found" });
   }
 

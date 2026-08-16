@@ -73,14 +73,28 @@ const BrowseTurfsPage: React.FC = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // Unclaimed turfs carry no real price, so they sort after every priced turf
+  // rather than pooling at the cheap end.
+  const byPrice = (
+    a: (typeof filtered)[number],
+    b: (typeof filtered)[number],
+    compare: (x: number, y: number) => number,
+  ) => {
+    const aUnpriced = a.status === "unclaimed";
+    const bUnpriced = b.status === "unclaimed";
+    if (aUnpriced !== bUnpriced) return aUnpriced ? 1 : -1;
+    if (aUnpriced) return a.name.localeCompare(b.name);
+    return compare(a.price_per_slot, b.price_per_slot);
+  };
+
   const sorted = [...filtered].sort((a, b) => {
     switch (sortBy) {
       case "nearest":
         return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
       case "price_low":
-        return a.price_per_slot - b.price_per_slot;
+        return byPrice(a, b, (x, y) => x - y);
       case "price_high":
-        return b.price_per_slot - a.price_per_slot;
+        return byPrice(a, b, (x, y) => y - x);
       case "name":
         return a.name.localeCompare(b.name);
       default:

@@ -43,6 +43,9 @@ export const TurfCard: React.FC<{ turf: TurfWithDistance }> = ({ turf }) => {
   const cardBg = useColorModeValue("white", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
+  // Unclaimed turfs are listed for discovery only — no owner has set a price yet.
+  const isUnclaimed = turf.status === "unclaimed";
+
   return (
     <LinkBox
       as="article"
@@ -148,19 +151,25 @@ export const TurfCard: React.FC<{ turf: TurfWithDistance }> = ({ turf }) => {
           align="center"
           gap={3}
         >
-          <Box>
-            <Text
-              fontSize="xl"
-              fontWeight="bold"
-              color="green.500"
-              lineHeight="short"
-            >
-              {turf.currency} {turf.price_per_slot.toLocaleString()}
-            </Text>
+          {isUnclaimed ? (
             <Text fontSize="xs" color="fg.muted">
-              per {turf.slot_duration_minutes} min slot
+              Not bookable yet
             </Text>
-          </Box>
+          ) : (
+            <Box>
+              <Text
+                fontSize="xl"
+                fontWeight="bold"
+                color="green.500"
+                lineHeight="short"
+              >
+                {turf.currency} {turf.price_per_slot.toLocaleString()}
+              </Text>
+              <Text fontSize="xs" color="fg.muted">
+                per {turf.slot_duration_minutes} min slot
+              </Text>
+            </Box>
+          )}
           {/* Visual only — the card-wide LinkOverlay owns the click and the tab stop */}
           <HStack
             as="span"
